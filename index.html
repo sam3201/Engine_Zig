@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>My Zig Game</title>
+</head>
+<body>
+  <canvas id="game" width="800" height="600"></canvas>
+  <script type="module">
+    const wasm = await WebAssembly.instantiateStreaming(fetch("main.wasm"), {
+      env: {
+        
+      }
+    });
+    
+  </script>
+</body>
+</html>
+
