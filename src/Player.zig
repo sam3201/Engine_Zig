@@ -1,274 +1,185 @@
 const std = @import("std");
 const eng = @import("Engine.zig");
-const Player = @import("Player.zig");
-const Chunk = @import("Chunk.zig");
+const Entity = @import("Entity.zig");
 
-pub const WorldManager = struct {
+pub const InputAction = enum {
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+    Interact,
+    Attack,
+    UseItem,
+    OpenInventory,
+    None,
+};
+
+pub const KeyBinding = struct {
+    key: u8,
+    action: InputAction,
+};
+
+pub const Player = struct {
+    entity: Entity.Entity,
+    key_bindings: []KeyBinding,
     allocator: std.mem.Allocator,
-    canvas: *eng.Canvas,
-    player: Player.Player,
-    chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
-    loaded_radius: i32 = 2,
-    canvas_width: i32,
-    canvas_height: i32,
-    camera_x: i32 = 0,
-    camera_y: i32 = 0,
 
-    const ChunkContext = struct {
-        pub fn hash(self: @This(), coord: Chunk.ChunkCoord) u64 {
-            _ = self;
-            return coord.hash();
-        }
+    health: i32 = 100,
+    max_health: i32 = 100,
+    speed: i32 = 1,
+    level: i32 = 1,
+    experience: i32 = 0,
+    experience_to_next_level: i32 = 100,
 
-        pub fn eql(self: @This(), a: Chunk.ChunkCoord, b: Chunk.ChunkCoord) bool {
-            _ = self;
-            return a.equals(b);
-        }
-    };
+    pub fn init(
+        allocator: std.mem.Allocator,
+        start_x: i32,
+        start_y: i32,
+        width: i32,
+        height: i32,
+        ch: u8,
+        color: eng.Color,
+        key_bindings: []const KeyBinding,
+    ) !Player {
+        const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
+        @memcpy(owned_bindings, key_bindings);
 
-    pub fn init(allocator: std.mem.Allocator, canvas: *eng.Canvas, player: Player.Player) !WorldManager {
-        var world = WorldManager{
+        const entity = Entity.Entity.init(start_x, start_y, width, height, Entity.RenderableType.PLAYER.toId(), ch, color);
+
+        return Player{
+            .entity = entity,
+            .key_bindings = owned_bindings,
             .allocator = allocator,
-            .canvas = canvas,
-            .player = player,
-            .chunks = std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage).init(allocator),
-            .canvas_width = @intCast(canvas.width),
-            .canvas_height = @intCast(canvas.height),
-        };
-
-        try world.updateChunks();
-
-        return world;
-    }
-
-    pub fn deinit(self: *WorldManager) void {
-        self.chunks.deinit();
-        self.player.deinit();
-    }
-
-    pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
-        const pos = self.player.getPosition();
-        return Chunk.ChunkCoord{
-            .x = @divFloor(pos.x, Chunk.CHUNK_SIZE),
-            .y = @divFloor(pos.y, Chunk.CHUNK_SIZE),
         };
     }
 
-    pub fn worldToChunkCoord(world_x: i32, world_y: i32) Chunk.ChunkCoord {
-        return Chunk.ChunkCoord{
-            .x = @divFloor(world_x, Chunk.CHUNK_SIZE),
-            .y = @divFloor(world_y, Chunk.CHUNK_SIZE),
-        };
+    pub fn deinit(self: *Player) void {
+        self.allocator.free(self.key_bindings);
+        self.entity.deinit();
     }
 
-    pub fn worldToLocalCoord(world_x: i32, world_y: i32) struct { x: i32, y: i32 } {
-        return .{
-            .x = @mod(world_x, Chunk.CHUNK_SIZE),
-            .y = @mod(world_y, Chunk.CHUNK_SIZE),
-        };
-    }
-
-    pub fn updateChunks(self: *WorldManager) !void {
-        const player_chunk = self.getPlayerChunkCoord();
-
-        var y: i32 = player_chunk.y - self.loaded_radius;
-        while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
-            var x: i32 = player_chunk.x - self.loaded_radius;
-            while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
-                const coord = Chunk.ChunkCoord{ .x = x, .y = y };
-
-                if (!self.chunks.contains(coord)) {
-                    const chunk = Chunk.Chunk.init(coord, self.player.entity.id); // Using entity.id as level for now
-                    try self.chunks.put(coord, chunk);
-                }
+    pub fn processInput(self: *Player, input: u8) InputAction {
+        for (self.key_bindings) |binding| {
+            if (binding.key == input) {
+                return binding.action;
             }
         }
-
-        self.unloadDistantChunks(player_chunk);
+        return InputAction.None;
     }
 
-    fn unloadDistantChunks(self: *WorldManager, player_chunk: Chunk.ChunkCoord) void {
-        const unload_radius = self.loaded_radius + 2;
-
-        var iterator = self.chunks.iterator();
-        var coords_to_remove = std.ArrayList(Chunk.ChunkCoord).init(self.allocator);
-        defer coords_to_remove.deinit();
-
-        while (iterator.next()) |entry| {
-            const coord = entry.key_ptr.*;
-            const distance = @abs(coord.x - player_chunk.x) + @abs(coord.y - player_chunk.y);
-
-            if (distance > unload_radius) {
-                coords_to_remove.append(coord) catch continue;
-            }
-        }
-
-        for (coords_to_remove.items) |coord| {
-            _ = self.chunks.remove(coord);
-        }
+    pub fn move(self: *Player, dx: i32, dy: i32) void {
+        self.entity.update(dx * self.speed, dy * self.speed);
     }
 
-    pub fn getTileAtWorld(self: WorldManager, world_x: i32, world_y: i32) Chunk.TileType {
-        const chunk_coord = worldToChunkCoord(world_x, world_y);
-        const local_coord = worldToLocalCoord(world_x, world_y);
-
-        if (self.chunks.get(chunk_coord)) |chunk| {
-            return chunk.getTile(local_coord.x, local_coord.y);
-        }
-
-        return .Stone;
+    pub fn setPosition(self: *Player, x: i32, y: i32) void {
+        self.entity.x = x;
+        self.entity.y = y;
     }
 
-    pub fn isWalkableAtWorld(self: WorldManager, world_x: i32, world_y: i32) bool {
-        const tile = self.getTileAtWorld(world_x, world_y);
-        return tile.isWalkable();
+    pub fn getPosition(self: Player) struct { x: i32, y: i32 } {
+        return .{ .x = self.entity.x, .y = self.entity.y };
     }
 
-    pub fn processPlayerInput(self: *WorldManager, input: u8) !void {
-        const action = self.player.processInput(input);
-        try self.handlePlayerAction(action);
+    pub fn getBounds(self: Player) struct { x: i32, y: i32, width: i32, height: i32 } {
+        return .{ .x = self.entity.x, .y = self.entity.y, .width = self.entity.width, .height = self.entity.height };
     }
 
-    fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
-        const old_pos = self.player.getPosition();
+    pub fn takeDamage(self: *Player, damage: i32) void {
+        self.health = @max(0, self.health - damage);
+    }
 
-        switch (action) {
-            .MoveUp => self.tryMovePlayer(0, -1),
-            .MoveDown => self.tryMovePlayer(0, 1),
-            .MoveLeft => self.tryMovePlayer(-1, 0),
-            .MoveRight => self.tryMovePlayer(1, 0),
-            .Interact => self.playerInteract(),
-            .Attack => self.playerAttack(),
-            .UseItem => self.playerUseItem(),
-            .OpenInventory => self.playerOpenInventory(),
-            .None => {},
-        }
+    pub fn heal(self: *Player, amount: i32) void {
+        self.health = @min(self.max_health, self.health + amount);
+    }
 
-        const new_pos = self.player.getPosition();
+    pub fn isAlive(self: Player) bool {
+        return self.health > 0;
+    }
 
-        if (@divFloor(old_pos.x, Chunk.CHUNK_SIZE) != @divFloor(new_pos.x, Chunk.CHUNK_SIZE) or
-            @divFloor(old_pos.y, Chunk.CHUNK_SIZE) != @divFloor(new_pos.y, Chunk.CHUNK_SIZE))
-        {
-            try self.updateChunks();
+    pub fn gainExperience(self: *Player, exp: i32) void {
+        self.experience += exp;
+
+        while (self.experience >= self.experience_to_next_level) {
+            self.levelUp();
         }
     }
 
-    fn tryMovePlayer(self: *WorldManager, dx: i32, dy: i32) void {
-        const pos = self.player.getPosition();
-        const new_x = pos.x + dx;
-        const new_y = pos.y + dy;
+    pub fn levelUp(self: *Player) void {
+        self.experience -= self.experience_to_next_level;
+        self.level += 1;
 
-        if (self.isWalkableAtWorld(new_x, new_y)) {
-            self.player.move(dx, dy);
+        self.max_health += 10;
+        self.health = self.max_health;
 
-            self.updateCamera();
-        }
+        self.experience_to_next_level = self.experience_to_next_level + (self.level * 25);
     }
 
-    fn updateCamera(self: *WorldManager) void {
-        const pos = self.player.getPosition();
-
-        self.camera_x = pos.x - @divTrunc(self.canvas_width, 2);
-        self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
+    pub fn getLevel(self: Player) i32 {
+        return self.level;
     }
 
-    fn playerInteract(self: *WorldManager) void {
-        // TODO:
-        _ = self;
-    }
-
-    fn playerAttack(self: *WorldManager) void {
-        // TODO:
-        _ = self;
-    }
-
-    fn playerUseItem(self: *WorldManager) void {
-        // TODO:
-        _ = self;
-    }
-
-    fn playerOpenInventory(self: *WorldManager) void {
-        // TODO:
-        _ = self;
-    }
-
-    pub fn draw(self: *WorldManager) void {
-        for (0..@intCast(self.canvas_height)) |screen_y| {
-            for (0..@intCast(self.canvas_width)) |screen_x| {
-                const world_x = self.camera_x + @as(i32, @intCast(screen_x));
-                const world_y = self.camera_y + @as(i32, @intCast(screen_y));
-
-                const tile = self.getTileAtWorld(world_x, world_y);
-
-                self.canvas.put(@intCast(screen_x), @intCast(screen_y), tile.getChar());
-                self.canvas.fillColor(@intCast(screen_x), @intCast(screen_y), tile.getColor());
-            }
-        }
-
-        const pos = self.player.getPosition();
-        const screen_x = pos.x - self.camera_x;
-        const screen_y = pos.y - self.camera_y;
-
-        if (screen_x >= 0 and screen_x < self.canvas_width and screen_y >= 0 and screen_y < self.canvas_height) {
-            self.player.draw(self.canvas);
-        }
-
-        self.drawHUD();
-    }
-
-    fn drawHUD(self: *WorldManager) void {
-        // Draw player info
-        const pos = self.player.getPosition();
-        const chunk_coord = self.getPlayerChunkCoord();
-
-        const info_text = std.fmt.allocPrint(self.allocator, " HP: {}/{} | Pos: ({},{}) | Chunk: ({},{}) | Chunks: {} ", .{ self.player.health, self.player.max_health, pos.x, pos.y, chunk_coord.x, chunk_coord.y, self.chunks.count() }) catch return;
-        defer self.allocator.free(info_text);
-
-        const quarter_health = @divTrunc(self.player.max_health, 4);
-        const half_health = @divTrunc(self.player.max_health, 2);
-
-        const health_color = if (self.player.health < quarter_health)
-            eng.Color{ .r = 255, .g = 0, .b = 0 }
-        else if (self.player.health < half_health)
-            eng.Color{ .r = 255, .g = 255, .b = 0 }
-        else
-            eng.Color{ .r = 0, .g = 255, .b = 0 };
-
-        for (0..info_text.len) |i| {
-            if (i < self.canvas.width) {
-                self.canvas.put(@intCast(i), 0, ' ');
-                self.canvas.fillColor(@intCast(i), 0, eng.Color{ .r = 0, .g = 0, .b = 64 });
-            }
-        }
-
-        for (info_text, 0..) |ch, i| {
-            if (i < self.canvas.width) {
-                self.canvas.put(@intCast(i), 0, ch);
-                self.canvas.fillColor(@intCast(i), 0, health_color);
-            }
-        }
-
-        const current_chunk_coord = self.getPlayerChunkCoord();
-        if (self.chunks.get(current_chunk_coord)) |chunk| {
-            const biome_text = std.fmt.allocPrint(self.allocator, " Biome: {} | Difficulty: {} ", .{ chunk.biome, chunk.difficulty_level }) catch return;
-            defer self.allocator.free(biome_text);
-
-            const biome_color = switch (chunk.biome) {
-                .Plains => eng.Color{ .r = 100, .g = 255, .b = 100 },
-                .Forest => eng.Color{ .r = 0, .g = 150, .b = 0 },
-                .Mountains => eng.Color{ .r = 150, .g = 150, .b = 150 },
-                .Desert => eng.Color{ .r = 255, .g = 200, .b = 100 },
-                .Tundra => eng.Color{ .r = 200, .g = 200, .b = 255 },
-                .Volcanic => eng.Color{ .r = 255, .g = 100, .b = 100 },
-            };
-
-            for (biome_text, 0..) |ch, i| {
-                const screen_y = 1;
-                if (i < self.canvas.width and screen_y < self.canvas.height) {
-                    self.canvas.put(@intCast(i), screen_y, ch);
-                    self.canvas.fillColor(@intCast(i), screen_y, biome_color);
-                }
-            }
-        }
+    pub fn draw(self: Player, canvas: *eng.Canvas) void {
+        canvas.put(self.entity.x, self.entity.y, self.entity.ch);
+        canvas.fillColor(self.entity.x, self.entity.y, self.entity.color);
     }
 };
+
+pub const WASD_BINDINGS = [_]KeyBinding{
+    .{ .key = 'w', .action = .MoveUp },
+    .{ .key = 'W', .action = .MoveUp },
+    .{ .key = 's', .action = .MoveDown },
+    .{ .key = 'S', .action = .MoveDown },
+    .{ .key = 'a', .action = .MoveLeft },
+    .{ .key = 'A', .action = .MoveLeft },
+    .{ .key = 'd', .action = .MoveRight },
+    .{ .key = 'D', .action = .MoveRight },
+    .{ .key = 'e', .action = .Interact },
+    .{ .key = 'E', .action = .Interact },
+    .{ .key = ' ', .action = .Attack },
+    .{ .key = 'i', .action = .OpenInventory },
+    .{ .key = 'I', .action = .OpenInventory },
+};
+
+pub const ARROW_BINDINGS = [_]KeyBinding{
+    .{ .key = 'k', .action = .MoveUp },
+    .{ .key = 'j', .action = .MoveDown },
+    .{ .key = 'h', .action = .MoveLeft },
+    .{ .key = 'l', .action = .MoveRight },
+    .{ .key = 'e', .action = .Interact },
+    .{ .key = ' ', .action = .Attack },
+    .{ .key = 'i', .action = .OpenInventory },
+};
+
+pub fn createPlayer(
+    allocator: std.mem.Allocator,
+    start_x: i32,
+    start_y: i32,
+    bindings: []const KeyBinding,
+) !Player {
+    return Player.init(
+        allocator,
+        start_x,
+        start_y,
+        1,
+        1,
+        '@',
+        eng.Color{ .r = 255, .g = 255, .b = 0 }, // Yellow
+        bindings,
+    );
+}
+
+pub fn createWASDPlayer(
+    allocator: std.mem.Allocator,
+    start_x: i32,
+    start_y: i32,
+) !Player {
+    return createPlayer(allocator, start_x, start_y, &WASD_BINDINGS);
+}
+
+pub fn createVimPlayer(
+    allocator: std.mem.Allocator,
+    start_x: i32,
+    start_y: i32,
+) !Player {
+    return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
+}

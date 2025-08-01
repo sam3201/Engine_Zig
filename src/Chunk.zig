@@ -120,7 +120,7 @@ pub const Chunk = struct {
         var rng = std.Random.DefaultPrng.init(seed);
         const random = rng.random();
 
-        const distance_from_origin = @abs(self.coord.x) + @abs(self.coord.y);
+        const distance_from_origin: i32 = @intCast(@abs(self.coord.x) + @abs(self.coord.y));
         self.biome = self.selectBiome(distance_from_origin, player_level, random);
         self.difficulty_level = player_level + @divTrunc(distance_from_origin, 3);
 
