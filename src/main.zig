@@ -6,7 +6,6 @@ const Thread = std.Thread;
 const Mutex = Thread.Mutex;
 const net = std.net;
 
-// Game instance for each client connection
 const GameInstance = struct {
     engine: Engine.Engine,
     player: Player.Player,
