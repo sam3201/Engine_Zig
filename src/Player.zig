@@ -62,7 +62,6 @@ pub const Player = struct {
             .level = 1,
             .experience = 0,
             .experience_to_next_level = 100,
-
             .id = 0,
             .name = "Nameless",
         };
