@@ -48,7 +48,6 @@ fn handleClient(connection: net.Server.Connection) void {
 
     const maybe_player = try Player.createWASDPlayer(allocator, 0.0, 0.0);
     players[player_id] = maybe_player;
-    players[player_id] = ?Player.createWASDPlayer(std.heap.page_allocator, 0.0, 0.0);
     player_count += 1;
 
     std.debug.print("Player {} connected\n", .{player_id});
