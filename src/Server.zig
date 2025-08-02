@@ -5,7 +5,6 @@ const net = std.net;
 const Thread = std.Thread;
 
 const MAX_PLAYERS = 64;
-
 var players: [MAX_PLAYERS]?Player = [_]?Player{null} ** MAX_PLAYERS;
 var player_count: usize = 0;
 var mutex = Thread.Mutex{};
@@ -36,23 +35,36 @@ fn handleClient(connection: net.Server.Connection) void {
     const reader = connection.stream.reader();
     const writer = connection.stream.writer();
 
+    // Find an available player slot
     mutex.lock();
-    defer mutex.unlock();
+    var player_id: ?usize = null;
+    for (players, 0..) |maybe_player, i| {
+        if (maybe_player == null) {
+            player_id = i;
+            break;
+        }
+    }
 
-    if (player_count >= MAX_PLAYERS) {
+    if (player_id == null) {
+        mutex.unlock();
         _ = writer.write("Server full\n") catch {};
         return;
     }
 
-    const player_id = player_count;
+    const id = player_id.?;
     const allocator = std.heap.page_allocator;
 
-    const new_player = PlayerModule.createWASDPlayer(allocator, 0.0, 0.0) catch {
+    const new_player = PlayerModule.createWASDPlayer(allocator, 0, 0) catch {
+        mutex.unlock();
         std.debug.print("Failed to create player\n", .{});
         return;
     };
-    players[player_id] = new_player;
-    std.debug.print("Player {} connected\n", .{player_id});
+
+    players[id] = new_player;
+    player_count += 1;
+    mutex.unlock();
+
+    std.debug.print("Player {} connected\n", .{id});
 
     while (true) {
         var buffer: [256]u8 = undefined;
@@ -64,8 +76,10 @@ fn handleClient(connection: net.Server.Connection) void {
         if (bytes_read == 0) break;
 
         const input = std.mem.trim(u8, buffer[0..bytes_read], " \n\r");
+        if (input.len == 0) continue;
 
-        if (players[player_id]) |*player| {
+        mutex.lock();
+        if (players[id]) |*player| {
             const action = player.processInput(input[0]);
             switch (action) {
                 .UP => player.move(0, -1),
@@ -75,6 +89,7 @@ fn handleClient(connection: net.Server.Connection) void {
                 else => {},
             }
         }
+        mutex.unlock();
 
         sendGameState(writer) catch |err| {
             std.debug.print("Failed to send game state: {}\n", .{err});
@@ -82,12 +97,16 @@ fn handleClient(connection: net.Server.Connection) void {
         };
     }
 
+    // Clean up player on disconnect
     mutex.lock();
-    players[player_id] = null;
+    if (players[id]) |*player| {
+        player.deinit();
+    }
+    players[id] = null;
     player_count -= 1;
     mutex.unlock();
 
-    std.debug.print("Player {} disconnected\n", .{player_id});
+    std.debug.print("Player {} disconnected\n", .{id});
 }
 
 fn sendGameState(writer: anytype) !void {
@@ -95,8 +114,8 @@ fn sendGameState(writer: anytype) !void {
     defer mutex.unlock();
 
     for (players, 0..) |maybe_player, i| {
-        if (maybe_player) |p| {
-            const pos = p.getPosition();
+        if (maybe_player) |player| {
+            const pos = player.getPosition();
             _ = writer.print("Player {} {} {}\n", .{ i, pos.x, pos.y }) catch continue;
         }
     }
