@@ -51,9 +51,6 @@ fn handleClient(connection: net.Server.Connection) void {
         return;
     };
     players[player_id] = .Some(new_player);
-    players[player_id] = maybe_player;
-    player_count += 1;
-
     std.debug.print("Player {} connected\n", .{player_id});
 
     while (true) {
