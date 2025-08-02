@@ -66,14 +66,15 @@ fn handleClient(connection: net.Server.Connection) void {
 
         const input = std.mem.trim(u8, buffer[0..bytes_read], " \n\r");
 
-        if (std.mem.eql(u8, input, "UP")) {
-            if (players[player_id]) |*p| p.y -= 1.0;
-        } else if (std.mem.eql(u8, input, "DOWN")) {
-            if (players[player_id]) |*p| p.y += 1.0;
-        } else if (std.mem.eql(u8, input, "LEFT")) {
-            if (players[player_id]) |*p| p.x -= 1.0;
-        } else if (std.mem.eql(u8, input, "RIGHT")) {
-            if (players[player_id]) |*p| p.x += 1.0;
+        if (players[player_id]) |*player| {
+            const action = player.processInput(input[0]);
+            switch (action) {
+                .UP => player.move(0, -1),
+                .DOWN => player.move(0, 1),
+                .LEFT => player.move(-1, 0),
+                .RIGHT => player.move(1, 0),
+                else => {},
+            }
         }
 
         sendGameState(writer) catch |err| {
