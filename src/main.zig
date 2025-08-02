@@ -17,32 +17,84 @@ const TerminalSpawner = struct {
         const exe_path = try std.fs.selfExePathAlloc(allocator);
         defer allocator.free(exe_path);
 
-        // Detect terminal emulator and spawn accordingly
-        const terminal_cmd = detectTerminal() orelse {
-            std.debug.print("Warning: Could not detect terminal emulator, falling back to inline mode\n", .{});
-            return error.NoTerminalFound;
-        };
-
         const instance_args = try std.fmt.allocPrint(allocator, "--client-mode --client-id={d} --is-wasd={}", .{ client_id, is_wasd });
         defer allocator.free(instance_args);
 
         const full_command = try std.fmt.allocPrint(allocator, "{s} {s}", .{ exe_path, instance_args });
         defer allocator.free(full_command);
 
-        std.debug.print("Spawning: {s} {s} {s}\n", .{ terminal_cmd.command, terminal_cmd.flag, full_command });
+        // Try macOS-specific methods first
+        if (spawnMacOSTerminal(allocator, full_command)) |child| {
+            std.debug.print("Successfully spawned macOS terminal for client {d}\n", .{client_id});
+            return child;
+        } else |_| {
+            // Fall back to standard terminal detection
+            const terminal_cmd = detectTerminal() orelse {
+                std.debug.print("Warning: Could not detect terminal emulator, falling back to inline mode\n", .{});
+                return error.NoTerminalFound;
+            };
 
-        var child = process.Child.init(&[_][]const u8{
-            terminal_cmd.command,
-            terminal_cmd.flag,
-            full_command,
-        }, allocator);
+            std.debug.print("Spawning: {s} {s} {s}\n", .{ terminal_cmd.command, terminal_cmd.flag, full_command });
+
+            var child = process.Child.init(&[_][]const u8{
+                terminal_cmd.command,
+                terminal_cmd.flag,
+                full_command,
+            }, allocator);
+
+            child.stdout_behavior = .Ignore;
+            child.stderr_behavior = .Ignore;
+            child.stdin_behavior = .Ignore;
+
+            try child.spawn();
+            std.debug.print("Successfully spawned terminal process for client {d}\n", .{client_id});
+            return child;
+        }
+    }
+
+    fn spawnMacOSTerminal(allocator: std.mem.Allocator, command: []const u8) !process.Child {
+        // Try Ghostty.app first
+        if (std.fs.accessAbsolute("/Applications/Ghostty.app", .{})) {
+            const applescript = try std.fmt.allocPrint(allocator,
+                \\tell application "Ghostty"
+                \\    activate
+                \\    delay 0.5
+                \\    tell application "System Events"
+                \\        keystroke "t" using {{command down}}
+                \\        delay 0.5
+                \\        keystroke "{s}"
+                \\        keystroke return
+                \\    end tell
+                \\end tell
+            , .{command});
+            defer allocator.free(applescript);
+
+            var child = process.Child.init(&[_][]const u8{ "osascript", "-e", applescript }, allocator);
+
+            child.stdout_behavior = .Ignore;
+            child.stderr_behavior = .Ignore;
+            child.stdin_behavior = .Ignore;
+
+            try child.spawn();
+            return child;
+        } else |_| {}
+
+        // Try Terminal.app as fallback
+        const applescript = try std.fmt.allocPrint(allocator,
+            \\tell application "Terminal"
+            \\    activate
+            \\    do script "{s}"
+            \\end tell
+        , .{command});
+        defer allocator.free(applescript);
+
+        var child = process.Child.init(&[_][]const u8{ "osascript", "-e", applescript }, allocator);
 
         child.stdout_behavior = .Ignore;
         child.stderr_behavior = .Ignore;
         child.stdin_behavior = .Ignore;
 
         try child.spawn();
-        std.debug.print("Successfully spawned terminal process for client {d}\n", .{client_id});
         return child;
     }
 
@@ -53,8 +105,8 @@ const TerminalSpawner = struct {
 
     fn detectTerminal() ?TerminalInfo {
         // Try common terminal emulators in order of preference
+        // Skip ghostty CLI since it doesn't support -e on macOS
         const terminals = [_]TerminalInfo{
-            .{ .command = "ghostty", .flag = "-e" },
             .{ .command = "alacritty", .flag = "-e" },
             .{ .command = "kitty", .flag = "-e" },
             .{ .command = "wezterm", .flag = "start" },
@@ -72,7 +124,7 @@ const TerminalSpawner = struct {
             }
         }
 
-        std.debug.print("No terminal emulator found\n", .{});
+        std.debug.print("No CLI terminal emulator found, will try macOS methods\n", .{});
         return null;
     }
 
