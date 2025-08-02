@@ -140,19 +140,19 @@ pub const Player = struct {
 };
 
 pub const WASD_BINDINGS = [_]KeyBinding{
-    .{ .key = 'w', .action = .MoveUp },
-    .{ .key = 'W', .action = .MoveUp },
-    .{ .key = 's', .action = .MoveDown },
-    .{ .key = 'S', .action = .MoveDown },
-    .{ .key = 'a', .action = .MoveLeft },
-    .{ .key = 'A', .action = .MoveLeft },
-    .{ .key = 'd', .action = .MoveRight },
-    .{ .key = 'D', .action = .MoveRight },
-    .{ .key = 'e', .action = .Interact },
-    .{ .key = 'E', .action = .Interact },
-    .{ .key = ' ', .action = .Attack },
-    .{ .key = 'i', .action = .OpenInventory },
-    .{ .key = 'I', .action = .OpenInventory },
+    .{ .key = 'w', .action = .UP },
+    .{ .key = 'W', .action = .UP },
+    .{ .key = 's', .action = .DOWN },
+    .{ .key = 'S', .action = .DOWN },
+    .{ .key = 'a', .action = .LEFT },
+    .{ .key = 'A', .action = .LEFT },
+    .{ .key = 'd', .action = .RIGHT },
+    .{ .key = 'D', .action = .RIGHT },
+    .{ .key = 'e', .action = .INTERACT },
+    .{ .key = 'E', .action = .INTERACT },
+    .{ .key = ' ', .action = .ATTACK },
+    .{ .key = 'i', .action = .OPENINVENTORY },
+    .{ .key = 'I', .action = .OPENINVENTORY },
 };
 
 pub const ARROW_BINDINGS = [_]KeyBinding{
