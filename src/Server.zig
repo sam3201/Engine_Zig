@@ -97,6 +97,9 @@ fn sendGameState(writer: anytype) !void {
 
     for (players, 0..) |maybe_player, i| {
         if (maybe_player) |p| {
+            const pos = p.getPosition();
+            _ = writer.print("Player {} {} {}\n", .{ i, pos.x, pos.y }) catch continue;
+
             _ = writer.print("Player {} {d:.2} {d:.2}\n", .{ i, p.x, p.y }) catch continue;
         }
     }
