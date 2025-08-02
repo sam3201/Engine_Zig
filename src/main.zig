@@ -9,16 +9,14 @@ var current_input: ?u8 = null;
 pub fn main() !void {
     const WIDTH: usize = 80;
     const HEIGHT: usize = 24;
-    const FPS: f64 = 10; // Slower for better control
+    const FPS: f64 = 10;
     const black = Engine.Color{ .r = 0, .g = 0, .b = 0 };
 
     var eng = try Engine.Engine.init(std.heap.page_allocator, WIDTH, HEIGHT, FPS, black);
     defer eng.deinit();
 
-    // Create player at world origin (0, 0)
     const player = try Player.createWASDPlayer(std.heap.page_allocator, 0, 0);
 
-    // Create world manager with infinite procedural generation
     var world_manager = try WorldManager.WorldManager.init(std.heap.page_allocator, &eng.canvas, player);
     defer world_manager.deinit();
 
@@ -27,10 +25,9 @@ pub fn main() !void {
     const UpdateFunctions = struct {
         fn update() void {
             if (global_world_manager) |wm| {
-                // Handle input for player
                 if (current_input) |input| {
                     wm.processPlayerInput(input) catch {};
-                    current_input = null; // Clear input after processing
+                    current_input = null;
                 }
                 wm.draw();
             }
@@ -42,7 +39,6 @@ pub fn main() !void {
     try eng.run();
 }
 
-// Function to set input from the engine
 pub fn setInput(input: u8) void {
     current_input = input;
 }

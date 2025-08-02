@@ -1,9 +1,106 @@
 const std = @import("std");
+const builtin = @import("builtin");
+const is_wasm = builtin.target.cpu.arch == .wasm32;
+
 const c = @cImport({
     @cInclude("termios.h");
     @cInclude("fcntl.h");
 });
-const main = @import("main.zig");
+
+const Error = error{WouldBlock};
+
+// Conditional exports for WASM - use C-compatible signatures
+pub fn wasm_readKey() callconv(.C) i32 {
+    if (comptime !is_wasm) return -1; // Not supported on native
+
+    const result = readKey() catch return -1;
+    return if (result) |key| @as(i32, key) else -1;
+}
+
+pub fn wasm_handleInput() callconv(.C) i32 {
+    if (comptime !is_wasm) return -1; // Not supported on native
+
+    const result = handleInput() catch return -1;
+    return if (result) |key| @as(i32, key) else -1;
+}
+
+pub fn wasm_run(engine_ptr: ?*anyopaque) callconv(.C) i32 {
+    if (comptime !is_wasm) return -1; // Not supported on native
+
+    const engine: *Engine = @ptrCast(@alignCast(engine_ptr orelse return -1));
+    engine.run() catch return -1;
+    return 0;
+}
+
+// Export symbols only for WASM builds
+comptime {
+    if (is_wasm) {
+        @export(wasm_readKey, .{ .name = "wasm_readKey" });
+        @export(wasm_handleInput, .{ .name = "wasm_handleInput" });
+        @export(wasm_run, .{ .name = "wasm_run" });
+    }
+}
+
+pub const TerminalGuard = if (!is_wasm) struct {
+    orig: std.posix.termios,
+    saved: bool = false,
+    orig_flags: usize = 0,
+
+    pub fn init() !TerminalGuard {
+        var tg: TerminalGuard = undefined;
+        tg.orig = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
+        tg.saved = true;
+
+        var raw = tg.orig;
+        const LBits = std.meta.Int(.unsigned, @bitSizeOf(@TypeOf(raw.lflag)));
+        var lbits: LBits = @bitCast(raw.lflag);
+        const ICANON_bits: LBits = @intCast(c.ICANON);
+        const ECHO_bits: LBits = @intCast(c.ECHO);
+        lbits &= ~(ICANON_bits | ECHO_bits);
+        raw.lflag = @bitCast(lbits);
+
+        raw.cc[@intFromEnum(std.posix.V.MIN)] = 0;
+        raw.cc[@intFromEnum(std.posix.V.TIME)] = 0;
+
+        try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
+
+        tg.orig_flags = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
+        _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, tg.orig_flags | 0x0004);
+        _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
+
+        return tg;
+    }
+
+    pub fn deinit(self: *TerminalGuard) void {
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
+        if (self.saved) std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
+        _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
+    }
+} else struct {
+    pub fn init() !TerminalGuard {
+        return TerminalGuard{};
+    }
+
+    pub fn deinit(_: *TerminalGuard) void {}
+};
+
+pub fn readKey() !?u8 {
+    if (!is_wasm) {
+        var byte: [1]u8 = undefined;
+        const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
+            error.WouldBlock => return null,
+            else => |e| return e,
+        };
+        if (n == 0) return null;
+        return byte[0];
+    } else {
+        return null;
+    }
+}
+
+pub fn handleInput() !?u8 {
+    return try readKey();
+}
 
 const UpdateFn = *const fn (*Canvas) void;
 
@@ -22,15 +119,13 @@ pub const Renderable = struct {
     ch: u8 = ' ',
     vx: i32 = 0,
     vy: i32 = 0,
-    color: Color = Color{ .r = 0, .g = 0, .b = 0 },
+    color: Color = .{},
 
     pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, vx: i32, vy: i32, color: Color) Renderable {
         return .{ .x = x, .y = y, .width = w, .height = h, .id = id, .ch = ch, .vx = vx, .vy = vy, .color = color };
     }
 
-    pub fn deinit(self: *Renderable) void {
-        _ = self;
-    }
+    pub fn deinit(_: *Renderable) void {}
 };
 
 pub const Clock = struct {
@@ -39,15 +134,12 @@ pub const Clock = struct {
     now: i128,
 
     pub fn init(fps: f64) Clock {
+        const now = std.time.nanoTimestamp();
         return .{
             .target = std.time.ns_per_s / fps,
-            .last = std.time.nanoTimestamp(),
-            .now = std.time.nanoTimestamp(),
+            .last = now,
+            .now = now,
         };
-    }
-
-    pub fn setFps(self: *Clock, fps: f64) void {
-        self.target = std.time.ns_per_s / fps;
     }
 
     pub fn tick(self: *Clock) void {
@@ -56,17 +148,14 @@ pub const Clock = struct {
     }
 
     pub fn sleepUntilNextFrame(self: *Clock) void {
-        const frame_last_f64: f64 = @floatFromInt(self.last);
-        const frame_end: f64 = frame_last_f64 + self.target;
-        const now_f64: f64 = @floatFromInt(self.now);
-        const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
-        const sleep_ns: u64 = @intFromFloat(diff);
+        const last: f64 = @floatFromInt(self.last);
+        const now: f64 = @floatFromInt(self.now);
+        const diff = last + self.target - now;
+        const sleep_ns: u64 = @intFromFloat(if (diff > 0) diff else 0);
         std.time.sleep(sleep_ns);
     }
 
-    pub fn deinit(self: *Clock) void {
-        _ = self;
-    }
+    pub fn deinit(_: *Clock) void {}
 };
 
 pub const Canvas = struct {
@@ -76,7 +165,7 @@ pub const Canvas = struct {
     colors: []Color,
     buf: []u8,
     scene: std.ArrayList(Renderable),
-    updateFn: ?UpdateFn = null, // Changed to null
+    updateFn: ?UpdateFn = null,
 
     pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
         var canvas = Canvas{
@@ -86,9 +175,7 @@ pub const Canvas = struct {
             .colors = try allocator.alloc(Color, width * height),
             .buf = try allocator.alloc(u8, width * height),
             .scene = try std.ArrayList(Renderable).initCapacity(allocator, 16),
-            .updateFn = null,
         };
-        // Set the default update function
         canvas.updateFn = Canvas.update;
         return canvas;
     }
@@ -102,9 +189,7 @@ pub const Canvas = struct {
 
     pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         @memset(self.buf, ch);
-        for (self.colors, 0..) |_, i| {
-            self.colors[i] = color;
-        }
+        for (self.colors, 0..) |_, i| self.colors[i] = color;
     }
 
     pub fn put(self: *Canvas, x: i32, y: i32, ch: u8) void {
@@ -124,15 +209,10 @@ pub const Canvas = struct {
     }
 
     pub fn fillRect(self: *Canvas, x: i32, y: i32, w: i32, h: i32, ch: u8) void {
-        const x0: i32 = x;
-        const y0: i32 = y;
-        const x1: i32 = x + w - 1;
-        const y1: i32 = y + h - 1;
-
-        var yy = y0;
-        while (yy <= y1) : (yy += 1) {
-            var xx = x0;
-            while (xx <= x1) : (xx += 1) {
+        var yy = y;
+        while (yy <= y + h - 1) : (yy += 1) {
+            var xx = x;
+            while (xx <= x + w - 1) : (xx += 1) {
                 self.put(xx, yy, ch);
             }
         }
@@ -140,28 +220,21 @@ pub const Canvas = struct {
 
     pub fn flushToTerminal(self: *Canvas) void {
         const stdout = std.io.getStdOut().writer();
-
         _ = stdout.write("\x1b[H") catch {};
 
-        var y: usize = 0;
-        while (y < self.height) : (y += 1) {
-            var x: usize = 0;
-            while (x < self.width) : (x += 1) {
-                const idx = y * self.width + x;
-                const col = self.colors[idx];
-                const ch = self.buf[idx];
+        for (0..self.height) |y| {
+            for (0..self.width) |x| {
+                const i = y * self.width + x;
+                const color = self.colors[i];
+                const ch = self.buf[i];
 
-                const esc = std.fmt.allocPrint(self.allocator, "\x1b[38;2;{};{};{}m", .{ col.r, col.g, col.b }) catch continue;
+                const esc = std.fmt.allocPrint(self.allocator, "\x1b[38;2;{};{};{}m", .{ color.r, color.g, color.b }) catch continue;
                 defer self.allocator.free(esc);
-
                 _ = stdout.write(esc) catch {};
                 _ = stdout.writeByte(ch) catch {};
             }
-
             _ = stdout.write("\n") catch {};
         }
-
-        // Reset color
         _ = stdout.write("\x1b[0m") catch {};
     }
 
@@ -170,45 +243,40 @@ pub const Canvas = struct {
     }
 
     pub fn update(self: *Canvas) void {
-        const canvas_width_i32: i32 = @intCast(self.width);
-        const canvas_height_i32: i32 = @intCast(self.height);
+        const width: i32 = @intCast(self.width);
+        const height: i32 = @intCast(self.height);
 
         for (self.scene.items) |*r| {
             r.x += r.vx;
             r.y += r.vy;
 
-            if (r.x >= canvas_width_i32) {
+            if (r.x >= width) {
                 r.x = -r.width;
-            } else if (r.x < -r.width) {
-                r.x = canvas_width_i32;
-            }
+            } else if (r.x < -r.width) r.x = width;
 
-            if (r.y >= canvas_height_i32) {
+            if (r.y >= height) {
                 r.y = -r.height;
-            } else if (r.y < -r.height) r.y = canvas_height_i32;
+            } else if (r.y < -r.height) r.y = height;
         }
-    }
-
-    pub fn setUpdateFn(self: *Canvas, update_fn: UpdateFn) void {
-        self.updateFn = update_fn;
     }
 
     pub fn render(self: *Canvas) void {
         for (self.scene.items) |r| {
-            const x0 = r.x;
-            const y0 = r.y;
-            const x1 = r.x + r.width - 1;
-            const y1 = r.y + r.height - 1;
-
-            var yy = y0;
-            while (yy <= y1) : (yy += 1) {
-                var xx = x0;
-                while (xx <= x1) : (xx += 1) {
-                    self.put(xx, yy, r.ch);
-                    self.fillColor(xx, yy, r.color);
+            for (0..@intCast(r.height)) |dy| {
+                for (0..@intCast(r.width)) |dx| {
+                    const dxi32: i32 = @intCast(dx);
+                    const dyi32: i32 = @intCast(dy);
+                    const x = r.x + dxi32;
+                    const y = r.y + dyi32;
+                    self.put(x, y, r.ch);
+                    self.fillColor(x, y, r.color);
                 }
             }
         }
+    }
+
+    pub fn setUpdateFn(self: *Canvas, fn_ptr: UpdateFn) void {
+        self.updateFn = fn_ptr;
     }
 };
 
@@ -218,22 +286,15 @@ pub const Engine = struct {
     canvas: Canvas,
     clock: Clock,
     background_color: Color,
-
     update: ?*const fn () void = null,
 
-    pub fn init(
-        allocator: std.mem.Allocator,
-        width: usize,
-        height: usize,
-        fps: f64,
-        background_color: Color,
-    ) !Engine {
+    pub fn init(allocator: std.mem.Allocator, width: usize, height: usize, fps: f64, bg: Color) !Engine {
         return .{
             .allocator = allocator,
             .running = true,
             .canvas = try Canvas.init(allocator, width, height),
             .clock = Clock.init(fps),
-            .background_color = background_color,
+            .background_color = bg,
         };
     }
 
@@ -252,25 +313,25 @@ pub const Engine = struct {
         while (self.running) {
             self.clock.tick();
 
-            if (try readKey()) |byte| {
-                if (byte == 'q' or byte == 27) {
-                    self.running = false;
-                    break;
+            if (!is_wasm) {
+                if (try readKey()) |byte| {
+                    if (byte == 'q' or byte == 27) break;
+                    if (@hasDecl(@import("root"), "setInput")) {
+                        @import("root").setInput(byte);
+                    }
                 }
-                main.setInput(byte);
             }
 
-            self.canvas.clear(
-                ' ',
-                self.background_color,
-            );
+            self.canvas.clear(' ', self.background_color);
 
-            if (self.canvas.updateFn) |updateFn| {
-                updateFn(&self.canvas);
+            if (self.canvas.updateFn) |fn_ptr| {
+                fn_ptr(&self.canvas);
+            } else {
+                self.canvas.update();
             }
 
-            if (self.update) |updateFn| {
-                updateFn();
+            if (self.update) |update_fn| {
+                update_fn();
             }
 
             self.canvas.render();
@@ -278,69 +339,8 @@ pub const Engine = struct {
             self.clock.sleepUntilNextFrame();
         }
 
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch |err| {
-            if (err != error.WouldBlock) return err;
-        };
-    }
-};
-
-pub const TerminalGuard = struct {
-    orig: std.posix.termios,
-    saved: bool = false,
-    orig_flags: usize = 0,
-
-    pub fn init() !TerminalGuard {
-        var tg: TerminalGuard = undefined;
-
-        tg.orig = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
-        tg.saved = true;
-
-        var raw = tg.orig;
-
-        const LFlag = @TypeOf(raw.lflag);
-        const LBits = std.meta.Int(.unsigned, @bitSizeOf(LFlag));
-        var lbits: LBits = @bitCast(raw.lflag);
-        const ICANON_bits: LBits = @intCast(c.ICANON);
-        const ECHO_bits: LBits = @intCast(c.ECHO);
-        lbits &= ~(ICANON_bits | ECHO_bits);
-        raw.lflag = @bitCast(lbits);
-
-        raw.cc[@intFromEnum(std.posix.V.MIN)] = 0;
-        raw.cc[@intFromEnum(std.posix.V.TIME)] = 0;
-
-        try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
-
-        const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
-        tg.orig_flags = flags;
-
-        const nonblock_bits: usize = 0x0004;
-        _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
-
-        _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
-
-        return tg;
-    }
-
-    pub fn deinit(self: *TerminalGuard) void {
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
-
-        if (self.saved) {
-            std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
+        if (!is_wasm) {
+            _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {};
         }
-        _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
     }
 };
-
-pub fn readKey() !?u8 {
-    var byte: [1]u8 = undefined;
-    const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
-        error.WouldBlock => return null,
-        else => return err,
-    };
-    if (n == 0) return null;
-    return byte[0];
-}
-
-pub fn handleInput() !?u8 {
-    return try readKey();
-}
