@@ -178,7 +178,7 @@ pub fn createPlayer(
         1,
         1,
         '@',
-        eng.Color{ .r = 255, .g = 255, .b = 0 }, // Yellow
+        eng.Color{ .r = 255, .g = 255, .b = 0 },
         bindings,
     );
 }
