@@ -46,8 +46,8 @@ fn handleClient(connection: net.Server.Connection) void {
     player_count += 1;
     const allocator = std.heap.page_allocator;
 
-const maybe_player = try Player.createWASDPlayer(allocator, 0.0, 0.0);
-players[player_id] = maybe_player;
+    const maybe_player = try Player.createWASDPlayer(allocator, 0.0, 0.0);
+    players[player_id] = maybe_player;
 
     std.debug.print("Player {} connected\n", .{player_id});
 
