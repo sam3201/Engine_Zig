@@ -10,8 +10,9 @@ var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
-    var server = try net
-        .StreamServer.init(.{});
+    var server = net.StreamServer.init(.{
+        .reuse_address = true,
+    });
 
     defer server.deinit();
 
