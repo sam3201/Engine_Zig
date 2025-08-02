@@ -44,12 +44,7 @@ fn handleClient(connection: net.Server.Connection) void {
     }
 
     const player_id = player_count;
-    players[player_id] = Player{
-        .id = player_id,
-        .x = 0.0,
-        .y = 0.0,
-        .connected = true,
-    };
+    players[player_id] = Player.init(0.0, 0.0);
     player_count += 1;
 
     std.debug.print("Player {} connected\n", .{player_id});
