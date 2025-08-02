@@ -10,105 +10,105 @@ var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
-    var server = net.StreamServer.init(.{
+    // Use the correct API for Zig 0.14
+    const address = try net.Address.parseIp("127.0.0.1", 42069);
+    var server = try address.listen(.{
         .reuse_address = true,
     });
-
     defer server.deinit();
 
-    try server.listen(.{ .address = try net.Address.parseIp("127.0.0.1", 42069) });
-
-    std.debug.print("Server started on 127.0.0.1:42069\n", .{});
+    std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
 
     while (true) {
-        const conn = try server.accept();
-        std.debug.print("New client connected!\n", .{});
+        const connection = server.accept() catch |err| {
+            std.debug.print("Failed to accept connection: {}\n", .{err});
+            continue;
+        };
 
-        _ = try Thread.spawn(.{}, handleClient, .{conn.stream});
+        // Handle client in a separate thread
+        const thread = try Thread.spawn(.{}, handleClient, .{connection});
+        thread.detach();
     }
 }
 
-fn handleClient(stream: *net.Stream) !void {
-    var id: usize = undefined;
+fn handleClient(connection: net.Server.Connection) void {
+    defer connection.stream.close();
 
-    {
-        mutex.lock();
-        defer mutex.unlock();
+    const reader = connection.stream.reader();
+    const writer = connection.stream.writer();
 
-        if (player_count >= MAX_PLAYERS) return;
-        id = player_count;
-        player_count += 1;
-
-        const name = try stream.reader().readUntilDelimiterOrEofAlloc(std.heap.page_allocator, '\n', 32);
-        const trimmed_name = name[0..@min(name.len, 31)];
-
-        var p = Player{
-            .id = id,
-            .name = undefined,
-            .stream = stream,
-            .x = 0,
-            .y = 0,
-        };
-        std.mem.copy(u8, &p.name, trimmed_name);
-
-        players[id] = p;
-    }
-
-    var buf: [128]u8 = undefined;
-    while (true) {
-        const n = try stream.read(&buf);
-        if (n == 0) break;
-
-        const dx = switch (buf[0]) {
-            'L' => -1.0,
-            'R' => 1.0,
-            else => 0.0,
-        };
-        const dy = switch (buf[0]) {
-            'U' => -1.0,
-            'D' => 1.0,
-            else => 0.0,
-        };
-
-        mutex.lock();
-        if (players[id]) |*p| {
-            p.x += dx;
-            p.y += dy;
-        }
-        mutex.unlock();
-    }
-}
-
-fn broadcastPlayers() void {
+    // Add new player
     mutex.lock();
     defer mutex.unlock();
 
-    var msg: [512]u8 = undefined;
-    var fbs = std.io.fixedBufferStream(&msg);
-    const writer = fbs.writer();
-
-    for (players) |maybe_player| {
-        if (maybe_player) |p| {
-            _ = writer.print("{s} {d:.2} {d:.2}\n", .{ p.name, p.x, p.y }) catch continue;
-        }
+    if (player_count >= MAX_PLAYERS) {
+        _ = writer.write("Server full\n") catch {};
+        return;
     }
 
-    const out = msg[0..fbs.pos];
-    for (players) |maybe_player| {
+    const player_id = player_count;
+    players[player_id] = Player{
+        .id = player_id,
+        .x = 0.0,
+        .y = 0.0,
+        .connected = true,
+    };
+    player_count += 1;
+
+    std.debug.print("Player {} connected\n", .{player_id});
+
+    // Game loop for this client
+    while (true) {
+        // Read player input
+        var buffer: [256]u8 = undefined;
+        const bytes_read = reader.read(&buffer) catch |err| {
+            std.debug.print("Failed to read from client: {}\n", .{err});
+            break;
+        };
+
+        if (bytes_read == 0) break; // Client disconnected
+
+        // Parse input and update player
+        const input = std.mem.trim(u8, buffer[0..bytes_read], " \n\r");
+
+        if (std.mem.eql(u8, input, "UP")) {
+            if (players[player_id]) |*p| p.y -= 1.0;
+        } else if (std.mem.eql(u8, input, "DOWN")) {
+            if (players[player_id]) |*p| p.y += 1.0;
+        } else if (std.mem.eql(u8, input, "LEFT")) {
+            if (players[player_id]) |*p| p.x -= 1.0;
+        } else if (std.mem.eql(u8, input, "RIGHT")) {
+            if (players[player_id]) |*p| p.x += 1.0;
+        }
+
+        // Send game state to all players
+        sendGameState(writer) catch |err| {
+            std.debug.print("Failed to send game state: {}\n", .{err});
+            break;
+        };
+    }
+
+    // Remove player on disconnect
+    mutex.lock();
+    players[player_id] = null;
+    player_count -= 1;
+    mutex.unlock();
+
+    std.debug.print("Player {} disconnected\n", .{player_id});
+}
+
+fn sendGameState(writer: anytype) !void {
+    mutex.lock();
+    defer mutex.unlock();
+
+    for (players, 0..) |maybe_player, i| {
         if (maybe_player) |p| {
-            _ = p.stream.writeAll(out) catch {};
+            _ = writer.print("Player {} {d:.2} {d:.2}\n", .{ i, p.x, p.y }) catch continue;
         }
     }
+    _ = writer.write("END\n") catch {};
 }
 
 pub fn main() !void {
-    _ = try Thread.spawn(.{}, tickLoop, .{});
     try startServer();
-}
-
-fn tickLoop() !void {
-    while (true) {
-        broadcastPlayers();
-        std.time.sleep(1_000_000 * 100);
-    }
 }
