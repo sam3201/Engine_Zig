@@ -1,5 +1,7 @@
 const std = @import("std");
 const PlayerModule = @import("Player.zig").Player;
+const Player = PlayerModule.Player;
+
 const net = std.net;
 const Thread = std.Thread;
 
