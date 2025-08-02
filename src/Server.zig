@@ -10,7 +10,13 @@ var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
-    var server = try net.StreamServer.init(.{ .reuse_address = true });
+    var server = try net
+        .StreamServer.init(.{
+        .reuse_address = true,
+        .reuse_port = true,
+        .tcp_nodelay = true,
+    });
+
     defer server.deinit();
 
     try server.listen(.{ .address = try net.Address.parseIp("127.0.0.1", 42069) });
