@@ -6,9 +6,7 @@ zig build-exe src/wasm_main.zig -target wasm32-freestanding -O ReleaseSmall --na
 if [ $? -eq 0 ]; then
     echo "Build successful, moving to docs folder..."
     mv main.wasm docs/
-    echo "✅ WASM build complete! File is at docs/main.wasm"
-    echo "🚀 You can now commit and push to update GitHub Pages"
+    rm main.wasm.o
 else
-    echo "❌ Build failed!"
     exit 1
 fi
