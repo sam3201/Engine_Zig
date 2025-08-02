@@ -44,7 +44,7 @@ fn handleClient(connection: net.Server.Connection) void {
     }
 
     const player_id = player_count;
-    players[player_id] = creat
+    players[player_id] = Player.createWASD();
     player_count += 1;
 
     std.debug.print("Player {} connected\n", .{player_id});
