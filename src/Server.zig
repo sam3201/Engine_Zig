@@ -1,5 +1,5 @@
 const std = @import("std");
-const Player = @import("Player.zig");
+const Player = @import("Player.zig").Player;
 const net = std.net;
 const Thread = std.Thread;
 
