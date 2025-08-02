@@ -1,412 +1,346 @@
 const std = @import("std");
-const Engine = @import("Engine.zig");
-const WorldManager = @import("WorldManager.zig");
-const Player = @import("Player.zig");
-const Thread = std.Thread;
-const Mutex = Thread.Mutex;
-const net = std.net;
+const c = @cImport({
+    @cInclude("termios.h");
+    @cInclude("fcntl.h");
+});
+const main = @import("main.zig");
 
-// Global references for update functions (since Engine.setUpdateFn doesn't support context)
-var current_instance: ?*GameInstance = null;
-var current_server: ?*GameServer = null;
+const UpdateFn = *const fn (*Canvas) void;
 
-// Game instance for each client connection
-const GameInstance = struct {
-    engine: Engine.Engine,
-    player: Player.Player,
-    client_id: u32,
-    is_running: bool,
-    thread_handle: ?Thread,
-    mutex: Mutex,
+pub const Color = struct {
+    r: u8 = 0,
+    g: u8 = 0,
+    b: u8 = 0,
+};
 
-    pub fn init(allocator: std.mem.Allocator, client_id: u32, is_wasd: bool) !GameInstance {
-        const WIDTH: usize = 40; // Each client gets a smaller window
-        const HEIGHT: usize = 24;
-        const FPS: f64 = 30;
-        const bg_color = if (is_wasd)
-            Engine.Color{ .r = 20, .g = 20, .b = 40 } // Dark blue for WASD
-        else
-            Engine.Color{ .r = 40, .g = 20, .b = 20 }; // Dark red for HJKL
+pub const Renderable = struct {
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32,
+    id: u32,
+    ch: u8 = ' ',
+    vx: i32 = 0,
+    vy: i32 = 0,
+    color: Color = Color{ .r = 0, .g = 0, .b = 0 },
 
-        var engine = try Engine.Engine.init(allocator, WIDTH, HEIGHT, FPS, bg_color);
-
-        const player = if (is_wasd)
-            try Player.createWASDPlayer(allocator, 10, 12)
-        else
-            try createVimPlayerCustom(allocator, 10, 12);
-
-        return GameInstance{
-            .engine = engine,
-            .player = player,
-            .client_id = client_id,
-            .is_running = false,
-            .thread_handle = null,
-            .mutex = Mutex{},
-        };
+    pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, vx: i32, vy: i32, color: Color) Renderable {
+        return .{ .x = x, .y = y, .width = w, .height = h, .id = id, .ch = ch, .vx = vx, .vy = vy, .color = color };
     }
 
-    pub fn deinit(self: *GameInstance) void {
-        self.mutex.lock();
-        self.is_running = false;
-        self.mutex.unlock();
-
-        if (self.thread_handle) |handle| {
-            handle.join();
-        }
-
-        self.player.deinit();
-        self.engine.deinit();
-    }
-
-    pub fn start(self: *GameInstance) !void {
-        self.mutex.lock();
-        self.is_running = true;
-        self.mutex.unlock();
-
-        self.thread_handle = try Thread.spawn(.{}, gameLoop, .{self});
-    }
-
-    pub fn stop(self: *GameInstance) void {
-        self.mutex.lock();
-        self.is_running = false;
-        self.mutex.unlock();
-    }
-
-    pub fn isRunning(self: *GameInstance) bool {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        return self.is_running;
-    }
-
-    pub fn processInput(self: *GameInstance, input: u8) void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-
-        const action = self.player.processInput(input);
-        switch (action) {
-            .UP => {
-                const new_y = self.player.entity.y - self.player.speed;
-                if (new_y >= 0) self.player.move(0, -1);
-            },
-            .DOWN => {
-                const new_y = self.player.entity.y + self.player.speed;
-                if (new_y < 24) self.player.move(0, 1);
-            },
-            .LEFT => {
-                const new_x = self.player.entity.x - self.player.speed;
-                if (new_x >= 0) self.player.move(-1, 0);
-            },
-            .RIGHT => {
-                const new_x = self.player.entity.x + self.player.speed;
-                if (new_x < 40) self.player.move(1, 0);
-            },
-            else => {},
-        }
-    }
-
-    fn gameLoop(self: *GameInstance) void {
-        std.debug.print("Game instance {d} started on dedicated thread\n", .{self.client_id});
-
-        // Store reference globally for the update function to access
-        current_instance = self;
-
-        const UpdateFunctions = struct {
-            fn update() void {
-                if (current_instance) |instance| {
-                    instance.mutex.lock();
-                    defer instance.mutex.unlock();
-
-                    // Clear canvas
-                    instance.engine.canvas.clear(' ', instance.engine.background_color);
-
-                    // Draw player
-                    instance.player.draw(&instance.engine.canvas);
-
-                    // Draw UI
-                    drawInstanceUI(&instance.engine, instance);
-                }
-            }
-        };
-
-        self.engine.setUpdateFn(&UpdateFunctions.update);
-
-        // Run the engine loop
-        self.engine.run() catch |err| {
-            std.debug.print("Engine error for instance {d}: {any}\n", .{ self.client_id, err });
-        };
-
-        std.debug.print("Game instance {d} terminated\n", .{self.client_id});
+    pub fn deinit(self: *Renderable) void {
+        _ = self;
     }
 };
 
-// Server state managing multiple game instances
-const GameServer = struct {
-    instances: std.ArrayList(*GameInstance),
-    server_engine: Engine.Engine,
+pub const Clock = struct {
+    target: f64,
+    last: i128,
+    now: i128,
+
+    pub fn init(fps: f64) Clock {
+        return .{
+            .target = std.time.ns_per_s / fps,
+            .last = std.time.nanoTimestamp(),
+            .now = std.time.nanoTimestamp(),
+        };
+    }
+
+    pub fn setFps(self: *Clock, fps: f64) void {
+        self.target = std.time.ns_per_s / fps;
+    }
+
+    pub fn tick(self: *Clock) void {
+        self.last = self.now;
+        self.now = @intCast(std.time.nanoTimestamp());
+    }
+
+    pub fn sleepUntilNextFrame(self: *Clock) void {
+        const frame_last_f64: f64 = @floatFromInt(self.last);
+        const frame_end: f64 = frame_last_f64 + self.target;
+        const now_f64: f64 = @floatFromInt(self.now);
+        const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
+        const sleep_ns: u64 = @intFromFloat(diff);
+        std.time.sleep(sleep_ns);
+    }
+
+    pub fn deinit(self: *Clock) void {
+        _ = self;
+    }
+};
+
+pub const Canvas = struct {
     allocator: std.mem.Allocator,
-    mutex: Mutex,
-    next_client_id: u32,
+    width: usize,
+    height: usize,
+    colors: []Color,
+    buf: []u8,
+    scene: std.ArrayList(Renderable),
+    updateFn: ?UpdateFn = null, // Changed to null
 
-    pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // Server has its own master engine for coordination
-        const server_engine = try Engine.Engine.init(allocator, 80, 30, 60, Engine.Color{ .r = 10, .g = 10, .b = 10 });
-
-        return GameServer{
-            .instances = std.ArrayList(*GameInstance).init(allocator),
-            .server_engine = server_engine,
+    pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
+        var canvas = Canvas{
             .allocator = allocator,
-            .mutex = Mutex{},
-            .next_client_id = 0,
+            .width = width,
+            .height = height,
+            .colors = try allocator.alloc(Color, width * height),
+            .buf = try allocator.alloc(u8, width * height),
+            .scene = try std.ArrayList(Renderable).initCapacity(allocator, 16),
+            .updateFn = null,
         };
+        // Set the default update function
+        canvas.updateFn = Canvas.update;
+        return canvas;
     }
 
-    pub fn deinit(self: *GameServer) void {
-        // Stop all instances
-        for (self.instances.items) |instance| {
-            instance.stop();
-            instance.deinit();
-            self.allocator.destroy(instance);
+    pub fn deinit(self: *Canvas) void {
+        for (self.scene.items) |*r| r.deinit();
+        self.scene.deinit();
+        self.allocator.free(self.colors);
+        self.allocator.free(self.buf);
+    }
+
+    pub fn clear(self: *Canvas, ch: u8, color: Color) void {
+        @memset(self.buf, ch);
+        for (self.colors, 0..) |_, i| {
+            self.colors[i] = color;
+        }
+    }
+
+    pub fn put(self: *Canvas, x: i32, y: i32, ch: u8) void {
+        if (x < 0 or y < 0) return;
+        const ux: usize = @intCast(x);
+        const uy: usize = @intCast(y);
+        if (ux >= self.width or uy >= self.height) return;
+        self.buf[uy * self.width + ux] = ch;
+    }
+
+    pub fn fillColor(self: *Canvas, x: i32, y: i32, color: Color) void {
+        if (x < 0 or y < 0) return;
+        const ux: usize = @intCast(x);
+        const uy: usize = @intCast(y);
+        if (ux >= self.width or uy >= self.height) return;
+        self.colors[uy * self.width + ux] = color;
+    }
+
+    pub fn fillRect(self: *Canvas, x: i32, y: i32, w: i32, h: i32, ch: u8) void {
+        const x0: i32 = x;
+        const y0: i32 = y;
+        const x1: i32 = x + w - 1;
+        const y1: i32 = y + h - 1;
+
+        var yy = y0;
+        while (yy <= y1) : (yy += 1) {
+            var xx = x0;
+            while (xx <= x1) : (xx += 1) {
+                self.put(xx, yy, ch);
+            }
+        }
+    }
+
+    pub fn flushToTerminal(self: *Canvas) void {
+        const stdout = std.io.getStdOut().writer();
+
+        _ = stdout.write("\x1b[H") catch {};
+
+        var y: usize = 0;
+        while (y < self.height) : (y += 1) {
+            var x: usize = 0;
+            while (x < self.width) : (x += 1) {
+                const idx = y * self.width + x;
+                const col = self.colors[idx];
+                const ch = self.buf[idx];
+
+                const esc = std.fmt.allocPrint(self.allocator, "\x1b[38;2;{};{};{}m", .{ col.r, col.g, col.b }) catch continue;
+                defer self.allocator.free(esc);
+
+                _ = stdout.write(esc) catch {};
+                _ = stdout.writeByte(ch) catch {};
+            }
+
+            _ = stdout.write("\n") catch {};
         }
 
-        self.instances.deinit();
-        self.server_engine.deinit();
+        // Reset color
+        _ = stdout.write("\x1b[0m") catch {};
     }
 
-    pub fn createInstance(self: *GameServer, is_wasd: bool) !*GameInstance {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-
-        const client_id = self.next_client_id;
-        self.next_client_id += 1;
-
-        const instance = try self.allocator.create(GameInstance);
-        instance.* = try GameInstance.init(self.allocator, client_id, is_wasd);
-
-        try self.instances.append(instance);
-
-        std.debug.print("Created game instance {d} ({s})\n", .{ client_id, if (is_wasd) "WASD" else "HJKL" });
-
-        return instance;
+    pub fn addRenderable(self: *Canvas, r: Renderable) !void {
+        try self.scene.append(r);
     }
 
-    pub fn startServerEngine(self: *GameServer) !void {
-        std.debug.print("Starting server master engine\n", .{});
+    pub fn update(self: *Canvas) void {
+        const canvas_width_i32: i32 = @intCast(self.width);
+        const canvas_height_i32: i32 = @intCast(self.height);
 
-        // Store reference globally for the update function to access
-        current_server = self;
+        for (self.scene.items) |*r| {
+            r.x += r.vx;
+            r.y += r.vy;
 
-        const UpdateFunctions = struct {
-            fn update() void {
-                if (current_server) |server| {
-                    server.mutex.lock();
-                    defer server.mutex.unlock();
+            if (r.x >= canvas_width_i32) {
+                r.x = -r.width;
+            } else if (r.x < -r.width) {
+                r.x = canvas_width_i32;
+            }
 
-                    // Clear server canvas
-                    server.server_engine.canvas.clear(' ', server.server_engine.background_color);
+            if (r.y >= canvas_height_i32) {
+                r.y = -r.height;
+            } else if (r.y < -r.height) r.y = canvas_height_i32;
+        }
+    }
 
-                    // Draw server overview
-                    drawServerOverview(&server.server_engine, server);
+    pub fn setUpdateFn(self: *Canvas, update_fn: UpdateFn) void {
+        self.updateFn = update_fn;
+    }
+
+    pub fn render(self: *Canvas) void {
+        for (self.scene.items) |r| {
+            const x0 = r.x;
+            const y0 = r.y;
+            const x1 = r.x + r.width - 1;
+            const y1 = r.y + r.height - 1;
+
+            var yy = y0;
+            while (yy <= y1) : (yy += 1) {
+                var xx = x0;
+                while (xx <= x1) : (xx += 1) {
+                    self.put(xx, yy, r.ch);
+                    self.fillColor(xx, yy, r.color);
                 }
             }
-        };
-
-        self.server_engine.setUpdateFn(&UpdateFunctions.update);
-
-        try self.server_engine.run();
+        }
     }
 };
 
-fn createVimPlayerCustom(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player.Player {
-    const VIM_BINDINGS = [_]Player.KeyBinding{
-        .{ .key = 'k', .action = .UP },
-        .{ .key = 'j', .action = .DOWN },
-        .{ .key = 'h', .action = .LEFT },
-        .{ .key = 'l', .action = .RIGHT },
-        .{ .key = 'e', .action = .INTERACT },
-        .{ .key = ' ', .action = .ATTACK },
-        .{ .key = 'i', .action = .OPENINVENTORY },
-    };
+pub const Engine = struct {
+    allocator: std.mem.Allocator,
+    running: bool,
+    canvas: Canvas,
+    clock: Clock,
+    background_color: Color,
 
-    const cyan_color = Engine.Color{ .r = 0, .g = 255, .b = 255 };
-    const entity = @import("Entity.zig").Entity.init(start_x, start_y, 1, 1, @import("Entity.zig").RenderableType.PLAYER.toId(), '#', cyan_color);
+    update: ?*const fn () void = null,
 
-    const owned_bindings = try allocator.alloc(Player.KeyBinding, VIM_BINDINGS.len);
-    @memcpy(owned_bindings, &VIM_BINDINGS);
-
-    return Player.Player{
-        .entity = entity,
-        .key_bindings = owned_bindings,
-        .allocator = allocator,
-    };
-}
-
-fn drawInstanceUI(engine: *Engine.Engine, instance: *GameInstance) void {
-    const white = Engine.Color{ .r = 255, .g = 255, .b = 255 };
-    const yellow = Engine.Color{ .r = 255, .g = 255, .b = 0 };
-    const cyan = Engine.Color{ .r = 0, .g = 255, .b = 255 };
-
-    // Determine if this is a WASD or HJKL instance based on player character
-    const is_wasd = instance.player.entity.ch == '@';
-    const color = if (is_wasd) yellow else cyan;
-    const controls = if (is_wasd) "WASD Controls" else "HJKL Controls";
-    const thread_info = std.fmt.allocPrint(std.heap.page_allocator, "Client {d} Thread", .{instance.client_id}) catch return;
-    defer std.heap.page_allocator.free(thread_info);
-
-    // Draw title
-    for (controls, 0..) |char, i| {
-        if (i >= 40) break;
-        engine.canvas.put(@intCast(i), 0, char);
-        engine.canvas.fillColor(@intCast(i), 0, color);
+    pub fn init(
+        allocator: std.mem.Allocator,
+        width: usize,
+        height: usize,
+        fps: f64,
+        background_color: Color,
+    ) !Engine {
+        return .{
+            .allocator = allocator,
+            .running = true,
+            .canvas = try Canvas.init(allocator, width, height),
+            .clock = Clock.init(fps),
+            .background_color = background_color,
+        };
     }
 
-    // Draw thread info
-    for (thread_info, 0..) |char, i| {
-        if (i >= 40) break;
-        engine.canvas.put(@intCast(i), 1, char);
-        engine.canvas.fillColor(@intCast(i), 1, white);
+    pub fn deinit(self: *Engine) void {
+        self.canvas.deinit();
     }
 
-    // Draw player position
-    const pos = instance.player.getPosition();
-    const pos_text = std.fmt.allocPrint(std.heap.page_allocator, "Position: ({d}, {d})", .{ pos.x, pos.y }) catch return;
-    defer std.heap.page_allocator.free(pos_text);
-
-    for (pos_text, 0..) |char, i| {
-        if (i >= 40) break;
-        engine.canvas.put(@intCast(i), 22, char);
-        engine.canvas.fillColor(@intCast(i), 22, white);
+    pub fn setUpdateFn(self: *Engine, func: *const fn () void) void {
+        self.update = func;
     }
 
-    // Draw engine info
-    const engine_info = "Dedicated Engine";
-    for (engine_info, 0..) |char, i| {
-        if (i >= 40) break;
-        engine.canvas.put(@intCast(i), 23, char);
-        engine.canvas.fillColor(@intCast(i), 23, Engine.Color{ .r = 0, .g = 255, .b = 0 });
-    }
-}
+    pub fn run(self: *Engine) !void {
+        var term = try TerminalGuard.init();
+        defer term.deinit();
 
-fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
-    const white = Engine.Color{ .r = 255, .g = 255, .b = 255 };
-    const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
-    const blue = Engine.Color{ .r = 100, .g = 150, .b = 255 };
+        while (self.running) {
+            self.clock.tick();
 
-    // Server title
-    const title = "MULTI-ENGINE GAME SERVER";
-    const title_start = (80 - title.len) / 2;
-    for (title, 0..) |char, i| {
-        engine.canvas.put(@intCast(title_start + i), 2, char);
-        engine.canvas.fillColor(@intCast(title_start + i), 2, green);
-    }
+            if (try readKey()) |byte| {
+                if (byte == 'q' or byte == 27) {
+                    self.running = false;
+                    break;
+                }
+                main.setInput(byte);
+            }
 
-    // CPU info
-    const cpu_count = Thread.getCpuCount() catch 1;
-    const cpu_text = std.fmt.allocPrint(std.heap.page_allocator, "Available CPU Cores: {d}", .{cpu_count}) catch return;
-    defer std.heap.page_allocator.free(cpu_text);
+            self.canvas.clear(
+                ' ',
+                self.background_color,
+            );
 
-    for (cpu_text, 0..) |char, i| {
-        engine.canvas.put(@intCast(i + 5), 5, char);
-        engine.canvas.fillColor(@intCast(i + 5), 5, white);
-    }
+            if (self.canvas.updateFn) |updateFn| {
+                updateFn(&self.canvas);
+            }
 
-    // Active instances count
-    const instance_text = std.fmt.allocPrint(std.heap.page_allocator, "Active Game Instances: {d}", .{server.instances.items.len}) catch return;
-    defer std.heap.page_allocator.free(instance_text);
+            if (self.update) |updateFn| {
+                updateFn();
+            }
 
-    for (instance_text, 0..) |char, i| {
-        engine.canvas.put(@intCast(i + 5), 7, char);
-        engine.canvas.fillColor(@intCast(i + 5), 7, blue);
-    }
-
-    // List running instances
-    var y_offset: i32 = 10;
-    for (server.instances.items, 0..) |instance, i| {
-        if (y_offset >= 25) break;
-
-        const is_wasd = instance.player.entity.ch == '@';
-        const status_text = std.fmt.allocPrint(std.heap.page_allocator, "Instance {d}: {s} - {s} - Thread: {s}", .{ instance.client_id, if (is_wasd) "WASD" else "HJKL", if (instance.isRunning()) "RUNNING" else "STOPPED", if (instance.thread_handle != null) "Active" else "None" }) catch continue;
-        defer std.heap.page_allocator.free(status_text);
-
-        const color = if (instance.isRunning()) green else Engine.Color{ .r = 255, .g = 100, .b = 100 };
-
-        for (status_text, 0..) |char, j| {
-            if (j >= 75) break;
-            engine.canvas.put(@intCast(j + 5), y_offset, char);
-            engine.canvas.fillColor(@intCast(j + 5), y_offset, color);
+            self.canvas.render();
+            self.canvas.flushToTerminal();
+            self.clock.sleepUntilNextFrame();
         }
 
-        y_offset += 1;
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch |err| {
+            if (err != error.WouldBlock) return err;
+        };
+    }
+};
+
+pub const TerminalGuard = struct {
+    orig: std.posix.termios,
+    saved: bool = false,
+    orig_flags: usize = 0,
+
+    pub fn init() !TerminalGuard {
+        var tg: TerminalGuard = undefined;
+
+        tg.orig = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
+        tg.saved = true;
+
+        var raw = tg.orig;
+
+        const LFlag = @TypeOf(raw.lflag);
+        const LBits = std.meta.Int(.unsigned, @bitSizeOf(LFlag));
+        var lbits: LBits = @bitCast(raw.lflag);
+        const ICANON_bits: LBits = @intCast(c.ICANON);
+        const ECHO_bits: LBits = @intCast(c.ECHO);
+        lbits &= ~(ICANON_bits | ECHO_bits);
+        raw.lflag = @bitCast(lbits);
+
+        raw.cc[@intFromEnum(std.posix.V.MIN)] = 0;
+        raw.cc[@intFromEnum(std.posix.V.TIME)] = 0;
+
+        try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
+
+        const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
+        tg.orig_flags = flags;
+
+        const nonblock_bits: usize = 0x0004;
+        _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
+
+        _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
+
+        return tg;
     }
 
-    // Architecture info
-    const arch_info = [_][]const u8{
-        "ARCHITECTURE:",
-        "- Server Engine: Master coordination",
-        "- Client Engines: Individual game instances",
-        "- Each client: Dedicated thread + canvas",
-        "- True concurrent processing",
-    };
+    pub fn deinit(self: *TerminalGuard) void {
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
 
-    y_offset = 20;
-    for (arch_info) |line| {
-        if (y_offset >= 30) break;
-
-        for (line, 0..) |char, i| {
-            if (i >= 75) break;
-            engine.canvas.put(@intCast(i + 2), y_offset, char);
-            engine.canvas.fillColor(@intCast(i + 2), y_offset, white);
+        if (self.saved) {
+            std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
         }
-        y_offset += 1;
+        _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
     }
+};
+
+pub fn readKey() !?u8 {
+    var byte: [1]u8 = undefined;
+    const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
+        error.WouldBlock => return null,
+        else => return err,
+    };
+    if (n == 0) return null;
+    return byte[0];
 }
 
-// Simulate network input handling
-fn simulateNetworkInput(instance: *GameInstance, input_sequence: []const u8) void {
-    std.debug.print("Simulating input for client {d}\n", .{instance.client_id});
-
-    for (input_sequence) |input| {
-        instance.processInput(input);
-        std.time.sleep(100_000_000); // 100ms delay between inputs
-
-        if (!instance.isRunning()) break;
-    }
-}
-
-pub fn main() !void {
-    std.debug.print("Starting Multi-Engine Game Server\n", .{});
-    std.debug.print("Available CPU cores: {d}\n", .{Thread.getCpuCount() catch 1});
-
-    var server = try GameServer.init(std.heap.page_allocator);
-    defer server.deinit();
-
-    // Create two game instances (simulating two client connections)
-    const instance1 = try server.createInstance(true); // WASD player
-    const instance2 = try server.createInstance(false); // HJKL player
-
-    // Start both game instances on separate threads
-    try instance1.start();
-    try instance2.start();
-
-    // Simulate network input for testing
-    const input_thread1 = try Thread.spawn(.{}, simulateNetworkInput, .{ instance1, "wwwwssssaaaadddwwww" });
-
-    const input_thread2 = try Thread.spawn(.{}, simulateNetworkInput, .{ instance2, "kkkkjjjjhhhhllllkkkk" });
-
-    // Start server master engine (this will block until exit)
-    try server.startServerEngine();
-
-    // Cleanup
-    instance1.stop();
-    instance2.stop();
-
-    input_thread1.join();
-    input_thread2.join();
-
-    std.debug.print("Multi-Engine Game Server terminated\n", .{});
-}
-
-pub fn setInput(input: u8) void {
-    // This would be called by the main engine input system
-    // In a real implementation, you'd route input to the appropriate instance
-    _ = input;
+pub fn handleInput() !?u8 {
+    return try readKey();
 }
