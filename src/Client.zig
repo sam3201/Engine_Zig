@@ -45,7 +45,6 @@ pub fn main() !void {
     };
     defer disconnectFromServer(&stream);
 
-    // Simple test - send some commands
     try sendInput(&stream, "RIGHT");
     try receiveGameState(&stream, allocator);
 
