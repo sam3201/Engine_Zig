@@ -320,7 +320,7 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
 
     // List running instances
     var y_offset: i32 = 10;
-    for (server.instances.items) |instance| {
+    for (server.instances.items) |instance, i| {
         if (y_offset >= 25) break;
 
         const is_wasd = instance.player.entity.ch == '@';
@@ -410,3 +410,4 @@ pub fn setInput(input: u8) void {
     // In a real implementation, you'd route input to the appropriate instance
     _ = input;
 }
+
