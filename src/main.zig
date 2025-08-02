@@ -7,11 +7,9 @@ const Mutex = Thread.Mutex;
 const net = std.net;
 const process = std.process;
 
-// Global references for update functions (since Engine.setUpdateFn doesn't support context)
 var current_instance: ?*GameInstance = null;
 var current_server: ?*GameServer = null;
 
-// Terminal spawning utilities
 const TerminalSpawner = struct {
     pub fn spawnInNewTerminal(allocator: std.mem.Allocator, client_id: u32, is_wasd: bool) !process.Child {
         const exe_path = try std.fs.selfExePathAlloc(allocator);
@@ -23,12 +21,10 @@ const TerminalSpawner = struct {
         const full_command = try std.fmt.allocPrint(allocator, "{s} {s}", .{ exe_path, instance_args });
         defer allocator.free(full_command);
 
-        // Try macOS-specific methods first
         if (spawnMacOSTerminal(allocator, full_command)) |child| {
             std.debug.print("Successfully spawned macOS terminal for client {d}\n", .{client_id});
             return child;
         } else |_| {
-            // Fall back to standard terminal detection
             const terminal_cmd = detectTerminal() orelse {
                 std.debug.print("Warning: Could not detect terminal emulator, falling back to inline mode\n", .{});
                 return error.NoTerminalFound;
@@ -53,7 +49,6 @@ const TerminalSpawner = struct {
     }
 
     fn spawnMacOSTerminal(allocator: std.mem.Allocator, command: []const u8) !process.Child {
-        // Try Ghostty.app first
         if (std.fs.accessAbsolute("/Applications/Ghostty.app", .{})) {
             const applescript = try std.fmt.allocPrint(allocator,
                 \\tell application "Ghostty"
@@ -79,7 +74,6 @@ const TerminalSpawner = struct {
             return child;
         } else |_| {}
 
-        // Try Terminal.app as fallback
         const applescript = try std.fmt.allocPrint(allocator,
             \\tell application "Terminal"
             \\    activate
@@ -104,8 +98,6 @@ const TerminalSpawner = struct {
     };
 
     fn detectTerminal() ?TerminalInfo {
-        // Try common terminal emulators in order of preference
-        // Skip ghostty CLI since it doesn't support -e on macOS
         const terminals = [_]TerminalInfo{
             .{ .command = "alacritty", .flag = "-e" },
             .{ .command = "kitty", .flag = "-e" },
@@ -138,7 +130,6 @@ const TerminalSpawner = struct {
     }
 };
 
-// Game instance for each client connection
 const GameInstance = struct {
     engine: Engine.Engine,
     player: Player.Player,
@@ -149,13 +140,13 @@ const GameInstance = struct {
     process_handle: ?process.Child,
 
     pub fn init(allocator: std.mem.Allocator, client_id: u32, is_wasd: bool) !GameInstance {
-        const WIDTH: usize = 60; // Larger window for standalone terminals
+        const WIDTH: usize = 60;
         const HEIGHT: usize = 30;
-        const FPS: f64 = 60; // Higher FPS for smoother experience
+        const FPS: f64 = 60;
         const bg_color = if (is_wasd)
-            Engine.Color{ .r = 20, .g = 20, .b = 40 } // Dark blue for WASD
+            Engine.Color{ .r = 20, .g = 20, .b = 40 }
         else
-            Engine.Color{ .r = 40, .g = 20, .b = 20 }; // Dark red for HJKL
+            Engine.Color{ .r = 40, .g = 20, .b = 20 };
 
         const engine = try Engine.Engine.init(allocator, WIDTH, HEIGHT, FPS, bg_color);
 
@@ -259,7 +250,6 @@ const GameInstance = struct {
     fn gameLoop(self: *GameInstance) void {
         std.debug.print("Game instance {d} started in dedicated session\n", .{self.client_id});
 
-        // Store reference globally for the update function to access
         current_instance = self;
 
         const UpdateFunctions = struct {
@@ -268,13 +258,10 @@ const GameInstance = struct {
                     instance.mutex.lock();
                     defer instance.mutex.unlock();
 
-                    // Clear canvas
                     instance.engine.canvas.clear(' ', instance.engine.background_color);
 
-                    // Draw player
                     instance.player.draw(&instance.engine.canvas);
 
-                    // Draw UI
                     drawInstanceUI(&instance.engine, instance);
                 }
             }
@@ -282,7 +269,6 @@ const GameInstance = struct {
 
         self.engine.setUpdateFn(&UpdateFunctions.update);
 
-        // Run the engine loop
         self.engine.run() catch |err| {
             std.debug.print("Engine error for instance {d}: {any}\n", .{ self.client_id, err });
         };
@@ -293,19 +279,15 @@ const GameInstance = struct {
     pub fn runStandalone(self: *GameInstance) !void {
         std.debug.print("Running standalone game instance {d}\n", .{self.client_id});
 
-        // Store reference globally for the update function to access
         current_instance = self;
 
         const UpdateFunctions = struct {
             fn update() void {
                 if (current_instance) |instance| {
-                    // Clear canvas
                     instance.engine.canvas.clear(' ', instance.engine.background_color);
 
-                    // Draw player
                     instance.player.draw(&instance.engine.canvas);
 
-                    // Draw UI
                     drawInstanceUI(&instance.engine, instance);
                 }
             }
@@ -313,16 +295,13 @@ const GameInstance = struct {
 
         self.engine.setUpdateFn(&UpdateFunctions.update);
 
-        // Simulate some movement for demo
         const input_thread = try Thread.spawn(.{}, simulateStandaloneInput, .{self});
         defer input_thread.join();
 
-        // Run the engine loop (this blocks)
         try self.engine.run();
     }
 };
 
-// Server state managing multiple game instances
 const GameServer = struct {
     instances: std.ArrayList(*GameInstance),
     server_engine: Engine.Engine,
@@ -332,7 +311,6 @@ const GameServer = struct {
     child_processes: std.ArrayList(process.Child),
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // Server has its own master engine for coordination
         const server_engine = try Engine.Engine.init(allocator, 80, 30, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
         return GameServer{
@@ -346,13 +324,11 @@ const GameServer = struct {
     }
 
     pub fn deinit(self: *GameServer) void {
-        // Stop all child processes
         for (self.child_processes.items) |*child| {
             _ = child.kill() catch {};
         }
         self.child_processes.deinit();
 
-        // Stop all instances
         for (self.instances.items) |instance| {
             instance.stop();
             instance.deinit();
@@ -383,7 +359,6 @@ const GameServer = struct {
     pub fn startServerEngine(self: *GameServer) !void {
         std.debug.print("Starting server master engine\n", .{});
 
-        // Store reference globally for the update function to access
         current_server = self;
 
         const UpdateFunctions = struct {
@@ -392,10 +367,8 @@ const GameServer = struct {
                     server.mutex.lock();
                     defer server.mutex.unlock();
 
-                    // Clear server canvas
                     server.server_engine.canvas.clear(' ', server.server_engine.background_color);
 
-                    // Draw server overview
                     drawServerOverview(&server.server_engine, server);
                 }
             }
@@ -436,28 +409,24 @@ fn drawInstanceUI(engine: *Engine.Engine, instance: *GameInstance) void {
     const yellow = Engine.Color{ .r = 255, .g = 255, .b = 0 };
     const cyan = Engine.Color{ .r = 0, .g = 255, .b = 255 };
 
-    // Determine if this is a WASD or HJKL instance based on player character
     const is_wasd = instance.player.entity.ch == '@';
     const color = if (is_wasd) yellow else cyan;
     const controls = if (is_wasd) "WASD Controls - Dedicated Terminal" else "HJKL Controls - Dedicated Terminal";
     const thread_info = std.fmt.allocPrint(std.heap.page_allocator, "Client {d} - Standalone Session", .{instance.client_id}) catch return;
     defer std.heap.page_allocator.free(thread_info);
 
-    // Draw title
     for (controls, 0..) |char, i| {
         if (i >= 58) break;
         engine.canvas.put(@intCast(i), 0, char);
         engine.canvas.fillColor(@intCast(i), 0, color);
     }
 
-    // Draw session info
     for (thread_info, 0..) |char, i| {
         if (i >= 58) break;
         engine.canvas.put(@intCast(i), 1, char);
         engine.canvas.fillColor(@intCast(i), 1, white);
     }
 
-    // Draw player position
     const pos = instance.player.getPosition();
     const pos_text = std.fmt.allocPrint(std.heap.page_allocator, "Position: ({d}, {d})", .{ pos.x, pos.y }) catch return;
     defer std.heap.page_allocator.free(pos_text);
@@ -468,7 +437,6 @@ fn drawInstanceUI(engine: *Engine.Engine, instance: *GameInstance) void {
         engine.canvas.fillColor(@intCast(i), 27, white);
     }
 
-    // Draw engine info
     const engine_info = "Dedicated Terminal Session - No Screen Tearing";
     for (engine_info, 0..) |char, i| {
         if (i >= 58) break;
@@ -476,7 +444,6 @@ fn drawInstanceUI(engine: *Engine.Engine, instance: *GameInstance) void {
         engine.canvas.fillColor(@intCast(i), 28, Engine.Color{ .r = 0, .g = 255, .b = 0 });
     }
 
-    // Draw border
     for (0..60) |x| {
         engine.canvas.put(@intCast(x), 2, '-');
         engine.canvas.fillColor(@intCast(x), 2, color);
@@ -490,7 +457,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
     const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
     const blue = Engine.Color{ .r = 100, .g = 150, .b = 255 };
 
-    // Server title
     const title = "MULTI-TERMINAL GAME SERVER";
     const title_start = (80 - title.len) / 2;
     for (title, 0..) |char, i| {
@@ -498,7 +464,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
         engine.canvas.fillColor(@intCast(title_start + i), 2, green);
     }
 
-    // CPU info
     const cpu_count = Thread.getCpuCount() catch 1;
     const cpu_text = std.fmt.allocPrint(std.heap.page_allocator, "Available CPU Cores: {d}", .{cpu_count}) catch return;
     defer std.heap.page_allocator.free(cpu_text);
@@ -508,7 +473,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
         engine.canvas.fillColor(@intCast(i + 5), 5, white);
     }
 
-    // Active instances count
     const instance_text = std.fmt.allocPrint(std.heap.page_allocator, "Active Terminal Sessions: {d}", .{server.instances.items.len}) catch return;
     defer std.heap.page_allocator.free(instance_text);
 
@@ -517,7 +481,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
         engine.canvas.fillColor(@intCast(i + 5), 7, blue);
     }
 
-    // List running instances
     var y_offset: i32 = 10;
     for (server.instances.items) |instance| {
         if (y_offset >= 20) break;
@@ -535,7 +498,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
         y_offset += 1;
     }
 
-    // Architecture info
     const arch_info = [_][]const u8{
         "ARCHITECTURE:",
         "- Server: Master coordination terminal",
@@ -560,7 +522,6 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
     }
 }
 
-// Simulate input for standalone instances
 fn simulateStandaloneInput(instance: *GameInstance) void {
     const input_sequence = if (instance.player.entity.ch == '@') "wwwwssssaaaadddwwwwssssaaaaddd" else "kkkkjjjjhhhhllllkkkkjjjjhhhhllll";
 
@@ -570,11 +531,10 @@ fn simulateStandaloneInput(instance: *GameInstance) void {
         if (!instance.isRunning()) break;
 
         instance.processInput(input);
-        std.time.sleep(200_000_000); // 200ms delay between inputs
+        std.time.sleep(200_000_000);
     }
 }
 
-// Parse command line arguments
 fn parseArgs(allocator: std.mem.Allocator) !struct { client_mode: bool, client_id: u32, is_wasd: bool } {
     const args = try process.argsAlloc(allocator);
     defer process.argsFree(allocator, args);
@@ -603,7 +563,6 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
     const args = try parseArgs(allocator);
 
-    // If running in client mode, start a single game instance
     if (args.client_mode) {
         std.debug.print("Starting client instance {d} ({s})\n", .{ args.client_id, if (args.is_wasd) "WASD" else "HJKL" });
 
@@ -614,31 +573,27 @@ pub fn main() !void {
         return;
     }
 
-    // Otherwise, run as server
     std.debug.print("Starting Multi-Terminal Game Server\n", .{});
     std.debug.print("Available CPU cores: {d}\n", .{Thread.getCpuCount() catch 1});
 
     var server = try GameServer.init(allocator);
     defer server.deinit();
 
-    // Create game instances
-    const instance1 = try server.createInstance(true); // WASD player
-    const instance2 = try server.createInstance(false); // HJKL player
+    const instance1 = try server.createInstance(true);
+    const instance2 = try server.createInstance(false);
 
-    // Start instances in new terminal sessions
     std.debug.print("Creating first terminal session...\n", .{});
     try instance1.startInNewTerminal(allocator);
-    std.time.sleep(2_000_000_000); // 2 second delay
+    std.time.sleep(2_000_000_000);
 
     std.debug.print("Creating second terminal session...\n", .{});
     try instance2.startInNewTerminal(allocator);
-    std.time.sleep(2_000_000_000); // 2 second delay
+    std.time.sleep(2_000_000_000);
 
     std.debug.print("Game instances created. Starting server coordination interface...\n", .{});
     std.debug.print("Note: If terminals didn't spawn, check the debug output above.\n", .{});
     std.debug.print("Server will run until you press 'q' or Ctrl+C\n", .{});
 
-    // Store reference for server
     current_server = &server;
 
     const UpdateFunctions = struct {
@@ -647,10 +602,8 @@ pub fn main() !void {
                 srv.mutex.lock();
                 defer srv.mutex.unlock();
 
-                // Clear server canvas
                 srv.server_engine.canvas.clear(' ', srv.server_engine.background_color);
 
-                // Draw server overview
                 drawServerOverview(&srv.server_engine, srv);
             }
         }
@@ -658,7 +611,6 @@ pub fn main() !void {
 
     server.server_engine.setUpdateFn(&UpdateFunctions.update);
 
-    // Start server master engine (this will block until exit)
     server.server_engine.run() catch |err| {
         std.debug.print("Server engine error: {any}\n", .{err});
     };
@@ -667,7 +619,5 @@ pub fn main() !void {
 }
 
 pub fn setInput(input: u8) void {
-    // This would be called by the main engine input system
-    // In a real implementation, you'd route input to the appropriate instance
     _ = input;
 }
