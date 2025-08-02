@@ -88,7 +88,6 @@ fn handleClient(connection: net.Server.Connection) void {
         };
     }
 
-    // Remove player on disconnect
     mutex.lock();
     players[player_id] = null;
     player_count -= 1;
