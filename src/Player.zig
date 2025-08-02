@@ -3,14 +3,15 @@ const eng = @import("Engine.zig");
 const Entity = @import("Entity.zig");
 
 pub const InputAction = enum {
-    MoveUp,
-    MoveDown,
-    MoveLeft,
-    MoveRight,
-    Interact,
-    Attack,
-    UseItem,
-    OpenInventory,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    INTERACT,
+    ATTACK,
+    USEITEM,
+    DROPITEM,
+    OPENINVENTORY,
     None,
 };
 
