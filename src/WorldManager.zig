@@ -144,7 +144,7 @@ pub const WorldManager = struct {
             .ATTACK => self.playerAttack(),
             .USEITEM => self.playerUseItem(),
             .DROPITEM => self.playerDropItem(),
-            .=> self.playerOpenInventory(),
+            .OPENINVENTORY => self.playerOpenInventory(),
             .None => {},
         }
 
