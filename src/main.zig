@@ -26,10 +26,15 @@ const TerminalSpawner = struct {
         const instance_args = try std.fmt.allocPrint(allocator, "--client-mode --client-id={d} --is-wasd={}", .{ client_id, is_wasd });
         defer allocator.free(instance_args);
 
+        const full_command = try std.fmt.allocPrint(allocator, "{s} {s}", .{ exe_path, instance_args });
+        defer allocator.free(full_command);
+
+        std.debug.print("Spawning: {s} {s} {s}\n", .{ terminal_cmd.command, terminal_cmd.flag, full_command });
+
         var child = process.Child.init(&[_][]const u8{
             terminal_cmd.command,
             terminal_cmd.flag,
-            try std.fmt.allocPrint(allocator, "{s} {s}", .{ exe_path, instance_args }),
+            full_command,
         }, allocator);
 
         child.stdout_behavior = .Ignore;
@@ -37,6 +42,7 @@ const TerminalSpawner = struct {
         child.stdin_behavior = .Ignore;
 
         try child.spawn();
+        std.debug.print("Successfully spawned terminal process for client {d}\n", .{client_id});
         return child;
     }
 
@@ -51,7 +57,7 @@ const TerminalSpawner = struct {
             .{ .command = "ghostty", .flag = "-e" },
             .{ .command = "alacritty", .flag = "-e" },
             .{ .command = "kitty", .flag = "-e" },
-            .{ .command = "wezterm", .flag = "-e" },
+            .{ .command = "wezterm", .flag = "start" },
             .{ .command = "gnome-terminal", .flag = "--" },
             .{ .command = "konsole", .flag = "-e" },
             .{ .command = "xterm", .flag = "-e" },
@@ -59,11 +65,14 @@ const TerminalSpawner = struct {
         };
 
         for (terminals) |terminal| {
+            std.debug.print("Checking for terminal: {s}\n", .{terminal.command});
             if (isCommandAvailable(terminal.command)) {
+                std.debug.print("Found terminal: {s}\n", .{terminal.command});
                 return terminal;
             }
         }
 
+        std.debug.print("No terminal emulator found\n", .{});
         return null;
     }
 
@@ -132,13 +141,18 @@ const GameInstance = struct {
     }
 
     pub fn startInNewTerminal(self: *GameInstance, allocator: std.mem.Allocator) !void {
+        std.debug.print("Attempting to start instance {d} in new terminal\n", .{self.client_id});
+
         self.process_handle = TerminalSpawner.spawnInNewTerminal(allocator, self.client_id, self.player.entity.ch == '@') catch |err| switch (err) {
             error.NoTerminalFound => {
                 std.debug.print("Starting instance {d} in current terminal (no separate terminal available)\n", .{self.client_id});
                 try self.start();
                 return;
             },
-            else => return err,
+            else => {
+                std.debug.print("Error spawning terminal for instance {d}: {any}\n", .{ self.client_id, err });
+                return err;
+            },
         };
 
         std.debug.print("Started instance {d} in new terminal session\n", .{self.client_id});
@@ -560,17 +574,42 @@ pub fn main() !void {
     const instance2 = try server.createInstance(false); // HJKL player
 
     // Start instances in new terminal sessions
+    std.debug.print("Creating first terminal session...\n", .{});
     try instance1.startInNewTerminal(allocator);
-    std.time.sleep(1_000_000_000); // 1 second delay
+    std.time.sleep(2_000_000_000); // 2 second delay
 
+    std.debug.print("Creating second terminal session...\n", .{});
     try instance2.startInNewTerminal(allocator);
-    std.time.sleep(1_000_000_000); // 1 second delay
+    std.time.sleep(2_000_000_000); // 2 second delay
 
-    std.debug.print("Game instances started in separate terminals\n", .{});
-    std.debug.print("Starting server coordination interface...\n", .{});
+    std.debug.print("Game instances created. Starting server coordination interface...\n", .{});
+    std.debug.print("Note: If terminals didn't spawn, check the debug output above.\n", .{});
+    std.debug.print("Server will run until you press 'q' or Ctrl+C\n", .{});
+
+    // Store reference for server
+    current_server = &server;
+
+    const UpdateFunctions = struct {
+        fn update() void {
+            if (current_server) |srv| {
+                srv.mutex.lock();
+                defer srv.mutex.unlock();
+
+                // Clear server canvas
+                srv.server_engine.canvas.clear(' ', srv.server_engine.background_color);
+
+                // Draw server overview
+                drawServerOverview(&srv.server_engine, srv);
+            }
+        }
+    };
+
+    server.server_engine.setUpdateFn(&UpdateFunctions.update);
 
     // Start server master engine (this will block until exit)
-    try server.startServerEngine();
+    server.server_engine.run() catch |err| {
+        std.debug.print("Server engine error: {any}\n", .{err});
+    };
 
     std.debug.print("Multi-Terminal Game Server terminated\n", .{});
 }
