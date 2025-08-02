@@ -136,9 +136,9 @@ pub const WorldManager = struct {
         const old_pos = self.player.getPosition();
 
         switch (action) {
-            .MoveUp => self.tryMovePlayer(0, -1),
-            .MoveDown => self.tryMovePlayer(0, 1),
-            .MoveLeft => self.tryMovePlayer(-1, 0),
+            .UP => self.tryMovePlayer(0, -1),
+            .DOWN => self.tryMovePlayer(0, 1),
+            .LEFT => self.tryMovePlayer(-1, 0),
             .MoveRight => self.tryMovePlayer(1, 0),
             .Interact => self.playerInteract(),
             .Attack => self.playerAttack(),
