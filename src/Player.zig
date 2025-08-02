@@ -26,10 +26,14 @@ pub const Player = struct {
 
     health: i32 = 100,
     max_health: i32 = 100,
+    xp: i32 = 0,
     speed: i32 = 1,
     level: i32 = 1,
     experience: i32 = 0,
     experience_to_next_level: i32 = 100,
+
+    id: i32 = 0,
+    name: []const u8 = "Nameless",
 
     pub fn init(
         allocator: std.mem.Allocator,

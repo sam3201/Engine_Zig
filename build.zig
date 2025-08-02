@@ -11,6 +11,24 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const server = b.addExecutable(.{
+        .name = "Server",
+        .root_source_file = b.path("src/Server.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    b.installArtifact(server);
+
+    const client = b.addExecutable(.{
+        .name = "Client",
+        .root_source_file = b.path("src/Client.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    b.installArtifact(client);
+
     // Add conditional compilation based on target
     if (target.result.cpu.arch == .wasm32) {
         // For WASM builds, include WASM exports
