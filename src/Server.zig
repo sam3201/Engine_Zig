@@ -5,7 +5,7 @@ const Thread = std.Thread;
 
 const MAX_PLAYERS = 64;
 
-var players: [MAX_PLAYERS]?Player = .{null} ** MAX_PLAYERS;
+vvar players: [MAX_PLAYERS]Player = undefined; // no optional
 var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
