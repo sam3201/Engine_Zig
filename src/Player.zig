@@ -61,7 +61,7 @@ pub const Player = struct {
     .speed: i32 = 1,
     .level: i32 = 1,
     .experience: i32 = 0,
-    experience_to_next_level: i32 = 100,
+    .experience_to_next_level: i32 = 100,
 
     id: i32 = 0,
     name: []const u8 = "Nameless",
