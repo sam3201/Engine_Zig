@@ -51,7 +51,6 @@ fn handleClient(connection: net.Server.Connection) void {
         return;
     };
     players[player_id] = new_player;
-
     std.debug.print("Player {} connected\n", .{player_id});
 
     while (true) {
