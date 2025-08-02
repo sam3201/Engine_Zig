@@ -1,21 +1,239 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Engine Zig WASM</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zig WASM Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        #gameContainer {
+            background-color: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+        }
+        
+        #gameOutput {
+            white-space: pre;
+            font-size: 14px;
+            line-height: 1.2;
+            color: #00ff00;
+            background-color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 400px;
+            min-width: 600px;
+            overflow: hidden;
+        }
+        
+        #controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .control-info {
+            margin: 5px 0;
+            color: #888;
+        }
+        
+        #status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+        }
+        
+        .loading {
+            color: #ffff00;
+        }
+        
+        .ready {
+            color: #00ff00;
+        }
+        
+        .error {
+            color: #ff0000;
+        }
+    </style>
 </head>
 <body>
-  <canvas id="canvas" width="800" height="800"></canvas>
-  <script type="module">
-    const response = await fetch("engine.wasm");
-    const buffer = await response.arrayBuffer();
-    const wasm = await WebAssembly.instantiate(buffer, {
-      env: {
+    <h1>🎮 Zig WASM Game Engine</h1>
+    
+    <div id="gameContainer">
+        <div id="gameOutput">Loading game...</div>
+    </div>
+    
+    <div id="controls">
+        <div class="control-info"><strong>Controls:</strong></div>
+        <div class="control-info">W/A/S/D - Move player (@)</div>
+        <div class="control-info">Q - Quit</div>
+        <div class="control-info">Click on the game area and use keyboard to play</div>
+    </div>
+    
+    <div id="status" class="loading">Initializing WASM module...</div>
+
+    <script>
+        let wasmModule = null;
+        let gameRunning = false;
+        let gameLoop = null;
+
+        // DOM elements
+        const gameOutput = document.getElementById('gameOutput');
+        const status = document.getElementById('status');
+        const gameContainer = document.getElementById('gameContainer');
+
+        // Make game container focusable
+        gameContainer.tabIndex = 0;
+
+        // WASM imports - functions that WASM can call
+        const importObject = {
+            env: {
+                consoleWrite: (ptr, len) => {
+                    if (!wasmModule) return;
+                    
+                    const memory = new Uint8Array(wasmModule.instance.exports.memory.buffer);
+                    const text = new TextDecoder().decode(memory.slice(ptr, ptr + len));
+                    gameOutput.textContent = text;
+                },
+                
+                consoleLog: (ptr, len) => {
+                    if (!wasmModule) return;
+                    
+                    const memory = new Uint8Array(wasmModule.instance.exports.memory.buffer);
+                    const text = new TextDecoder().decode(memory.slice(ptr, ptr + len));
+                    console.log('[WASM]', text);
+                }
+            }
+        };
+
+        // Load and initialize WASM
+        async function initWasm() {
+            try {
+                status.textContent = 'Loading WASM module...';
+                status.className = 'loading';
+
+                const wasmResponse = await fetch('main.wasm');
+                if (!wasmResponse.ok) {
+                    throw new Error(`Failed to fetch WASM: ${wasmResponse.status}`);
+                }
+
+                const wasmBytes = await wasmResponse.arrayBuffer();
+                wasmModule = await WebAssembly.instantiate(wasmBytes, importObject);
+
+                status.textContent = 'Initializing game...';
+                
+                // Initialize the game
+                wasmModule.instance.exports.wasm_init();
+                
+                status.textContent = 'Game ready! Click on the game area and use WASD to move.';
+                status.className = 'ready';
+                
+                gameRunning = true;
+                startGameLoop();
+                
+            } catch (error) {
+                console.error('Failed to initialize WASM:', error);
+                status.textContent = `Error: ${error.message}`;
+                status.className = 'error';
+                gameOutput.textContent = 'Failed to load game. Check console for details.';
+            }
+        }
+
+        // Game loop
+        function startGameLoop() {
+            if (gameLoop) {
+                clearInterval(gameLoop);
+            }
+            
+            // Initial render
+            if (wasmModule && gameRunning) {
+                wasmModule.instance.exports.wasm_update();
+            }
+            
+            // Set up periodic updates (optional, mainly for animations)
+            gameLoop = setInterval(() => {
+                if (wasmModule && gameRunning) {
+                    wasmModule.instance.exports.wasm_update();
+                }
+            }, 100); // Update every 100ms
+        }
+
+        // Handle keyboard input
+        function handleKeyPress(event) {
+            if (!wasmModule || !gameRunning) return;
+            
+            const key = event.key.toLowerCase();
+            let keyCode = 0;
+            
+            // Convert key to ASCII code
+            if (key.length === 1) {
+                keyCode = key.charCodeAt(0);
+            } else {
+                // Handle special keys
+                switch (key) {
+                    case 'escape':
+                        keyCode = 27;
+                        break;
+                    case 'enter':
+                        keyCode = 13;
+                        break;
+                    default:
+                        return; // Ignore other special keys
+                }
+            }
+            
+            // Send key to WASM
+            wasmModule.instance.exports.wasm_handle_input(keyCode);
+            
+            // Handle quit
+            if (key === 'q') {
+                gameRunning = false;
+                if (gameLoop) {
+                    clearInterval(gameLoop);
+                }
+                status.textContent = 'Game stopped. Refresh to restart.';
+                status.className = 'loading';
+            }
+            
+            // Prevent default browser behavior
+            event.preventDefault();
+        }
+
+        // Event listeners
+        gameContainer.addEventListener('keydown', handleKeyPress);
         
-      }
-    });
-    wasm.instance.exports.wasm_run();
-  </script>
+        // Focus on game container when clicked
+        gameContainer.addEventListener('click', () => {
+            gameContainer.focus();
+        });
+
+        // Ensure game container is focused initially
+        window.addEventListener('load', () => {
+            gameContainer.focus();
+        });
+
+        // Initialize when page loads
+        initWasm();
+    </script>
 </body>
 </html>
-

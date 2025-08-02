@@ -2,6 +2,8 @@ const std = @import("std");
 const Engine = @import("Engine.zig");
 const WorldManager = @import("WorldManager.zig");
 const Player = @import("Player.zig");
+const WASD_BINDINGS = @import("Player.zig").WASD_BINDINGS;
+const ARROW_BINDINGS = @import("Player.zig").ARROW_BINDINGS;
 
 var global_world_manager: ?*WorldManager.WorldManager = null;
 var current_input: ?u8 = null;

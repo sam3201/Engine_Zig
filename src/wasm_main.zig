@@ -171,17 +171,6 @@ export fn wasm_get_last_key() u8 {
     return last_key;
 }
 
-export fn main() void {
-    log("WASM Game Starting...");
-
-    wasm_init();
-
-    // Initial render
-    wasm_update();
-
-    log("Game ready! Use WASD to move, Q to quit.");
-}
-
 // Simple allocator for WASM
 var wasm_allocator_buffer: [1024 * 64]u8 = undefined;
 var wasm_allocator_pos: usize = 0;
