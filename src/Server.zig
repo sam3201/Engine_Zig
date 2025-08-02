@@ -11,11 +11,7 @@ var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
     var server = try net
-        .StreamServer.init(.{
-        .reuse_address = true,
-        .reuse_port = true,
-        .tcp_nodelay = true,
-    });
+        .StreamServer.init(.{});
 
     defer server.deinit();
 
