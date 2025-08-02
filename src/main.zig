@@ -20,8 +20,8 @@ const GameInstance = struct {
     mutex: Mutex,
 
     pub fn init(allocator: std.mem.Allocator, client_id: u32, is_wasd: bool) !GameInstance {
-        const WIDTH: usize = 40; // Each client gets a smaller window
-        const HEIGHT: usize = 24;
+        const WIDTH: usize = 20; // Each client gets a smaller window
+        const HEIGHT: usize = 20;
         const FPS: f64 = 30;
         const bg_color = if (is_wasd)
             Engine.Color{ .r = 20, .g = 20, .b = 40 } // Dark blue for WASD
