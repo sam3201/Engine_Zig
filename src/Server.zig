@@ -50,8 +50,8 @@ fn handleClient(connection: net.Server.Connection) void {
         std.debug.print("Failed to create player\n", .{});
         return;
     };
-    players[player_id] = .Some(new_player);
-    std.debug.print("Player {} connected\n", .{player_id});
+    std.debug.print("Playeplayers[player_id] = new_player;
+r {} connected\n", .{player_id});
 
     while (true) {
         var buffer: [256]u8 = undefined;
