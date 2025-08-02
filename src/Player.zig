@@ -156,13 +156,13 @@ pub const WASD_BINDINGS = [_]KeyBinding{
 };
 
 pub const ARROW_BINDINGS = [_]KeyBinding{
-    .{ .key = 'k', .action = .MoveUp },
-    .{ .key = 'j', .action = .MoveDown },
-    .{ .key = 'h', .action = .MoveLeft },
-    .{ .key = 'l', .action = .MoveRight },
-    .{ .key = 'e', .action = .Interact },
-    .{ .key = ' ', .action = .Attack },
-    .{ .key = 'i', .action = .OpenInventory },
+    .{ .key = 'k', .action = .UP },
+    .{ .key = 'j', .action = .DOWN },
+    .{ .key = 'h', .action = .LEFT },
+    .{ .key = 'l', .action = .RIGHT },
+    .{ .key = 'e', .action = .INTERACT },
+    .{ .key = ' ', .action = .ATTACK },
+    .{ .key = 'i', .action = .OPENINVENTORY },
 };
 
 pub fn createPlayer(
