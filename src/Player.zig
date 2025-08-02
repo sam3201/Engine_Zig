@@ -55,6 +55,15 @@ pub const Player = struct {
             .entity = entity,
             .key_bindings = owned_bindings,
             .allocator = allocator,
+            .health = 100,
+            .max_health = 100,
+            .xp = 0,
+            .speed = 1,
+            .level = 1,
+            .experience = 0,
+            .experience_to_next_level = 100,
+            .id = 0,
+            .name = "Nameless",
         };
     }
 
