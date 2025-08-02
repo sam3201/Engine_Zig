@@ -46,7 +46,7 @@ pub const Player = struct {
         color: eng.Color,
         key_bindings: []const KeyBinding,
     ) !Player {
-        var owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
+        const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
         @memcpy(owned_bindings, key_bindings);
 
         const entity = Entity.Entity.init(start_x, start_y, width, height, Entity.RenderableType.PLAYER.toId(), ch, color);
@@ -198,4 +198,3 @@ pub fn createVimPlayer(
 ) !Player {
     return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
 }
-
