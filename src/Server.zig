@@ -9,14 +9,6 @@ var players: [MAX_PLAYERS]?Player = .{null} ** MAX_PLAYERS;
 var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
-const Player = struct {
-    id: usize,
-    x: f32,
-    y: f32,
-    vx: f32 = 0.0,
-    vy: f32 = 0.0,
-};
-
 pub fn startServer() !void {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     var server = try address.listen(.{
