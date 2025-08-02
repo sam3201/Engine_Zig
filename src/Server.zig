@@ -17,7 +17,6 @@ const Player = struct {
     vy: f32 = 0.0,
 };
 
-
 pub fn startServer() !void {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     var server = try address.listen(.{
