@@ -46,7 +46,7 @@ pub const Player = struct {
         color: eng.Color,
         key_bindings: []const KeyBinding,
     ) !Player {
-        const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
+        var owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
         @memcpy(owned_bindings, key_bindings);
 
         const entity = Entity.Entity.init(start_x, start_y, width, height, Entity.RenderableType.PLAYER.toId(), ch, color);
@@ -55,21 +55,13 @@ pub const Player = struct {
             .entity = entity,
             .key_bindings = owned_bindings,
             .allocator = allocator,
-            .health = 100,
-            .max_health = 100,
-            .xp = 0,
-            .speed = 1,
-            .level = 1,
-            .experience = 0,
-            .experience_to_next_level = 100,
-
-            .id = 0,
-            .name = "Nameless",
         };
     }
 
     pub fn deinit(self: *Player) void {
-        self.allocator.free(self.key_bindings);
+        if (self.key_bindings.len > 0) {
+            self.allocator.free(self.key_bindings);
+        }
         self.entity.deinit();
     }
 
@@ -126,7 +118,7 @@ pub const Player = struct {
         self.max_health += 10;
         self.health = self.max_health;
 
-        self.experience_to_next_level = self.experience_to_next_level + (self.level * 25);
+        self.experience_to_next_level += self.level * 25;
     }
 
     pub fn getLevel(self: Player) i32 {
@@ -138,6 +130,10 @@ pub const Player = struct {
         canvas.fillColor(self.entity.x, self.entity.y, self.entity.color);
     }
 };
+
+// ─────────────────────────────────────────────────────────────
+// Bindings
+// ─────────────────────────────────────────────────────────────
 
 pub const WASD_BINDINGS = [_]KeyBinding{
     .{ .key = 'w', .action = .UP },
@@ -165,6 +161,10 @@ pub const ARROW_BINDINGS = [_]KeyBinding{
     .{ .key = 'i', .action = .OPENINVENTORY },
 };
 
+// ─────────────────────────────────────────────────────────────
+// Factories
+// ─────────────────────────────────────────────────────────────
+
 pub fn createPlayer(
     allocator: std.mem.Allocator,
     start_x: i32,
@@ -175,8 +175,8 @@ pub fn createPlayer(
         allocator,
         start_x,
         start_y,
-        1,
-        1,
+        1, // width
+        1, // height
         '@',
         eng.Color{ .r = 255, .g = 255, .b = 0 },
         bindings,
@@ -198,3 +198,4 @@ pub fn createVimPlayer(
 ) !Player {
     return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
 }
+
