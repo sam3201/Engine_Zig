@@ -6,8 +6,8 @@ const Thread = std.Thread;
 
 const MAX_PLAYERS = 64;
 
-var players: [MAX_PLAYERS]Player = undefined;
-var player_count: usize = 0;
+var player_count: usize = 0var players: [MAX_PLAYERS]?Player = [_]?Player{null} ** MAX_PLAYERS;
+;
 var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
