@@ -10,7 +10,6 @@ var player_count: usize = 0;
 var mutex = Thread.Mutex{};
 
 pub fn startServer() !void {
-    // Use the correct API for Zig 0.14
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     var server = try address.listen(.{
         .reuse_address = true,
@@ -25,7 +24,6 @@ pub fn startServer() !void {
             continue;
         };
 
-        // Handle client in a separate thread
         const thread = try Thread.spawn(.{}, handleClient, .{connection});
         thread.detach();
     }
@@ -37,7 +35,6 @@ fn handleClient(connection: net.Server.Connection) void {
     const reader = connection.stream.reader();
     const writer = connection.stream.writer();
 
-    // Add new player
     mutex.lock();
     defer mutex.unlock();
 
@@ -57,18 +54,15 @@ fn handleClient(connection: net.Server.Connection) void {
 
     std.debug.print("Player {} connected\n", .{player_id});
 
-    // Game loop for this client
     while (true) {
-        // Read player input
         var buffer: [256]u8 = undefined;
         const bytes_read = reader.read(&buffer) catch |err| {
             std.debug.print("Failed to read from client: {}\n", .{err});
             break;
         };
 
-        if (bytes_read == 0) break; // Client disconnected
+        if (bytes_read == 0) break;
 
-        // Parse input and update player
         const input = std.mem.trim(u8, buffer[0..bytes_read], " \n\r");
 
         if (std.mem.eql(u8, input, "UP")) {
@@ -81,7 +75,6 @@ fn handleClient(connection: net.Server.Connection) void {
             if (players[player_id]) |*p| p.x += 1.0;
         }
 
-        // Send game state to all players
         sendGameState(writer) catch |err| {
             std.debug.print("Failed to send game state: {}\n", .{err});
             break;
