@@ -311,7 +311,7 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
 
     // List running instances
     var y_offset: i32 = 10;
-    for (server.instances.items, 0..) |instance, i| {
+    for (server.instances.items, 0..) |instance| {
         if (y_offset >= 25) break;
 
         const is_wasd = instance.player.entity.ch == '@';
