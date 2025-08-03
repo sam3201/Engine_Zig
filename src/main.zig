@@ -578,7 +578,7 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
     const args = try parseArgs(allocator);
 
-    const engine = try Engine.init(allocator);
+    const engine = try Engine.Engine.init(allocator);
     defer engine.deinit();
 
     if (args.client_mode) {
