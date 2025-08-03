@@ -96,6 +96,6 @@ pub fn main() !void {
         try renderGameState(&stream, allocator, &canvas);
 
         canvas.present();
-        std.time.sleep(16_666_666); // 60fps
+        std.time.sleep(16_666_666); 
     }
 }
