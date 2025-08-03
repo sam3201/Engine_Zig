@@ -250,6 +250,8 @@ const GameInstance = struct {
 
     fn gameLoop(self: *GameInstance) void {
         std.debug.print("Game instance {d} started in dedicated session\n", .{self.client_id});
+
+        var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
         var world = Engine.World.init(&arena);
         world.spawnPlayer("Player1", 10, 10);
         world.spawnEnemy(15, 5);
