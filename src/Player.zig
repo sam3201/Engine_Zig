@@ -74,6 +74,13 @@ pub const Player = struct {
         return InputAction.None;
     }
 
+    pub fn update(self: *Player, dt: f32, input: *InputState) void {
+    if (input.isKeyPressed('w')) self.pos.y -= self.speed * dt;
+    if (input.isKeyPressed('s')) self.pos.y += self.speed * dt;
+    if (input.isKeyPressed('a')) self.pos.x -= self.speed * dt;
+    if (input.isKeyPressed('d')) self.pos.x += self.speed * dt;
+}
+
     pub fn move(self: *Player, dx: i32, dy: i32) void {
         self.entity.update(dx * self.speed, dy * self.speed);
     }
