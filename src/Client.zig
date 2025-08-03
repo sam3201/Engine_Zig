@@ -3,7 +3,6 @@ const World = @import("World.zig");
 const WorldManager = @import("WorldManager.zig");
 const PlayerModule = @import("Player.zig");
 const Canvas = eng.Canvas;
-const input = eng.input;
 const std = @import("std");
 const net = std.net;
 
