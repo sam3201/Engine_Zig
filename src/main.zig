@@ -264,6 +264,18 @@ const GameInstance = struct {
                     instance.player.draw(&instance.engine.canvas);
 
                     drawInstanceUI(&instance.engine, instance);
+                    if (last_input) |key| {
+    const player = world.players.items[0]; // Your current player
+    switch (key) {
+        'w' => player.y -= 1,
+        's' => player.y += 1,
+        'a' => player.x -= 1,
+        'd' => player.x += 1,
+        else => {},
+    }
+    last_input = null; // Reset input after use
+}
+
                 }
             }
         };
