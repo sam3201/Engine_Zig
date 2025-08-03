@@ -113,8 +113,7 @@ pub fn init(coord: ChunkCoord, difficulty_level: i32) Chunk {
                 tiles[idx] = .Wall;
 
             } else {
-                tiles[idx] = .Wall;
-                
+                tiles[idx] = .Empty; 
             }
         }
     }
