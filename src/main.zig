@@ -150,7 +150,7 @@ const GameInstance = struct {
         else
             Engine.Color{ .r = 40, .g = 20, .b = 20 };
 
-        const engine = try Engine.Engine.init(allocator, WIDTH, HEIGHT, FPS, bg_color);
+        const engine = try Engine.Engine..Engine.init(allocator, WIDTH, HEIGHT, FPS, bg_color);
 
         const player = if (is_wasd)
             try Player.createWASDPlayer(allocator, 30, 15)
