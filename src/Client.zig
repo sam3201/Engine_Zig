@@ -28,4 +28,3 @@ pub fn main() !void {
         std.time.sleep(16_666_666); // ~60 fps
     }
 }
-
