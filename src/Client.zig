@@ -74,9 +74,6 @@ pub fn main() !void {
     var canvas = Canvas.init(80, 24); // adjust size as needed
     defer canvas.deinit();
 
-    defer disconnectFromServer(&stream);
-    defer canvas.deinit();
-
     const input_state = input.InputState.init();
     var stream = try connectToServer();
 
