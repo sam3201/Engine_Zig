@@ -621,4 +621,3 @@ pub fn main() !void {
 pub fn setInput(byte: u8) void {
     last_input = byte;
 }
-
