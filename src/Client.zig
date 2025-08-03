@@ -71,7 +71,7 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = arena.allocator();
 
-        while (true) {
+    while (true) {
         canvas.clear();
 
         try input_state.poll();
@@ -88,5 +88,4 @@ pub fn main() !void {
         canvas.present();
         std.time.sleep(16_666_666); // 60fps
     }
-
 }
