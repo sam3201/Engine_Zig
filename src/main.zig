@@ -618,6 +618,7 @@ pub fn main() !void {
     std.debug.print("Multi-Terminal Game Server terminated\n", .{});
 }
 
-pub fn setInput(input: u8) void {
-    _ = input;
+pub fn setInput(byte: u8) void {
+    last_input = byte;
 }
+
