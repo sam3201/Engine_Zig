@@ -77,7 +77,6 @@ pub fn main() !void {
 
     try receiveGameState(&stream, allocator);
 
-    var canvas = Canvas.init(allocator);
     defer canvas.deinit();
 
     var input_state = input.InputState.init();
