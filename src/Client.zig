@@ -66,20 +66,6 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
     }
 }
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
-
-    var stream = try connectToServer();
-    defer disconnectFromServer(&stream);
-
-    var canvas = try Canvas.init(allocator, 80, 24); // adjust to your terminal
-    defer canvas.deinit();
-
-    var input_state = input.InputState{};
-    try input_state.init();
-
     while (true) {
         canvas.clear();
 
@@ -92,10 +78,9 @@ pub fn main() !void {
         if (input_state.isKeyPressed('a')) try sendInput(&stream, "a");
         if (input_state.isKeyPressed('d')) try sendInput(&stream, "d");
 
-        // Receive new game state and draw
         try renderGameState(&stream, allocator, &canvas);
 
         canvas.present();
-        std.time.sleep(16_666_666); // ~60 FPS
+        std.time.sleep(16_666_666); // 60fps
     }
-}
+
