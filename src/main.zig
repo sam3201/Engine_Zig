@@ -60,7 +60,9 @@ const TerminalSpawner = struct {
         , .{command});
         defer allocator.free(applescript);
 
-        var child = process.Child.init(&[_][]const u8{ "osascript", "-e", applescript }, allocator);
+        var child = process.Child.init(&[_][]const u8{
+            "osascript", "-e", applescript
+        }, allocator);
 
         child.stdout_behavior = .Ignore;
         child.stderr_behavior = .Ignore;
@@ -120,7 +122,7 @@ const GameInstance = struct {
         const FPS: f64 = 60;
 
         // Create engine with different colors for each client
-        var engine = if (is_wasd)
+        const engine = if (is_wasd)
             try Engine.Engine.init(allocator, WIDTH, HEIGHT, FPS, Engine.Color{ .r = 20, .g = 20, .b = 40 })
         else
             try Engine.Engine.init(allocator, WIDTH, HEIGHT, FPS, Engine.Color{ .r = 40, .g = 20, .b = 20 });
@@ -161,7 +163,7 @@ const GameInstance = struct {
 
     pub fn startInNewTerminal(self: *GameInstance, allocator: std.mem.Allocator) !void {
         std.debug.print("Attempting to start instance {d} in new terminal\n", .{self.client_id});
-
+        
         self.process_handle = TerminalSpawner.spawnInNewTerminal(allocator, self.client_id, self.player.entity.ch == '@') catch |err| switch (err) {
             error.NoTerminalFound => {
                 std.debug.print("Starting instance {d} in current terminal (no separate terminal available)\n", .{self.client_id});
@@ -187,7 +189,7 @@ const GameInstance = struct {
 
     pub fn runStandalone(self: *GameInstance) !void {
         std.debug.print("Running standalone game instance {d}\n", .{self.client_id});
-
+        
         current_instance = self;
 
         const UpdateFunctions = struct {
@@ -270,7 +272,7 @@ const GameServer = struct {
     child_processes: std.ArrayList(process.Child),
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        var server_engine = try Engine.Engine.init(allocator, 80, 30, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        const server_engine = try Engine.Engine.init(allocator, 80, 30, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
         return GameServer{
             .instances = std.ArrayList(*GameInstance).init(allocator),
@@ -476,7 +478,7 @@ fn drawServerOverview(engine: *Engine.Engine, server: *GameServer) void {
 
 fn simulateInput(instance: *GameInstance) void {
     const input_sequence = if (instance.player.entity.ch == '@') "wwwwssssaaaadddwwww" else "kkkkjjjjhhhhllllkkkk";
-
+    
     std.debug.print("Simulating input for client {d}\n", .{instance.client_id});
 
     for (input_sequence) |input| {
@@ -516,7 +518,7 @@ pub fn main() !void {
     // If running in client mode, start a single game instance
     if (args.client_mode) {
         std.debug.print("Starting client instance {d} ({s})\n", .{ args.client_id, if (args.is_wasd) "WASD" else "HJKL" });
-
+        
         var instance = try GameInstance.init(allocator, args.client_id, args.is_wasd);
         defer instance.deinit();
 
