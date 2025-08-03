@@ -263,6 +263,7 @@ const GameInstance = struct {
         const UpdateFunctions = struct {
             last_input: ?u8 = null,
             world: current_instance.?.player.World,
+
             fn update() void {
                 if (current_instance) |instance| {
                     instance.mutex.lock();
