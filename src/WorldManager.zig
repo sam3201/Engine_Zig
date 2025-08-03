@@ -230,7 +230,7 @@ pub const WorldManager = struct {
         const half_health = @divTrunc(self.player.max_health, 2);
 
         const health_color = if (self.player.health < quarter_health)
-            eng.Color{ .r = 255, .g = 0, .b = 0 } /
+            eng.Color{ .r = 255, .g = 0, .b = 0 } 
         else if (self.player.health < half_health)
             eng.Color{ .r = 255, .g = 255, .b = 0 } 
         else
