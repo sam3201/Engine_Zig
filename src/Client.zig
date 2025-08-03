@@ -43,17 +43,32 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var stream = connectToServer() catch |err| {
-        std.debug.print("Failed to connect: {}\n", .{err});
-        return;
-    };
+    var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    try sendInput(&stream, "RIGHT");
-    try receiveGameState(&stream, allocator);
+    var canvas = try Canvas.init(allocator, 80, 24); // adjust to your terminal
+    defer canvas.deinit();
 
-    try sendInput(&stream, "UP");
-    try receiveGameState(&stream, allocator);
+    var input_state = input.InputState{};
+    try input_state.init();
 
-    std.debug.print("Client test completed\n", .{});
+    while (true) {
+        canvas.clear();
+
+        try input_state.poll();
+
+        if (input_state.isKeyPressed('q')) break;
+
+        if (input_state.isKeyPressed('w')) try sendInput(&stream, "w");
+        if (input_state.isKeyPressed('s')) try sendInput(&stream, "s");
+        if (input_state.isKeyPressed('a')) try sendInput(&stream, "a");
+        if (input_state.isKeyPressed('d')) try sendInput(&stream, "d");
+
+        // Receive new game state and draw
+        try renderGameState(&stream, allocator, &canvas);
+
+        canvas.present();
+        std.time.sleep(16_666_666); // ~60 FPS
+    }
 }
+
