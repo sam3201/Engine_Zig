@@ -67,8 +67,22 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
 }
 
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    const stream = try connectToServer();
+    defer disconnectFromServer(&stream);
+
+    try receiveGameState(&stream, allocator);
+
+    var canvas = Canvas.init(allocator);
+    defer canvas.deinit();
+
+    var input_state = input.InputState.init();
+
     while (true) {
-        var canvas.clear();
+        canvas.clear();
 
         try input_state.poll();
 
