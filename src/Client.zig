@@ -68,7 +68,7 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
 
 pub fn main() !void {
     while (true) {
-        canvas.clear();
+        var canvas.clear();
 
         try input_state.poll();
 
