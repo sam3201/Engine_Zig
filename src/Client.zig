@@ -73,7 +73,6 @@ pub fn main() !void {
     const input_state = input.InputState.init();
     var stream = try connectToServer();
 
-    const stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
     try receiveGameState(&stream, allocator);
