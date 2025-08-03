@@ -252,11 +252,6 @@ const GameInstance = struct {
         std.debug.print("Game instance {d} started in dedicated session\n", .{self.client_id});
 
         var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-        var world = Engine.World.init(&arena);
-        world.spawnPlayer("Player1", 10, 10);
-        world.spawnEnemy(15, 5);
-        world.spawnFood(20, 8);
-        world.spawnFood(12, 12);
 
         current_instance = self;
 
