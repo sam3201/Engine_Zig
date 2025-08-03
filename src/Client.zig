@@ -66,7 +66,12 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
     }
 }
 
-    while (true) {
+pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+        while (true) {
         canvas.clear();
 
         try input_state.poll();
@@ -83,4 +88,5 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
         canvas.present();
         std.time.sleep(16_666_666); // 60fps
     }
+
 
