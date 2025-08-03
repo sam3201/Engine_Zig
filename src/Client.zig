@@ -69,7 +69,11 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+    defer std.debug.assert(!gpa.deinit());
+
     var canvas = Canvas.init(80, 24); // adjust size as needed
+    defer canvas.deinit();
+
     const input_state = input.InputState.init();
     var stream = try connectToServer();
 
@@ -77,7 +81,6 @@ pub fn main() !void {
 
     try receiveGameState(&stream, allocator);
 
-    defer canvas.deinit();
 
     var input_state = input.InputState.init();
 
