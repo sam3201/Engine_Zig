@@ -67,10 +67,6 @@ pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void
 }
 
 pub fn main() !void {
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    const allocator = arena.allocator();
-
     while (true) {
         canvas.clear();
 
