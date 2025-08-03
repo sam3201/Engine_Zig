@@ -1,5 +1,6 @@
 const std = @import("std");
 const Engine = @import("Engine.zig");
+const World = @import("World.zig");
 const WorldManager = @import("WorldManager.zig");
 const Player = @import("Player.zig");
 const Thread = std.Thread;
@@ -250,9 +251,6 @@ const GameInstance = struct {
 
     fn gameLoop(self: *GameInstance) void {
         std.debug.print("Game instance {d} started in dedicated session\n", .{self.client_id});
-
-        var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-
         current_instance = self;
 
         const UpdateFunctions = struct {
