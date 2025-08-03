@@ -326,7 +326,7 @@ const GameServer = struct {
     child_processes: std.ArrayList(process.Child),
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        const server_engine = try Engine.Engine.init(allocator, 80, 30, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        const server_engine = try Engine.init(allocator, 80, 30, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
         return GameServer{
             .instances = std.ArrayList(*GameInstance).init(allocator),
