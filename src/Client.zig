@@ -1,3 +1,7 @@
+const eng = @import("Engine.zig");
+const PlayerModule = @import("Player.zig");
+const Canvas = eng.Canvas;
+const input = eng.input;
 const std = @import("std");
 const net = std.net;
 
