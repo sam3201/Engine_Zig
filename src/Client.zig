@@ -45,9 +45,9 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
     std.debug.print("Disconnected from server\n", .{});
 }
 
-pub fn sendInput(stream: *net.Stream, input: []const u8) !void {
+pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
     const writer = stream.writer();
-    try writer.writeAll(input);
+    try writer.writeAll(input_data);
     try writer.writeAll("\n");
 }
 
