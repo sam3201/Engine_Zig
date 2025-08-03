@@ -9,6 +9,7 @@ const process = std.process;
 
 var current_instance: ?*GameInstance = null;
 var current_server: ?*GameServer = null;
+var last_input: ?u8 = null;
 
 const TerminalSpawner = struct {
     pub fn spawnInNewTerminal(allocator: std.mem.Allocator, client_id: u32, is_wasd: bool) !process.Child {
