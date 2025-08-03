@@ -22,7 +22,6 @@ fn renderGameState(
         const label = it.next() orelse continue;
         if (!std.mem.eql(u8, label, "Player")) continue;
 
-        const id_str = it.next() orelse continue;
         const x_str = it.next() orelse continue;
         const y_str = it.next() orelse continue;
 
