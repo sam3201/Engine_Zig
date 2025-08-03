@@ -275,7 +275,7 @@ const GameInstance = struct {
 
                     drawInstanceUI(&instance.engine, instance);
                     if (last_input) |key| {
-                        const player = world.players.items[0]; // Your current player
+                        const player = instance.world.players.items[0]; 
                         switch (key) {
                             'w' => player.y -= 1,
                             's' => player.y += 1,
