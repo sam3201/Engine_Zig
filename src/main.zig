@@ -578,6 +578,9 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
     const args = try parseArgs(allocator);
 
+    const engine = try Engine.init(allocator);
+    defer engine.deinit();
+
     if (args.client_mode) {
         std.debug.print("Starting client instance {d} ({s})\n", .{ args.client_id, if (args.is_wasd) "WASD" else "HJKL" });
 
