@@ -36,7 +36,6 @@ pub const WorldManager = struct {
             .canvas_height = @intCast(canvas.height),
         };
 
-        // Generate initial chunks around player
         try world.updateChunks();
 
         return world;
@@ -72,7 +71,6 @@ pub const WorldManager = struct {
     pub fn updateChunks(self: *WorldManager) !void {
         const player_chunk = self.getPlayerChunkCoord();
 
-        // Generate chunks around player
         var y: i32 = player_chunk.y - self.loaded_radius;
         while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
             var x: i32 = player_chunk.x - self.loaded_radius;
@@ -86,7 +84,6 @@ pub const WorldManager = struct {
             }
         }
 
-        // Remove chunks that are too far away (optional optimization)
         self.unloadDistantChunks(player_chunk);
     }
 
@@ -119,7 +116,7 @@ pub const WorldManager = struct {
             return chunk.getTile(local_coord.x, local_coord.y);
         }
 
-        return .Stone; // Default for unloaded chunks
+        return .Stone; 
     }
 
     pub fn isWalkableAtWorld(self: WorldManager, world_x: i32, world_y: i32) bool {
@@ -150,7 +147,6 @@ pub const WorldManager = struct {
 
         const new_pos = self.player.getPosition();
 
-        // Update chunks if player moved to a new chunk
         if (@divFloor(old_pos.x, Chunk.CHUNK_SIZE) != @divFloor(new_pos.x, Chunk.CHUNK_SIZE) or
             @divFloor(old_pos.y, Chunk.CHUNK_SIZE) != @divFloor(new_pos.y, Chunk.CHUNK_SIZE))
         {
@@ -166,7 +162,6 @@ pub const WorldManager = struct {
         if (self.isWalkableAtWorld(new_x, new_y)) {
             self.player.move(dx, dy);
 
-            // Update camera to follow player
             self.updateCamera();
         }
     }
@@ -174,33 +169,31 @@ pub const WorldManager = struct {
     fn updateCamera(self: *WorldManager) void {
         const pos = self.player.getPosition();
 
-        // Center camera on player
         self.camera_x = pos.x - @divTrunc(self.canvas_width, 2);
         self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
     }
 
     fn playerInteract(self: *WorldManager) void {
-        // TODO: Implement interaction logic
+        // TODO
         _ = self;
     }
 
     fn playerAttack(self: *WorldManager) void {
-        // TODO: Implement attack logic
+        // TODO
         _ = self;
     }
 
     fn playerUseItem(self: *WorldManager) void {
-        // TODO: Implement item usage
+        // TODO:
         _ = self;
     }
 
     fn playerOpenInventory(self: *WorldManager) void {
-        // TODO: Implement inventory system
+        // TODO: 
         _ = self;
     }
 
     pub fn draw(self: *WorldManager) void {
-        // Clear canvas
         for (0..@intCast(self.canvas_height)) |screen_y| {
             for (0..@intCast(self.canvas_width)) |screen_x| {
                 const world_x = self.camera_x + @as(i32, @intCast(screen_x));
@@ -213,18 +206,15 @@ pub const WorldManager = struct {
             }
         }
 
-        // Draw player
         const pos = self.player.getPosition();
         const screen_x = pos.x - self.camera_x;
         const screen_y = pos.y - self.camera_y;
 
-        // Only draw player if on screen
         if (screen_x >= 0 and screen_x < self.canvas_width and screen_y >= 0 and screen_y < self.canvas_height) {
             self.canvas.put(screen_x, screen_y, self.player.entity.ch);
             self.canvas.fillColor(screen_x, screen_y, self.player.entity.color);
         }
 
-        // Draw HUD
         self.drawHUD();
     }
 
@@ -240,13 +230,12 @@ pub const WorldManager = struct {
         const half_health = @divTrunc(self.player.max_health, 2);
 
         const health_color = if (self.player.health < quarter_health)
-            eng.Color{ .r = 255, .g = 0, .b = 0 } // Red when low health
+            eng.Color{ .r = 255, .g = 0, .b = 0 } /
         else if (self.player.health < half_health)
-            eng.Color{ .r = 255, .g = 255, .b = 0 } // Yellow when medium health
+            eng.Color{ .r = 255, .g = 255, .b = 0 } 
         else
-            eng.Color{ .r = 0, .g = 255, .b = 0 }; // Green when high health
+            eng.Color{ .r = 0, .g = 255, .b = 0 }; 
 
-        // Draw HUD background
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
                 self.canvas.put(@intCast(i), 0, ' ');
@@ -254,7 +243,6 @@ pub const WorldManager = struct {
             }
         }
 
-        // Draw HUD text
         for (info_text, 0..) |ch, i| {
             if (i < self.canvas.width) {
                 self.canvas.put(@intCast(i), 0, ch);
@@ -262,7 +250,6 @@ pub const WorldManager = struct {
             }
         }
 
-        // Draw current biome info
         const current_chunk_coord = self.getPlayerChunkCoord();
         if (self.chunks.get(current_chunk_coord)) |chunk| {
             const biome_text = std.fmt.allocPrint(self.allocator, " Biome: {} | Difficulty: {} ", .{ chunk.biome, chunk.difficulty_level }) catch return;
