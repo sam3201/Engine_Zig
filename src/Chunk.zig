@@ -103,26 +103,26 @@ pub const Chunk = struct {
     difficulty_level: i32,
     generated: bool = false,
 
-pub fn init(width: usize, height: usize, coord: Coord) !Chunk {
-    var tiles = try allocator.alloc(Tile, width * height);
-    for (0..height) |y| {
-        for (0..width) |x| {
-            const idx = y * width + x;
-            if (x == 0 or y == 0 or x == width - 1 or y == height - 1) {
-                tiles[idx] = .Wall;
-            } else {
-                tiles[idx] = .Floor;
+    pub fn init(width: usize, height: usize, coord: Coord) !Chunk {
+        var tiles = try allocator.alloc(Tile, width * height);
+        for (0..height) |y| {
+            for (0..width) |x| {
+                const idx = y * width + x;
+                if (x == 0 or y == 0 or x == width - 1 or y == height - 1) {
+                    tiles[idx] = .Wall;
+                } else {
+                    tiles[idx] = .Floor;
+                }
             }
         }
-    }
 
-    return Chunk{
-        .width = width,
-        .height = height,
-        .coord = coord,
-        .tiles = tiles,
-    };
-}
+        return Chunk{
+            .width = width,
+            .height = height,
+            .coord = coord,
+            .tiles = tiles,
+        };
+    }
 
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
