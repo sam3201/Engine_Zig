@@ -116,7 +116,7 @@ pub const WorldManager = struct {
             return chunk.getTile(local_coord.x, local_coord.y);
         }
 
-        return .Stone; 
+        return .Stone;
     }
 
     pub fn isWalkableAtWorld(self: WorldManager, world_x: i32, world_y: i32) bool {
@@ -189,7 +189,7 @@ pub const WorldManager = struct {
     }
 
     fn playerOpenInventory(self: *WorldManager) void {
-        // TODO: 
+        // TODO:
         _ = self;
     }
 
@@ -230,11 +230,11 @@ pub const WorldManager = struct {
         const half_health = @divTrunc(self.player.max_health, 2);
 
         const health_color = if (self.player.health < quarter_health)
-            eng.Color{ .r = 255, .g = 0, .b = 0 } 
+            eng.Color{ .r = 255, .g = 0, .b = 0 }
         else if (self.player.health < half_health)
-            eng.Color{ .r = 255, .g = 255, .b = 0 } 
+            eng.Color{ .r = 255, .g = 255, .b = 0 }
         else
-            eng.Color{ .r = 0, .g = 255, .b = 0 }; 
+            eng.Color{ .r = 0, .g = 255, .b = 0 };
 
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
