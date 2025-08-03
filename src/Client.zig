@@ -81,7 +81,6 @@ pub fn main() !void {
 
     try receiveGameState(&stream, allocator);
 
-
     var input_state = input.InputState.init();
 
     while (true) {
