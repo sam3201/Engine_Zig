@@ -75,8 +75,7 @@ pub fn main() !void {
     defer canvas.deinit();
 
     defer disconnectFromServer(&stream);
-defer canvas.deinit();
-
+    defer canvas.deinit();
 
     const input_state = input.InputState.init();
     var stream = try connectToServer();
