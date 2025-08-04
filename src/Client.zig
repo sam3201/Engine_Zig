@@ -19,7 +19,8 @@ fn renderGameState(
 
         if (std.mem.eql(u8, line, "END")) break;
 
-        var it = std.mem.split(line, " ");
+        //split is deprecated in zig 0.14
+        var it = std.mem.split(u8, line, " "); 
         const label = it.next() orelse continue;
         if (!std.mem.eql(u8, label, "Player")) continue;
 
