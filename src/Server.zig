@@ -106,7 +106,7 @@ pub const GameServer = struct {
         // FIX 2: Create a proper context struct with update method
         const ServerContext = struct {
             server: *GameServer,
-            update: fn (Self: *@This(), canvas: *Engine.Canvas) void,
+            updateFn: fn (Self: *@This(), canvas: *Engine.Canvas) void,
 
             pub fn update(Self: *@This(), canvas: *Engine.Canvas) void {
                 Self.server.mutex.lock();
@@ -117,9 +117,9 @@ pub const GameServer = struct {
             }
         };
 
-        const context = ServerContext{ .server = self };
+        const context = ServerContext{ .server = self, .updateFn = ServerContext.update };
 
-        self.server_engine.canvas.setUpdateFn(context.update);
+        self.server_engine.canvas.setUpdateFn(context.updateFn);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
         };
