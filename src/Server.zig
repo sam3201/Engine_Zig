@@ -110,7 +110,8 @@ pub const GameServer = struct {
                 drawServerOverview(canvas, Self.server);
 
             .updateFn = update;
-    fn runServerEngine(self: *GameServer) void {
+            }
+        fn runServerEngine(self: *GameServer) void {
 
 
 
