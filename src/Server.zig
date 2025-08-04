@@ -114,6 +114,7 @@ pub const GameServer = struct {
                 Self.server.world_manager.draw();
                 drawServerOverview(canvas, Self.server);
             }
+            self.updateFn = update;
         };
 
         const context = ServerContext{ .server = self, .updateFn = self.server_engine.updateFn };
