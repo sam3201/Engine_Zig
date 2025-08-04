@@ -13,7 +13,7 @@ pub fn connectToServer() !net.Stream {
     return stream;
 }
 
-pub fn disconnectFromServer(stream: const *net.Stream) void {
+pub fn disconnectFromServer(stream: *net.Stream) void {
     stream.close();
     std.debug.print("Disconnected from server\n", .{});
 }
@@ -123,3 +123,4 @@ pub fn main() !void {
         std.time.sleep(16_666_666); // ~60 FPS
     }
 }
+
