@@ -20,7 +20,7 @@ pub const TileType = enum {
     pub fn getChar(self: TileType) u8 {
         return switch (self) {
             .Empty => '.',
-            .Wall => '#',  // FIX 1: Added missing Wall case
+            .Wall => '#', // FIX 1: Added missing Wall case
             .Grass => ',',
             .Stone => '@',
             .Water => '~',
@@ -35,7 +35,7 @@ pub const TileType = enum {
     pub fn getColor(self: TileType) eng.Color {
         return switch (self) {
             .Empty => eng.Color{ .r = 64, .g = 64, .b = 64 },
-            .Wall => eng.Color{ .r = 128, .g = 64, .b = 0 },  // FIX 1: Added missing Wall case
+            .Wall => eng.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
             .Grass => eng.Color{ .r = 0, .g = 128, .b = 0 },
             .Stone => eng.Color{ .r = 128, .g = 128, .b = 128 },
             .Water => eng.Color{ .r = 0, .g = 0, .b = 255 },
@@ -50,7 +50,7 @@ pub const TileType = enum {
     pub fn isWalkable(self: TileType) bool {
         return switch (self) {
             .Empty, .Grass, .Desert, .Snow => true,
-            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false,  // FIX 1: Added Wall to non-walkable
+            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false, // FIX 1: Added Wall to non-walkable
         };
     }
 };
