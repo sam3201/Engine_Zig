@@ -131,7 +131,7 @@ pub const WorldManager = struct {
         try self.handlePlayerAction(action);
     }
 
-    fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
+    pub fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
         const old_pos = self.player.getPosition();
 
         switch (action) {
