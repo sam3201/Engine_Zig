@@ -81,13 +81,15 @@ pub fn main() !void {
         canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
         const key = try eng.readKey();
-        if (key) |k| {}
-
+        if (key) |k| {
         if (std.mem.eql(u8, key, "q")) break;
         if (std.mem.eql(u8, key, "w")) try sendInput(&stream, "w");
         if (std.mem.eql(u8, key, "s")) try sendInput(&stream, "s");
         if (std.mem.eql(u8, key, "a")) try sendInput(&stream, "a");
         if (std.mem.eql(u8, key, "d")) try sendInput(&stream, "d");
+
+
+        }
 
         try renderGameState(&stream, allocator, &canvas);
 
