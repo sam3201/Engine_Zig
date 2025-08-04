@@ -1,4 +1,4 @@
-// src/Client.zig 
+// src/Client.zig
 
 const std = @import("std");
 const net = std.net;
@@ -107,17 +107,16 @@ pub fn main() !void {
         allocator: std.mem.Allocator,
 
         pub fn update(Self: *@This()) !void {
-    // Render latest game state
-    try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
+            // Render latest game state
+            try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
 
-    // Send input to server
-    const input = try eng.getInput(); // This depends on your Engine.zig
-    if (input != 0) {
-        var buf: [1]u8 = .{input};
-        try sendInput(Self.stream_ptr, &buf);
-    }
-}
-
+            // Send input to server
+            const input = try eng.getInput(); // This depends on your Engine.zig
+            if (input != 0) {
+                var buf: [1]u8 = .{input};
+                try sendInput(Self.stream_ptr, &buf);
+            }
+        }
     };
 
     var update_context = UpdateContext{ .stream_ptr = &stream, .allocator = allocator };
