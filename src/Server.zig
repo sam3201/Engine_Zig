@@ -107,7 +107,7 @@ pub const GameServer = struct {
         const ServerContext = struct {
             server: *GameServer,
 
-            pub fn update(self: *@This(), canvas: *Engine.Canvas) void {
+            pub fn update(self: *ServerContext, canvas: *Engine.Canvas) void {
                 self.server.mutex.lock();
                 defer self.server.mutex.unlock();
 
