@@ -57,7 +57,8 @@ pub fn renderGameState(
             const screen_y = y - camera_y;
 
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
-                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
+            {
                 canvas.put(screen_x, screen_y, tile_type.getChar());
                 canvas.fillColor(screen_x, screen_y, tile_type.getColor());
             }
@@ -76,13 +77,13 @@ pub fn renderGameState(
             const screen_y = y - camera_y;
 
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
-                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
+            {
                 canvas.put(screen_x, screen_y, if (is_host) '@' else '#');
-                canvas.fillColor(screen_x, screen_y,
-                    if (is_host)
-                        eng.Color{ .r = 255, .g = 255, .b = 0 }
-                    else
-                        eng.Color{ .r = 0, .g = 255, .b = 255 });
+                canvas.fillColor(screen_x, screen_y, if (is_host)
+                    eng.Color{ .r = 255, .g = 255, .b = 0 }
+                else
+                    eng.Color{ .r = 0, .g = 255, .b = 255 });
             }
         }
     }
@@ -122,4 +123,3 @@ pub fn main() !void {
     engine.canvas.setUpdateFn(UpdateContext.update);
     try engine.run();
 }
-
