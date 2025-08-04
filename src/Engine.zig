@@ -1,4 +1,4 @@
-// src/Engine
+// src/Engine.zig
 
 const std = @import("std");
 const c = @cImport({
