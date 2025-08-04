@@ -99,6 +99,8 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
+    const current_stream: ?*net.Stream = &stream;
+
     const UpdateFunctions = struct {
         fn update(canvas: *eng.Canvas) void {
             if (current_stream) |s| {
@@ -109,7 +111,6 @@ pub fn main() !void {
         }
     };
 
-    const current_stream: ?*net.Stream = &stream;
     engine.canvas.setUpdateFn(&UpdateFunctions.update);
 
     while (true) {
