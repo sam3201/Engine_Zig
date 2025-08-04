@@ -19,7 +19,7 @@ fn renderGameState(
 
         if (std.mem.eql(u8, line, "END")) break;
 
-        var it = std.mem.tokenize(u8, line, " ");
+        var it = std.mem.split(u8, line, " ");
         const label = it.next() orelse continue;
         if (!std.mem.eql(u8, label, "Player")) continue;
 
