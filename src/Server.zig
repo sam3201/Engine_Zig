@@ -119,7 +119,7 @@ pub const GameServer = struct {
 
         const context = ServerContext{ .server = self, .updateFn = ServerContext.update };
 
-        self.server_engine.canvas.setUpdateFn(context.updateFn);
+        self.server_engine.setUpdateFn(context.updateFn);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
         };
