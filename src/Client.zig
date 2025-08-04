@@ -125,4 +125,3 @@ pub fn main() !void {
     engine.canvas.setUpdateFn(&context.update);
     try engine.run();
 }
-
