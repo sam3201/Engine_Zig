@@ -111,7 +111,7 @@ pub fn main() !void {
             try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
 
             // Send input to server
-            const input = try eng.handleInput();
+            const input = try eng.readKey();
             if (input != 0) {
                 var buf: [1]u8 = .{input};
                 try sendInput(Self.stream_ptr, &buf);
