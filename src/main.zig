@@ -92,4 +92,3 @@ pub fn main() !void {
 pub fn setInput(input: u8) void {
     _ = input;
 }
-
