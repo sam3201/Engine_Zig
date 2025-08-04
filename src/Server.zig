@@ -106,7 +106,7 @@ pub const GameServer = struct {
         // FIX 2: Create a proper context struct with update method
         const ServerContext = struct {
             server: *GameServer,
-            
+
             pub fn update(self: *@This(), canvas: *Engine.Canvas) void {
                 self.server.mutex.lock();
                 defer self.server.mutex.unlock();
@@ -117,7 +117,7 @@ pub const GameServer = struct {
         };
 
         var context = ServerContext{ .server = self };
-        
+
         // FIX 2: Pass the context properly to setUpdateFn
         self.server_engine.canvas.setUpdateFn(&context.update);
         self.server_engine.run() catch |err| {
