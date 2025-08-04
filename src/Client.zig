@@ -82,11 +82,7 @@ pub fn main() !void {
 
         const key = try eng.readKey();
         if (key) |k| {
-            if (std.mem.eql(u8, k, 'q')) break;
-            if (std.mem.eql(u8, k, 'w')) try sendInput(&stream, "w");
-            if (std.mem.eql(u8, k, 's')) try sendInput(&stream, "s");
-            if (std.mem.eql(u8, k, 'a')) try sendInput(&stream, "a");
-            if (std.mem.eql(u8, k, 'd')) try sendInput(&stream, "d");
+            try sendInput(&stream, &[_]u8{k});
         }
 
         try renderGameState(&stream, allocator, &canvas);
