@@ -1,4 +1,4 @@
-//src/Client.zig
+// src/Client.zig
 
 const std = @import("std");
 const net = std.net;
