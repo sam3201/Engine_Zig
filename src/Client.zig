@@ -106,7 +106,7 @@ pub fn main() !void {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
 
-        pub fn update(Self: *UpdateContext) !void {
+        pub fn update(self: *This()) !void {
             try renderGameState(self.stream_ptr, self.allocator, &engine.canvas);
         }
     };
