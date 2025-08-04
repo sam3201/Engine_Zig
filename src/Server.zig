@@ -116,7 +116,7 @@ pub const GameServer = struct {
             }
         };
 
-        const context = ServerContext{ .server = self, .updateFn = ServerContext.update };
+        const context = ServerContext{ .server = self};
 
         self.server_engine.setUpdateFn(context.update);
         self.server_engine.run() catch |err| {
