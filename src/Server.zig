@@ -304,3 +304,4 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
 pub fn main() !void {
     try GameServer.init(std.heap.page_allocator).startServer();
 }
+
