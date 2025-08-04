@@ -104,7 +104,7 @@ pub fn main() !void {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
 
-        pub fn update(self: *@This(), canvas: *Canvas) void {
+        pub fn update(self: *@This(), canvas: *eng.Canvas) void {
             const input = eng.readKey() catch 0;
             if (input != 0) {
                 var buf: [1]u8 = .{input};
