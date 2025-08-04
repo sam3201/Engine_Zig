@@ -97,28 +97,32 @@ pub fn main() !void {
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    // FIX 4: Make stream mutable to fix const qualifier issue
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    // FIX 5: Create a proper context struct to handle stream scope
     const UpdateContext = struct {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
 
-        pub fn update(Self: *@This()) !void {
-            // Render latest game state
-            try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
-
-            // Send input to server
-            const input = try eng.readKey();
+        pub fn update(self: *@This(), canvas: *eng.Canvas) void {
+            // Try to send input if any
+            const input = eng.readKey() catch 0;
             if (input != 0) {
                 var buf: [1]u8 = .{input};
-                try sendInput(Self.stream_ptr, &buf);
+                _ = sendInput(self.stream_ptr, &buf) catch {};
             }
+
+            // Try to update game state
+            _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
         }
     };
 
-    var update_context = UpdateContext{ .stream_ptr = &stream, .allocator = allocator };
-    try engine.run(allocator, update_context.update);
+    var context = UpdateContext{
+        .stream_ptr = &stream,
+        .allocator = allocator,
+    };
+
+    engine.canvas.setUpdateFn(&context.update);
+    try engine.run();
 }
+
