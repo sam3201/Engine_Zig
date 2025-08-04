@@ -80,7 +80,7 @@ pub fn main() !void {
     while (true) {
         canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-        const key = try std.io.getStdIn().readByte();
+        const key = readKey(); 
         if (key.isKeyPressed('q')) break;
         if (key.isKeyPressed('w')) try sendInput(&stream, "w");
         if (key.isKeyPressed('s')) try sendInput(&stream, "s");
