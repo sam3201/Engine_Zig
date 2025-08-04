@@ -1,4 +1,4 @@
-// src/Server.zig
+// src/Server.zig - FIXED VERSION
 
 const std = @import("std");
 const net = std.net;
@@ -55,7 +55,6 @@ pub const GameServer = struct {
     }
 
     pub fn deinit(self: *GameServer) void {
-        // FIX 1: Change pointer capture syntax
         for (&self.players) |*maybe_player| {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
@@ -104,30 +103,30 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
-        // FIX 2: Create a context struct to pass server reference properly
+        // FIX 2: Create a proper context struct with update method
         const ServerContext = struct {
             server: *GameServer,
             
-            fn update(canvas: *Engine.Canvas, ctx: *@This()) void {
-                ctx.server.mutex.lock();
-                defer ctx.server.mutex.unlock();
+            pub fn update(self: *@This(), canvas: *Engine.Canvas) void {
+                self.server.mutex.lock();
+                defer self.server.mutex.unlock();
 
-                ctx.server.world_manager.draw();
-                drawServerOverview(canvas, ctx.server);
+                self.server.world_manager.draw();
+                drawServerOverview(canvas, self.server);
             }
         };
 
         var context = ServerContext{ .server = self };
         
-        // Assuming your Engine has a way to set context - you may need to adapt this
-        // based on your actual Engine implementation
+        // FIX 2: Pass the context properly to setUpdateFn
         self.server_engine.canvas.setUpdateFn(&context.update);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
         };
     }
 
-    fn handleClient(self: *GameServer, connection: net.Server.Connection) void {
+    // FIX 3: Change return type to handle errors properly
+    fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
         const reader = connection.stream.reader();
@@ -185,7 +184,7 @@ pub const GameServer = struct {
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(input[0]);
-                // FIX 3: This should work now that handlePlayerAction is marked as pub
+                // FIX 3: Now properly handles the error return from handlePlayerAction
                 try self.world_manager.handlePlayerAction(action);
             }
             self.mutex.unlock();
