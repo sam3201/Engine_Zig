@@ -82,7 +82,7 @@ pub fn main() !void {
 
         const key = eng.readKey();
 
-        if (key.isKeyPressed('q')) break;
+        if (key == "q") break;
         if (key.isKeyPressed('w')) try sendInput(&stream, "w");
         if (key.isKeyPressed('s')) try sendInput(&stream, "s");
         if (key.isKeyPressed('a')) try sendInput(&stream, "a");
