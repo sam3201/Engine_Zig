@@ -235,7 +235,7 @@ pub const GameServer = struct {
                 try writer.print("Player {} {} {} {}\n", .{ i, pos.x, pos.y, player_info.is_host });
             }
         }
-        try writer.write("END\n");
+        _ = try writer.write("END\n");
     }
 };
 
