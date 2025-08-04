@@ -19,7 +19,7 @@ fn renderGameState(
 
         if (std.mem.eql(u8, line, "END")) break;
 
-        var it = std.mem.splitAll(u8, line, " ");
+        var it = std.mem.splitAny(u8, line, " ");
         const label = it.next() orelse continue;
         if (!std.mem.eql(u8, label, "Player")) continue;
 
