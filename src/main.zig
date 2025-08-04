@@ -67,8 +67,7 @@ pub fn main() !void {
         if (try Engine.readKey() != false) {
             title_engine.running = false;
             break;
-}
-
+        }
 
         title_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         UpdateFunctions.update(&title_engine.canvas);
