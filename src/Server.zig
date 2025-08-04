@@ -116,7 +116,7 @@ pub const GameServer = struct {
             }
         };
 
-        var context = ServerContext{ .server = self };
+        const context = ServerContext{ .server = self };
 
         // FIX 2: Pass the context properly to setUpdateFn
         self.server_engine.canvas.setUpdateFn(context.update);
