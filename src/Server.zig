@@ -104,6 +104,8 @@ pub const GameServer = struct {
 
     fn runServerEngine(self: *GameServer) void {
         const ServerContext = struct {
+            updateFn: fn (*@This()) void,
+
             pub fn update(Self: *@This(), canvas: *Engine.Canvas) void {
                 Self.server.mutex.lock();
                 defer Self.server.mutex.unlock();
