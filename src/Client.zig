@@ -119,7 +119,7 @@ pub fn main() !void {
         .allocator = allocator,
     };
 
-    engine.canvas.setUpdateFn(UpdateContext.update, &context);
+    engine.canvas.setUpdateFn(UpdateContext.update);
     try engine.run();
 }
 
