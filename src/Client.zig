@@ -104,7 +104,7 @@ pub fn main() !void {
         const input = engine.readKey() catch 0;
         if (input != 0) {
             var buf: [1]u8 = .{input};
-            _ = sendInput(self.stream_ptr, &buf) catch {};
+            _ = sendInput(stream_ptr, &buf) catch {};
         }
 
         _ = renderGameState(stream, allocator, canvas) catch {};
