@@ -1,4 +1,4 @@
-//src/WorldManager.zig
+// src/WorldManager.zig
 
 const std = @import("std");
 const eng = @import("Engine.zig");
