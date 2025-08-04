@@ -74,22 +74,18 @@ pub fn main() !void {
 
     var canvas = try Canvas.init(allocator, 80, 24);
 
-    const input_state = input.InputState.init();
-
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
     while (true) {
-        canvas.clear();
+        canvas.clear(canvas, ' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-        try input_state.poll();
-
-        if (input_state.isKeyPressed('q')) break;
-
-        if (input_state.isKeyPressed('w')) try sendInput(&stream, "w");
-        if (input_state.isKeyPressed('s')) try sendInput(&stream, "s");
-        if (input_state.isKeyPressed('a')) try sendInput(&stream, "a");
-        if (input_state.isKeyPressed('d')) try sendInput(&stream, "d");
+        const key = try std.io.getStdIn().readByte();
+        if (key.isKeyPressed('q')) break;
+        if (key.isKeyPressed('w')) try sendInput(&stream, "w");
+        if (key.isKeyPressed('s')) try sendInput(&stream, "s");
+        if (key.isKeyPressed('a')) try sendInput(&stream, "a");
+        if (key.isKeyPressed('d')) try sendInput(&stream, "d");
 
         try renderGameState(&stream, allocator, &canvas);
 
