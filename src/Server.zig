@@ -101,7 +101,8 @@ pub const GameServer = struct {
 
     fn runServerEngine(self: *GameServer) void {
         const UpdateFunctions = struct {
-            const current_server: ?*GameServer = self;
+            const current_server: ?*GameServer = self; 
+
             fn update(canvas: *Engine.Canvas) void {
                 if (current_server) |server| {
                     server.mutex.lock();
