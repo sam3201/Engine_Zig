@@ -99,6 +99,8 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
+        var current_server: ?*GameServer = self;
+
         const UpdateFunctions = struct {
             fn update(canvas: *Engine.Canvas) void {
                 if (current_server) |server| {
@@ -111,7 +113,6 @@ pub const GameServer = struct {
             }
         };
 
-        var current_server: ?*GameServer = self;
         self.server_engine.canvas.setUpdateFn(&UpdateFunctions.update);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
