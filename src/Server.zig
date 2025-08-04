@@ -118,7 +118,6 @@ pub const GameServer = struct {
 
         const context = ServerContext{ .server = self };
 
-        // FIX 2: Pass the context properly to setUpdateFn
         self.server_engine.canvas.setUpdateFn(context.update);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
