@@ -110,8 +110,6 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-
     engine.canvas.setUpdateFn(update);
     try engine.run();
 }
-
