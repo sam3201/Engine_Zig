@@ -80,7 +80,7 @@ pub fn main() !void {
     while (true) {
         canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-        const key = eng.readKey();
+        const key = try eng.readKey();
         if (key) |k
 
         if (std.mem.eql(u8, key, "q")) break;
