@@ -89,6 +89,16 @@ pub fn renderGameState(
     }
 }
 
+pub fn update(e: *eng.Engine) void {
+    const input = e.readKey();
+    if (input != 0) {
+        var buf: [1]u8 = .{input};
+        _ = sendInput(e.stream_ptr, &buf) catch {};
+    }
+
+    _ = renderGameState(e.stream_ptr, e.allocator, e.canvas) catch {};
+}
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -100,16 +110,8 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    fn update(canvas: *eng.Canvas) void {
-        const input = engine.readKey() catch 0;
-        if (input != 0) {
-            var buf: [1]u8 = .{input};
-            _ = sendInput(stream_ptr, &buf) catch {};
-        }
 
-        _ = renderGameState(stream, allocator, canvas) catch {};
-    }
-
-    engine.canvas.setUpdateFn(UpdateContext.update);
+    engine.canvas.setUpdateFn(update);
     try engine.run();
 }
+
