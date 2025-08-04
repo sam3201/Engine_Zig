@@ -108,7 +108,7 @@ pub const GameServer = struct {
             server: *GameServer,
 
             pub fn update(Self: *@This(), canvas: *Engine.Canvas) void {
-                self.server.mutex.lock();
+                Self.server.mutex.lock();
                 defer self.server.mutex.unlock();
 
                 self.server.world_manager.draw();
