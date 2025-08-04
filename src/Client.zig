@@ -95,12 +95,11 @@ pub fn main() !void {
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    var stream = try connectToServer();
+    const stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
     const UpdateFunctions = struct {
         const current_stream: ?*net.Stream = &stream;
-
         fn update(canvas: *eng.Canvas) void {
             if (current_stream) |s| {
                 renderGameState(s, allocator, canvas) catch |err| {
