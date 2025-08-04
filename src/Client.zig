@@ -104,8 +104,7 @@ pub fn main() !void {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
 
-        pub fn update(self: *@This(), canvas: *eng.Canvas) void {
-            // Try to send input if any
+        pub fn update(self: *@This(), canvas: *Canvas)     // Try to send input if any
             const input = eng.readKey() catch 0;
             if (input != 0) {
                 var buf: [1]u8 = .{input};
