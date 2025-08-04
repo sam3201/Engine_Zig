@@ -252,3 +252,4 @@ pub const Chunk = struct {
         self.tiles[idx] = tile;
     }
 };
+
