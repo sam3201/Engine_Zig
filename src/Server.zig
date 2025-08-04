@@ -116,7 +116,6 @@ pub const GameServer = struct {
             updateFn: fn (Self: *@This(), canvas: *Engine) void,
         };
 
-        const context = ServerContext{ .server = self };
 
         self.server_engine.setUpdateFn(context.updateFn);
         self.server_engine.run() catch |err| {
