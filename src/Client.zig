@@ -106,7 +106,7 @@ pub fn main() !void {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
 
-    }pub fn update(Self: *@This()) !void {
+        pub fn update(Self: *@This()) !void {
     // Render latest game state
     try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
 
@@ -117,7 +117,8 @@ pub fn main() !void {
         try sendInput(Self.stream_ptr, &buf);
     }
 }
-;
+
+    };
 
     var update_context = UpdateContext{ .stream_ptr = &stream, .allocator = allocator };
     try engine.run(allocator, update_context.update);
