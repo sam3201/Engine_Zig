@@ -122,6 +122,6 @@ pub fn main() !void {
         .allocator = allocator,
     };
 
-    engine.canvas.setUpdateFn(&context.update);
-    try engine.run();
+    engine.canvas.setUpdateFn(UpdateContext.update, &context);
+try engine.run();
 }
