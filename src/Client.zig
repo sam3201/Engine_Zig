@@ -106,4 +106,12 @@ pub fn main() !void {
         stream_ptr: *net.Stream,
         allocator: std.mem.Allocator,
         
-        pub fn update(self: *@
+        pub fn update(self: *UpdateContext) !void {
+            try renderGameState(self.stream_ptr, self.allocator, &engine.canvas);
+        }
+    };
+
+    var update_context = UpdateContext{ .stream_ptr = &stream, .allocator = allocator };    
+    try engine.run(allocator, update_context.update);
+        
+        }
