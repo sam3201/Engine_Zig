@@ -107,7 +107,7 @@ pub fn main() !void {
         allocator: std.mem.Allocator,
 
         pub fn update(Self: *@This()) !void {
-            try renderGameState(self.stream_ptr, self.allocator, &engine.canvas);
+            try renderGameState(Self.stream_ptr, Self.allocator, &Self.canvas);
         }
     };
 
