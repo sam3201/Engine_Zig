@@ -64,7 +64,7 @@ pub fn main() !void {
     while (title_engine.running) {
         title_engine.clock.tick();
 
-        if (try Engine.readKey()) |byte| {
+        if (try Engine.readKey()) {
             title_engine.running = false;
             break;
         }
@@ -92,3 +92,4 @@ pub fn main() !void {
 pub fn setInput(input: u8) void {
     _ = input;
 }
+
