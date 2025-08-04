@@ -89,21 +89,6 @@ pub fn renderGameState(
     }
 }
 
-const UpdateContext = struct {
-    stream_ptr: *net.Stream,
-    allocator: std.mem.Allocator,
-
-    pub fn update(self: *@This(), canvas: *eng.Canvas) void {
-        const input = eng.readKey() catch 0;
-        if (input != 0) {
-            var buf: [1]u8 = .{input};
-            _ = sendInput(self.stream_ptr, &buf) catch {};
-        }
-
-        _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
-    }
-};
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -114,6 +99,15 @@ pub fn main() !void {
 
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
+
+    pub fn update(self: *@This(), canvas: *eng.Canvas) void {
+        const input = eng.readKey() catch 0;
+        if (input != 0) {
+            var buf: [1]u8 = .{input};
+            _ = sendInput(self.stream_ptr, &buf) catch {};
+        }
+
+        _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
 
     engine.canvas.setUpdateFn(UpdateContext.update);
     try engine.run();
