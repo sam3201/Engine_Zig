@@ -32,7 +32,8 @@ pub const GameServer = struct {
 
         // Generate initial chunks
         try world_manager.updateChunks();
-        for (world_manager.chunks.keyIterator()) |coord| {
+        var key_iterator = world_manager.chunks.keyIterator();
+        while (key_iterator.next()) |coord| {
             if (world_manager.chunks.getPtr(coord.*)) |chunk| {
                 chunk.generate(host_player.getLevel());
             }
@@ -99,7 +100,7 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
-        const current_server: ?*GameServer = self;
+        var current_server: ?*GameServer = self;
 
         const UpdateFunctions = struct {
             fn update(canvas: *Engine.Canvas) void {
@@ -302,6 +303,8 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
 }
 
 pub fn main() !void {
-    try GameServer.init(std.heap.page_allocator).startServer();
+var server = try GameServer.init(std.heap.page_allocator);
+try server.startServer();
+
 }
 

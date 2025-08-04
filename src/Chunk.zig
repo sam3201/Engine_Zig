@@ -5,6 +5,7 @@ pub const CHUNK_SIZE: i32 = 32;
 
 pub const TileType = enum {
     Empty,
+    Wall,
     Grass,
     Stone,
     Water,
@@ -17,8 +18,9 @@ pub const TileType = enum {
     pub fn getChar(self: TileType) u8 {
         return switch (self) {
             .Empty => '.',
+            .Wall => "#",
             .Grass => ',',
-            .Stone => '#',
+            .Stone => '@',
             .Water => '~',
             .Tree => 'T',
             .Mountain => '^',

@@ -63,7 +63,6 @@ pub fn renderGameState(
                 canvas.fillColor(screen_x, screen_y, tile_type.getColor());
             }
         } else if (std.mem.eql(u8, label, "Player")) {
-            const id_str = it.next() orelse continue;
             const x_str = it.next() orelse continue;
             const y_str = it.next() orelse continue;
             const is_host_str = it.next() orelse continue;
