@@ -99,7 +99,9 @@ pub fn main() !void {
     defer disconnectFromServer(&stream);
 
     const UpdateFunctions = struct {
+
         const current_stream: ?*net.Stream = &stream;
+        
         fn update(canvas: *eng.Canvas) void {
             if (current_stream) |s| {
                 renderGameState(s, allocator, canvas) catch |err| {
