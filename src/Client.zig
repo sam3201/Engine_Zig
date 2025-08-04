@@ -46,7 +46,7 @@ pub fn renderGameState(
             const id_str = it.next() orelse continue;
             const x_str = it.next() orelse continue;
             const y_str = it.next() orelse continue;
-            const tile_type_str = it.next() orelse continue;
+            const is_host_str = it.next() orelse continue;
 
             const x = try std.fmt.parseInt(i32, x_str, 10);
             const y = try std.fmt.parseInt(i32, y_str, 10);
