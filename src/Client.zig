@@ -1,38 +1,8 @@
-const eng = @import("Engine.zig");
-const World = @import("World.zig");
-const WorldManager = @import("WorldManager.zig");
-const PlayerModule = @import("Player.zig");
-const Canvas = eng.Canvas;
 const std = @import("std");
 const net = std.net;
-
-fn renderGameState(
-    stream: *net.Stream,
-    allocator: std.mem.Allocator,
-    canvas: *Canvas,
-) !void {
-    const reader = stream.reader();
-
-    while (true) {
-        const line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
-        defer allocator.free(line);
-
-        if (std.mem.eql(u8, line, "END")) break;
-
-        var it = std.mem.splitAny(u8, line, " ");
-        const label = it.next() orelse continue;
-        if (!std.mem.eql(u8, label, "Player")) continue;
-
-        const x_str = it.next() orelse continue;
-        const y_str = it.next() orelse continue;
-
-        const x = try std.fmt.parseInt(i32, x_str, 10);
-        const y = try std.fmt.parseInt(i32, y_str, 10);
-
-        canvas.put(x, y, '@');
-        canvas.fillColor(x, y, eng.Color{ .r = 255, .g = 255, .b = 0 });
-    }
-}
+const eng = @import("Engine.zig");
+const PlayerModule = @import("Player.zig");
+const Chunk = @import("Chunk.zig");
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
@@ -52,18 +22,67 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
     try writer.writeAll("\n");
 }
 
-pub fn receiveGameState(stream: *net.Stream, allocator: std.mem.Allocator) !void {
+pub fn renderGameState(
+    stream: *net.Stream,
+    allocator: std.mem.Allocator,
+    canvas: *eng.Canvas,
+) !void {
     const reader = stream.reader();
+
+    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
         const line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
         defer allocator.free(line);
 
-        if (std.mem.eql(u8, line, "END")) {
-            break;
-        }
+        if (std.mem.eql(u8, line, "END")) break;
 
-        std.debug.print("{s}\n", .{line});
+        var it = std.mem.splitAny(u8, line, " ");
+        const label = it.next() orelse continue;
+
+        if (std.mem.eql(u8, label, "Tile")) {
+            const x_str = it.next() orelse continue;
+            const y_str = it.next() orelse continue;
+            const tile_type_str = it.next() orelse continue;
+
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+            const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10);
+            const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int));
+
+            // Adjust for camera (center on host player)
+            const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
+            const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
+            const screen_x = x - camera_x;
+            const screen_y = y - camera_y;
+
+            if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
+                canvas.put(screen_x, screen_y, tile_type.getChar());
+                canvas.fillColor(screen_x, screen_y, tile_type.getColor());
+            }
+        } else if (std.mem.eql(u8, label, "Player")) {
+            const id_str = it.next() orelse continue;
+            const x_str = it.next() orelse continue;
+            const y_str = it.next() orelse continue;
+            const is_host_str = it.next() orelse continue;
+
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+            const is_host = std.mem.eql(u8, is_host_str, "true");
+
+            // Adjust for camera
+            const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
+            const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
+            const screen_x = x - camera_x;
+            const screen_y = y - camera_y;
+
+            if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
+                canvas.put(screen_x, screen_y, if (is_host) '@' else '#');
+                canvas.fillColor(screen_x, screen_y, if (is_host) eng.Color{ .r = 255, .g = 255, .b = 0 } else eng.Color{ .r = 0, .g = 255, .b = 255 });
+            }
+        }
     }
 }
 
@@ -72,22 +91,32 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var canvas = try Canvas.init(allocator, 80, 24);
+    var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
+    defer engine.deinit();
 
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    while (true) {
-        canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+    const UpdateFunctions = struct {
+        fn update(canvas: *eng.Canvas) void {
+            if (current_stream) |s| {
+                renderGameState(s, allocator, canvas) catch |err| {
+                    std.debug.print("Error rendering game state: {}\n", .{err});
+                };
+            }
+        }
+    };
 
-        const key = try eng.readKey();
-        if (key) |k| {
-            try sendInput(&stream, &[_]u8{k});
+    var current_stream: ?*net.Stream = &stream;
+    engine.canvas.setUpdateFn(&UpdateFunctions.update);
+
+    while (true) {
+        if (try eng.readKey()) |key| {
+            if (key == 'q' or key == 27) break;
+            try sendInput(&stream, &[_]u8{key});
         }
 
-        try renderGameState(&stream, allocator, &canvas);
-
-        canvas.render();
-        std.time.sleep(16_666_666);
+        try engine.run();
+        std.time.sleep(16_666_666); // ~60 FPS
     }
 }
