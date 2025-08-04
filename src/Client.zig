@@ -81,7 +81,7 @@ pub fn main() !void {
         canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
         const key = eng.readKey();
-        if (key == null) continue;
+        if (key) |k| std.debug.print("{s}\n", .{k});
 
         if (std.mem.eql(u8, key, "q")) break;
         if (std.mem.eql(u8, key, "w")) try sendInput(&stream, "w");
