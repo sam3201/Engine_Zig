@@ -111,7 +111,7 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
-        self.server_engine.setUpdateFn(context.updateFn);
+        self.server_engine.setUpdateFn(update);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
         };
