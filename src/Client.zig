@@ -115,11 +115,6 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    var context = UpdateContext{
-        .stream_ptr = &stream,
-        .allocator = allocator,
-    };
-
     engine.canvas.setUpdateFn(UpdateContext.update);
     try engine.run();
 }
