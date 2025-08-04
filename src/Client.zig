@@ -109,7 +109,7 @@ pub fn main() !void {
         }
     };
 
-    var current_stream: ?*net.Stream = &stream;
+    const current_stream: ?*net.Stream = &stream;
     engine.canvas.setUpdateFn(&UpdateFunctions.update);
 
     while (true) {
