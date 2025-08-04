@@ -108,6 +108,7 @@ pub fn main() !void {
         }
 
         _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
+    }
 
     engine.canvas.setUpdateFn(UpdateContext.update);
     try engine.run();
