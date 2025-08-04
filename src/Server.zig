@@ -55,12 +55,13 @@ pub const GameServer = struct {
     }
 
     pub fn deinit(self: *GameServer) void {
-        for (self.players) |*maybe_player| {
+        for ((&self.players)|*maybe_player|{
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
                 player_info.connection.stream.close();
             }
         }
+
         self.world_manager.deinit();
         self.server_engine.deinit();
     }
