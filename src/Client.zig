@@ -100,7 +100,7 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    pub fn update(self: *@This(), canvas: *eng.Canvas) void {
+    fn update(self: *@This(), canvas: *eng.Canvas) void {
         const input = eng.readKey() catch 0;
         if (input != 0) {
             var buf: [1]u8 = .{input};
