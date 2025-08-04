@@ -1,4 +1,4 @@
-// src/Client.zig
+// src/Client.zig - FIXED VERSION
 
 const std = @import("std");
 const net = std.net;
@@ -97,30 +97,13 @@ pub fn main() !void {
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    const stream = try connectToServer();
+    // FIX 4: Make stream mutable to fix const qualifier issue
+    var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    const UpdateFunctions = struct {
-        const current_stream: ?*net.Stream = &stream;
-        fn update(canvas: *eng.Canvas) void {
-            if (current_stream) |s| {
-                renderGameState(s, allocator, canvas) catch |err| {
-                    std.debug.print("Error rendering game state: {}\n", .{err});
-                };
-            }
-        }
-    };
-
-    engine.canvas.setUpdateFn(&UpdateFunctions.update);
-
-    while (true) {
-        if (try eng.readKey()) |key| {
-            if (key == 'q' or key == 27) break;
-            try sendInput(&stream, &[_]u8{key});
-        }
-
-        try engine.run();
-        std.time.sleep(16_666_666); // ~60 FPS
-    }
-}
-
+    // FIX 5: Create a proper context struct to handle stream scope
+    const UpdateContext = struct {
+        stream_ptr: *net.Stream,
+        allocator: std.mem.Allocator,
+        
+        pub fn update(self: *@
