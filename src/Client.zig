@@ -78,7 +78,7 @@ pub fn main() !void {
     defer disconnectFromServer(&stream);
 
     while (true) {
-        canvas.clear('  ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+        canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
         const key = try std.io.getStdIn().readByte();
         if (key.isKeyPressed('q')) break;
