@@ -107,7 +107,7 @@ pub fn main() !void {
             _ = sendInput(self.stream_ptr, &buf) catch {};
         }
 
-        _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
+        _ = renderGameState(stream, allocator, canvas) catch {};
     }
 
     engine.canvas.setUpdateFn(UpdateContext.update);
