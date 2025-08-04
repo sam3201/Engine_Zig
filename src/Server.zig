@@ -115,7 +115,7 @@ pub const GameServer = struct {
                 drawServerOverview(canvas, Self.server);
             }
 
-            self.updateFn = update;
+            Self.updateFn = update;
         };
 
         const context = ServerContext{ .server = self, .updateFn = self.server_engine.updateFn };
