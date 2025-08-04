@@ -87,7 +87,7 @@ pub fn main() !void {
 
         try renderGameState(&stream, allocator, &canvas);
 
-        canvas.present();
+        canvas.render();
         std.time.sleep(16_666_666);
     }
 }
