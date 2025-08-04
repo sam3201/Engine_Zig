@@ -30,7 +30,6 @@ pub fn renderGameState(
     canvas: *eng.Canvas,
 ) !void {
     const reader = stream.reader();
-
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
@@ -39,7 +38,7 @@ pub fn renderGameState(
 
         if (std.mem.eql(u8, line, "END")) break;
 
-        var it = std.mem.splitAny(u8, line, " ");
+        var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
 
         if (std.mem.eql(u8, label, "Tile")) {
@@ -52,15 +51,13 @@ pub fn renderGameState(
             const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10);
             const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int));
 
-            // Adjust for camera (center on host player)
             const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
             const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
             const screen_x = x - camera_x;
             const screen_y = y - camera_y;
 
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
-                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
-            {
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
                 canvas.put(screen_x, screen_y, tile_type.getChar());
                 canvas.fillColor(screen_x, screen_y, tile_type.getColor());
             }
@@ -73,21 +70,38 @@ pub fn renderGameState(
             const y = try std.fmt.parseInt(i32, y_str, 10);
             const is_host = std.mem.eql(u8, is_host_str, "true");
 
-            // Adjust for camera
             const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
             const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
             const screen_x = x - camera_x;
             const screen_y = y - camera_y;
 
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
-                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
-            {
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height))) {
                 canvas.put(screen_x, screen_y, if (is_host) '@' else '#');
-                canvas.fillColor(screen_x, screen_y, if (is_host) eng.Color{ .r = 255, .g = 255, .b = 0 } else eng.Color{ .r = 0, .g = 255, .b = 255 });
+                canvas.fillColor(screen_x, screen_y,
+                    if (is_host)
+                        eng.Color{ .r = 255, .g = 255, .b = 0 }
+                    else
+                        eng.Color{ .r = 0, .g = 255, .b = 255 });
             }
         }
     }
 }
+
+const UpdateContext = struct {
+    stream_ptr: *net.Stream,
+    allocator: std.mem.Allocator,
+
+    pub fn update(self: *@This(), canvas: *eng.Canvas) void {
+        const input = eng.readKey() catch 0;
+        if (input != 0) {
+            var buf: [1]u8 = .{input};
+            _ = sendInput(self.stream_ptr, &buf) catch {};
+        }
+
+        _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
+    }
+};
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -100,27 +114,12 @@ pub fn main() !void {
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
 
-    const UpdateContext = struct {
-        stream_ptr: *net.Stream,
-        allocator: std.mem.Allocator,
-
-        pub fn update(self: *@This(), canvas: *eng.Canvas) void {
-            const input = eng.readKey() catch 0;
-            if (input != 0) {
-                var buf: [1]u8 = .{input};
-                _ = sendInput(self.stream_ptr, &buf) catch {};
-            }
-
-            // Try to update game state
-            _ = renderGameState(self.stream_ptr, self.allocator, canvas) catch {};
-        }
-    };
-
     var context = UpdateContext{
         .stream_ptr = &stream,
         .allocator = allocator,
     };
 
     engine.canvas.setUpdateFn(UpdateContext.update, &context);
-try engine.run();
+    try engine.run();
 }
+
