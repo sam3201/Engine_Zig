@@ -65,8 +65,10 @@ pub fn main() !void {
         title_engine.clock.tick();
 
         if (try Engine.readKey()) |key| {
-            // Use the key value here
-        }
+            title_engine.running = false;
+            break;
+}
+
 
         title_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         UpdateFunctions.update(&title_engine.canvas);
