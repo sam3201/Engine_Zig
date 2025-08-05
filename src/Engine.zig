@@ -79,7 +79,7 @@ pub const Canvas = struct {
     buf: []u8,
     scene: std.ArrayList(Renderable),
 
-    updateFn: ?UpdateFn = null, 
+    updateFn: ?UpdateFn = null,
 
     pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
         var canvas = Canvas{
@@ -191,7 +191,7 @@ pub const Canvas = struct {
         }
     }
 
- pub fn setUpdateFn(self: *Canvas, update_fn: UpdateFn) void {
+    pub fn setUpdateFn(self: *Canvas, update_fn: UpdateFn) void {
         self.updateFn = update_fn;
     }
 
