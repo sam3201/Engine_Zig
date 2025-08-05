@@ -243,7 +243,7 @@ pub const Engine = struct {
         self.canvas.deinit();
     }
 
-    pub fn setUpdateFn(self: *Engine, func: *const fn () void) void {
+    pub fn setUpdateFn(self: *@This(), func: *const fn () void) void {
         self.update = func;
     }
 
