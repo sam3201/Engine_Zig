@@ -78,7 +78,8 @@ pub const Canvas = struct {
     colors: []Color,
     buf: []u8,
     scene: std.ArrayList(Renderable),
-    updateFn: ?UpdateFn = null, // Changed to null
+
+    updateFn: ?UpdateFn = null, 
 
     pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
         var canvas = Canvas{
