@@ -107,7 +107,7 @@ pub const GameServer = struct {
         defer self.mutex.unlock();
 
         self.world_manager.draw();
-        drawServerOverview(canvas, self);
+        drawServerOverview(canvas, &self);
     }
 
     fn runServerEngine(self: *GameServer) void {
