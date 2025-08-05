@@ -106,7 +106,7 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        self.server.world_manager.draw();
+        self.world_manager.draw();
         drawServerOverview(canvas, self.server);
     }
 
