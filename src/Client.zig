@@ -90,7 +90,7 @@ pub fn renderGameState(
 }
 
 pub fn update(e: *eng.Engine) void {
-    const input = e.readKey();
+    const input = engine.readKey();
     if (input != 0) {
         var buf: [1]u8 = .{input};
         _ = sendInput(e.stream_ptr, &buf) catch {};
