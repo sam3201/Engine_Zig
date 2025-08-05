@@ -7,7 +7,7 @@ const c = @cImport({
 });
 const main = @import("main.zig");
 
-const UpdateFn = *const fn (*Canvas) void;
+const UpdateFn = *fn (*Canvas) void;
 
 pub const Color = struct {
     r: u8 = 0,
