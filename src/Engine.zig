@@ -191,7 +191,7 @@ pub const Canvas = struct {
         }
     }
 
-    pub fn setUpdateFn(self: *Canvas, update_fn: UpdateFn) void {
+    pub fn setUpdateFn(Self: *Canvas, update_fn: UpdateFn) void {
         self.updateFn = update_fn;
     }
 
