@@ -90,7 +90,6 @@ pub const Canvas = struct {
             .scene = try std.ArrayList(Renderable).initCapacity(allocator, 16),
             .updateFn = null,
         };
-        // Set the default update function
         canvas.updateFn = Canvas.update;
         return canvas;
     }
