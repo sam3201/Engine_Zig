@@ -1,3 +1,5 @@
+// src/main.zig
+
 const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
