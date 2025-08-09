@@ -66,7 +66,7 @@ pub fn main() !void {
     while (title_engine.running) {
         title_engine.clock.tick();
 
-        if (try Engine.readKey() key != null) {
+        if (try Engine.readKey() != null) {
             title_engine.running = false;
             break;
         }
