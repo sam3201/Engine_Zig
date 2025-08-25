@@ -120,6 +120,7 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
+
     defer disconnectFromServer(&stream);
 
     engine.canvas.setUpdateFn(update);
