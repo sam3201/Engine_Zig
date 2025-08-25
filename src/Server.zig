@@ -110,6 +110,18 @@ pub const GameServer = struct {
         drawServerOverview(canvas, self);
     }
 
+    fn updateCallback(canvas: *Engine.Canvas) void {
+    // get the global server instance
+    if (global_server) |server| {
+        server.mutex.lock();
+        defer server.mutex.unlock();
+
+        server.world_manager.draw();
+        drawServerOverview(canvas, server);
+    }
+}
+
+
     fn runServerEngine(self: *GameServer) void {
         self.server_engine.setUpdateFn(update);
         self.server_engine.run() catch |err| {
