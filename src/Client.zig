@@ -89,7 +89,7 @@ pub fn renderGameState(
     }
 }
 
-pub fn update(e: *eng.Engine.canvas) void {
+pub fn update(e: *eng.Canvas) void {
     const input = eng.readKey();
     if (input != null) {
         var buf: [1]u8 = .{input};
