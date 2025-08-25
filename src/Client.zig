@@ -123,5 +123,6 @@ pub fn main() !void {
     defer disconnectFromServer(&stream);
 
     engine.canvas.setUpdateFn(update);
+
     try engine.run();
 }
