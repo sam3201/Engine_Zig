@@ -27,7 +27,7 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
 pub fn renderGameState(
     stream: *net.Stream,
     allocator: std.mem.Allocator,
-    canvas: *eng.canvas.Canvas,
+    canvas: *eng.canvas,
 ) !void {
     const reader = stream.reader();
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
