@@ -7,7 +7,7 @@ const Chunk = @import("Chunk.zig");
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
-    canvas: *const eng.Canvas,
+    canvas: *eng.Canvas,
     player: Player.Player,
     chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
     loaded_radius: i32 = 2,
