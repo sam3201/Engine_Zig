@@ -89,14 +89,14 @@ pub fn renderGameState(
     }
 }
 
-pub fn update(e: *eng.Canvas) void {
-    const input = eng.readKey();
-    if (input != null) {
-        var buf: [1]u8 = .{input};
-        _ = sendInput(e.stream_ptr, &buf) catch {};
+pub fn update(canvas: *eng.Canvas) void {
+    const input = eng.readKey() catch null;
+    if (input) |key| {
+        var buf: [1]u8 = .{key};
+        _ = sendInput(canvas.stream_ptr, &buf) catch {};
     }
 
-    _ = renderGameState(e.stream_ptr, e.allocator, e.canvas) catch {};
+    _ = renderGameState(canvas.stream_ptr, canvas.allocator, canvas) catch {};
 }
 
 pub fn main() !void {
