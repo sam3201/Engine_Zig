@@ -102,13 +102,13 @@ pub const GameServer = struct {
         }
     }
 
-    fn update(self: *GameServer, canvas: *Engine.Canvas) void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
+fn update(self: *GameServer, canvas: *Engine.Canvas) void {
+    self.mutex.lock();
+    defer self.mutex.unlock();
 
-        self.world_manager.draw();
-        drawServerOverview(canvas, self);
-    }
+    self.world_manager.draw();
+    drawServerOverview(canvas, self);
+}
 
     fn runServerEngine(self: *GameServer) void {
         self.server_engine.setUpdateFn(update);
