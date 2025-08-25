@@ -1,4 +1,4 @@
-// src/Chunk.zig - FIXED VERSION
+// src/Chunk.zig 
 
 const std = @import("std");
 const eng = @import("Engine.zig");
