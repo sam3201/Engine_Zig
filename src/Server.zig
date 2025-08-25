@@ -110,12 +110,12 @@ pub const GameServer = struct {
         drawServerOverview(canvas, self);
     }
 
-fn runServerEngine(self: *GameServer) void {
-    self.server_engine.setUpdateFn(update);
-    self.server_engine.run() catch |err| {
-        std.debug.print("Server engine error: {}\n", .{err});
-    };
-}
+    fn runServerEngine(self: *GameServer) void {
+        self.server_engine.setUpdateFn(update);
+        self.server_engine.run() catch |err| {
+            std.debug.print("Server engine error: {}\n", .{err});
+        };
+    }
 
     // FIX 3: Change return type to handle errors properly
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
