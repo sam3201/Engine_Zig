@@ -120,7 +120,7 @@ pub const GameServer = struct {
             server.world_manager.draw();
             drawServerOverview(canvas, server);
         }
-}
+    }
 
 
 fn runServerEngine(self: *GameServer) void {
