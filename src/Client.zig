@@ -5,6 +5,7 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const PlayerModule = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
+
 var g_stream: ?*net.Stream = null;
 var g_allocator: ?std.mem.Allocator = null;
 
