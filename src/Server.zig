@@ -122,14 +122,14 @@ pub const GameServer = struct {
         }
     }
 
-fn runServerEngine(self: *GameServer) void {
-    global_server = self; // store pointer for callback
-    // was: self.server_engine.setUpdateFn(updateCallback);
-    self.server_engine.canvas.setUpdateFn(updateCallback);
-    self.server_engine.run() catch |err| {
-        std.debug.print("Server engine error: {}\n", .{err});
-    };
-}
+    fn runServerEngine(self: *GameServer) void {
+        global_server = self; // store pointer for callback
+        // was: self.server_engine.setUpdateFn(updateCallback);
+        self.server_engine.canvas.setUpdateFn(updateCallback);
+        self.server_engine.run() catch |err| {
+            std.debug.print("Server engine error: {}\n", .{err});
+        };
+    }
 
     // FIX 3: Change return type to handle errors properly
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
