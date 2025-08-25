@@ -9,7 +9,7 @@ const WorldManager = @import("WorldManager.zig");
 const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-const global_server: ?*GameServer = null;
+var global_server: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
@@ -129,7 +129,7 @@ fn runServerEngine(self: *GameServer) void {
     self.server_engine.run() catch |err| {
         std.debug.print("Server engine error: {}\n", .{err});
     };
-}
+    }
 
     // FIX 3: Change return type to handle errors properly
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
