@@ -112,14 +112,14 @@ pub const GameServer = struct {
     }
 
     fn updateCallback(canvas: *Engine.Canvas) void {
-    // get the global server instance
-    if (global_server) |server| {
-        server.mutex.lock();
-        defer server.mutex.unlock();
+        // get the global server instance
+        if (global_server) |server| {
+            server.mutex.lock();
+            defer server.mutex.unlock();
 
-        server.world_manager.draw();
-        drawServerOverview(canvas, server);
-    }
+            server.world_manager.draw();
+            drawServerOverview(canvas, server);
+        }
 }
 
 
