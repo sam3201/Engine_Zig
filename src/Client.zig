@@ -117,7 +117,7 @@ pub fn main() !void {
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    g_stream = &stream; 
+    g_stream = &stream;
     g_allocator = allocator;
     var stream = try connectToServer();
     defer disconnectFromServer(&stream);
