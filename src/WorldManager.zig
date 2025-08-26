@@ -204,19 +204,18 @@ pub const WorldManager = struct {
     }
 
     fn playerDropItem(self: *WorldManager) void {
-    if (self.player.inventory.len == 0) return;
+        if (self.player.inventory.len == 0) return;
 
-    const pos = self.player.getPosition();
-    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+        const pos = self.player.getPosition();
+        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-    if (self.chunks.get(chunk_coord)) |*chunk| {
-        const dropped = self.player.inventory[0];
-        chunk.items.append(dropped) catch return;
-        self.player.removeItem(dropped.name, 1);
-        std.debug.print("Dropped {s}\n", .{ dropped.name });
+        if (self.chunks.get(chunk_coord)) |*chunk| {
+            const dropped = self.player.inventory[0];
+            chunk.items.append(dropped) catch return;
+            self.player.removeItem(dropped.name, 1);
+            std.debug.print("Dropped {s}\n", .{dropped.name});
+        }
     }
-}
-
 
     fn playerOpenInventory(self: *WorldManager) void {
         // TODO:
