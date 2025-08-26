@@ -47,7 +47,10 @@ pub fn main() !void {
     // Title Screen
     // ───────────────────────────────
     var title_engine = try Engine.Engine.init(
-        allocator, 80, 24, 30,
+        allocator,
+        80,
+        24,
+        30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer title_engine.deinit();
@@ -82,7 +85,10 @@ pub fn main() !void {
     // Singleplayer Game Loop
     // ───────────────────────────────
     var engine = try Engine.Engine.init(
-        allocator, 80, 24, 30,
+        allocator,
+        80,
+        24,
+        30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer engine.deinit();
@@ -104,8 +110,8 @@ pub fn main() !void {
                 .DOWN => player.move(0, 1),
                 .LEFT => player.move(-1, 0),
                 .RIGHT => player.move(1, 0),
-                .ATTACK => {},      // TODO: attack logic
-                .INTERACT => {},    // TODO: interact
+                .ATTACK => {}, // TODO: attack logic
+                .INTERACT => {}, // TODO: interact
                 .OPENINVENTORY => {}, // TODO: open inventory UI
                 else => {
                     if (key == 'q' or key == 'Q') break; // quit
@@ -122,8 +128,7 @@ pub fn main() !void {
         player.draw(&engine.canvas);
 
         // HUD
-        engine.canvas.print(0, 0, "HP: {d}/{d}  Lv: {d}  XP: {d}/{d}",
-            .{ player.health, player.max_health, player.level, player.experience, player.experience_to_next_level });
+        engine.canvas.print(0, 0, "HP: {d}/{d}  Lv: {d}  XP: {d}/{d}", .{ player.health, player.max_health, player.level, player.experience, player.experience_to_next_level });
 
         // Push to terminal
         engine.canvas.render();
@@ -133,4 +138,3 @@ pub fn main() !void {
 
     std.debug.print("Exited single-player world.\n", .{});
 }
-
