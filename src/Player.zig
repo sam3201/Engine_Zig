@@ -130,7 +130,7 @@ pub const Player = struct {
     }
 
     pub fn addItem(self: *Player, item: Item) void {
-        for (self.inventory) |*item| {
+        for (self.inventory) |*inv_item| {
             if (existing_item.id == item.id) {
                 existing_item.quantity += 1;
                 return;
