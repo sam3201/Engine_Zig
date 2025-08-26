@@ -31,7 +31,7 @@ pub const GameServer = struct {
     pub fn init(allocator: std.mem.Allocator) !GameServer {
         const canvas = try Engine.Canvas.init(allocator, 80, 24);
         const host_player = try PlayerModule.createWASDPlayer(allocator, 30, 15);
-        var world_manager = try WorldManager.WorldManager.init(allocator, canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(allocator, &canvas, host_player);
 
         // Generate initial chunks
         try world_manager.updateChunks();
