@@ -129,9 +129,7 @@ pub const Player = struct {
         return self.level;
     }
 
-    pub fn addItem(self: *Player, item: Item) void {
-        
-    }
+    pub fn addItem(self: *Player, item: Item) void {}
 
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
         canvas.put(self.entity.x, self.entity.y, self.entity.ch);
