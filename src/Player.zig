@@ -283,3 +283,18 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     return player;
 }
+
+
+pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
+    for (self.key_bindings) |*binding| {
+        if (binding.action == action) {
+            binding.key = key;
+            return;
+        }
+    }
+    // If not found, grow list
+    if (self.key_bindings.len < 32) { // arbitrary cap
+        self.key_bindings = self.allocator.resize(self.key_bindings, self.key_bindings.len + 1) catch return;
+        self.key_bindings[self.key_bindings.len - 1] = KeyBinding{ .key = key, .action = action };
+    }
+}
