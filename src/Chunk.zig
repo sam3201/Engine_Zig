@@ -110,7 +110,6 @@ pub const WorldItem = struct {
     color: eng.Color = .{ .r = 255, .g = 255, .b = 0 },
 };
 
-
 pub const Chunk = struct {
     coord: ChunkCoord,
     tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType,
