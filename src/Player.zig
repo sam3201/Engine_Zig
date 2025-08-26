@@ -286,6 +286,20 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const inv_json = obj.get("inventory").?.array;
     const key_json = obj.get("key_bindings").?.array;
     const key_bindings = try allocator.alloc(KeyBinding, key_json.items.len);
+    for (key_json.items, 0..) |b, i| {
+        key_bindings[i] = KeyBinding{
+            .key = @intCast(b.object.get("key").?.integer),
+            .action = @enumFromInt(b.object.get("action").?.integer),
+        };
+    }
+    const inv = try allocator.alloc(Item, inv_json.items.len);
+    for (inv_json.items, 0..) |it, i| {
+        inv[i] = Item{
+            .id = @intCast(it.object.get("id").?.integer),
+            .name = it.object.get("name").?.string,
+            .quantity = @intCast(it.object.get("quantity").?.integer),
+        };
+    }
     var inventory = try allocator.alloc(Item, inv_json.items.len);
     for (inv_json.items, 0..) |it, i| {
         inventory[i] = Item{
