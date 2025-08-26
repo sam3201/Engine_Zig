@@ -278,6 +278,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     const name = obj.get("name").?.string;
     const health: i32 = @intCast(obj.get("health").?.integer);
+    const speed = obj.get("speed").?.integer;
     const max_health: i32 = @intCast(obj.get("max_health").?.integer);
     const xp: i32 = @intCast(obj.get("xp").?.integer);
     const level: i32 = @intCast(obj.get("level").?.integer);
@@ -286,7 +287,6 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const inv_json = obj.get("inventory").?.array;
     const key_json = obj.get("key_bindings").?.array;
     const key_bindings = try allocator.alloc(KeyBinding, key_json.items.len);
-    const speed = obj.get("speed").?.integer;
     for (key_json.items, 0..) |b, i| {
         key_bindings[i] = KeyBinding{
             .key = @intCast(b.object.get("key").?.integer),
