@@ -119,9 +119,6 @@ pub const Chunk = struct {
     items: std.ArrayList(WorldItem),
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) Chunk {
-        var items = std.ArrayList(Item).init(allocator);
-        try items.append(Item.init(1, "Potion", 1));
-
         var items = std.ArrayList(WorldItem).init(allocator);
 
         for (0..CHUNK_SIZE) |y| {
