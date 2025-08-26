@@ -292,8 +292,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
             .quantity = @intCast(it.object.get("quantity").?.integer),
         };
     }
-    player.inventory = inventory;
-
+    
     // Load key bindings
     const bindings_json = obj.get("key_bindings").?.array;
     var bindings = try allocator.alloc(KeyBinding, bindings_json.items.len);
@@ -321,6 +320,8 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     player.level = level;
     player.experience = experience;
     player.experience_to_next_level = exp_next;
+    player.inventory = inventory;
+
 
     return player;
 }
