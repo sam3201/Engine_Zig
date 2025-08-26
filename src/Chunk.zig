@@ -116,7 +116,7 @@ pub const Chunk = struct {
     biome: BiomeType,
     difficulty_level: i32,
     generated: bool = false,
-    items: std.ArrayList(Item),
+    items: std.ArrayList(WorldItem),
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) Chunk {
         var items = std.ArrayList(Item).init(allocator);
