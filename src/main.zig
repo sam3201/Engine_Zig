@@ -93,7 +93,7 @@ pub fn main() !void {
     );
     defer engine.deinit();
 
-    var world = try WorldManager.WorldManager.init(allocator, engine.canvas, player);
+    var world = try WorldManager.WorldManager.init(allocator, engine.canvas, null);
     defer world.deinit();
 
     var player = try Player.createWASDPlayer(allocator, 5, 5);
