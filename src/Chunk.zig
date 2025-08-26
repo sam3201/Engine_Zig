@@ -128,6 +128,7 @@ pub const Chunk = struct {
             .biome = .Plains,
             .difficulty_level = difficulty_level,
             .items = items,
+            .generated = false,
         };
     }
 
