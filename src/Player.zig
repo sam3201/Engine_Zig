@@ -266,7 +266,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     defer file.close();
 
     const stat = try file.stat();
-    var buf = try allocator.alloc(u8, stat.size);
+    const buf = try allocator.alloc(u8, stat.size);
     defer allocator.free(buf);
 
     _ = try file.readAll(buf);
