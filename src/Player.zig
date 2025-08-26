@@ -142,7 +142,7 @@ pub const PlayerData = struct {
     experience: i32,
     experience_to_next_level: i32,
     key_bindings: []KeyBinding,
-    inventory: [],
+    inventory: []u8,
     // TODO: inventory []Item when we add inventory
 };
 
