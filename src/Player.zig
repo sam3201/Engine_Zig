@@ -292,7 +292,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
             .quantity = @intCast(it.object.get("quantity").?.integer),
         };
     }
-    obj.inventory = inventory;
+    player.inventory = inventory;
 
     // Load key bindings
     const bindings_json = obj.get("key_bindings").?.array;
