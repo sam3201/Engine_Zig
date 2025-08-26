@@ -243,7 +243,7 @@ pub fn createVimPlayer(
     return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
 }
 
-pub fn save(self: Player, allocator: std.mem.Allocator, path: []const u8) !void {
+pub fn save(self: Player, path: []const u8) !void {
     var file = try std.fs.cwd().createFile(path, .{ .truncate = true });
     defer file.close();
 
