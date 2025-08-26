@@ -2,7 +2,7 @@
 
 const std = @import("std");
 const eng = @import("Engine.zig");
-const Item = @import("Item.zig").Item;
+const Item = @import("Item.zig");
 
 pub const CHUNK_SIZE: i32 = 32;
 
