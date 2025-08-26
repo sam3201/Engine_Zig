@@ -265,7 +265,11 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     var player = try Player.init(
         allocator,
-        5, 5, 1, 1, '@',
+        5,
+        5,
+        1,
+        1,
+        '@',
         eng.Color{ .r = 255, .g = 255, .b = 0 },
         bindings,
     );
@@ -279,4 +283,3 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     return player;
 }
-
