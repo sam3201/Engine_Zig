@@ -283,6 +283,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     return player;
 }
+
 pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
     for (self.key_bindings) |*binding| {
         if (binding.action == action) {
