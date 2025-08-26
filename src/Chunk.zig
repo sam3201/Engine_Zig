@@ -128,7 +128,6 @@ pub const Chunk = struct {
             .difficulty_level = difficulty_level,
             .items = items,
         };
-        }
 
         return Chunk{
             .coord = coord,
