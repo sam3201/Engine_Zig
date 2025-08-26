@@ -28,7 +28,7 @@ pub const WorldManager = struct {
         }
     };
 
-    pub fn init(allocator: std.mem.Allocator, canvas: eng.Canvas, player: Player.Player) !WorldManager {
+    pub fn init(allocator: std.mem.Allocator, canvas: *eng.Canvas, player: Player.Player) !WorldManager {
         var world = WorldManager{
             .allocator = allocator,
             .canvas = canvas,
