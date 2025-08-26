@@ -107,6 +107,7 @@ pub const Chunk = struct {
     biome: BiomeType,
     difficulty_level: i32,
     generated: bool = false,
+    items: std.ArrayList(eng.Item) = std.ArrayList(eng.Item).init(std.heap.page_allocator),
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32) Chunk {
         var tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType = undefined;
