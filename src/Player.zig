@@ -248,17 +248,17 @@ pub fn save(self: Player, allocator: std.mem.Allocator, path: []const u8) !void 
     defer file.close();
 
     var writer = file.writer();
-try std.json.stringify(.{
-    .name = self.name,
-    .health = self.health,
-    .max_health = self.max_health,
-    .xp = self.xp,
-    .level = self.level,
-    .experience = self.experience,
-    .experience_to_next_level = self.experience_to_next_level,
-    .key_bindings = self.key_bindings,
-    .inventory = self.inventory,
-}, .{}, writer);
+    try std.json.stringify(.{
+        .name = self.name,
+        .health = self.health,
+        .max_health = self.max_health,
+        .xp = self.xp,
+        .level = self.level,
+        .experience = self.experience,
+        .experience_to_next_level = self.experience_to_next_level,
+        .key_bindings = self.key_bindings,
+        .inventory = self.inventory,
+    }, .{}, writer);
 }
 
 pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
