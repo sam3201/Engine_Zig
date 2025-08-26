@@ -247,7 +247,7 @@ pub fn save(self: Player, allocator: std.mem.Allocator, path: []const u8) !void 
     var file = try std.fs.cwd().createFile(path, .{ .truncate = true });
     defer file.close();
 
-    var writer = file.writer();
+    const writer = file.writer();
     try std.json.stringify(.{
         .name = self.name,
         .health = self.health,
