@@ -4,9 +4,7 @@ const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
-const Server = @import("Server.zig");
 const Thread = std.Thread;
-const process = std.process;
 
 fn drawTitleScreen(canvas: *Engine.Canvas) void {
     const white = Engine.Color{ .r = 255, .g = 255, .b = 255 };
@@ -27,10 +25,8 @@ fn drawTitleScreen(canvas: *Engine.Canvas) void {
     }
 
     const instructions = [_][]const u8{
-        "Press any key to start the server",
-        "Host controls difficulty",
-        "Clients connect to 127.0.0.1:42069",
-        // TODO: Add save/load game instructions in future
+        "Press any key to start single-player",
+        "Later: Host can open world for others",
     };
 
     var y_offset: i32 = 12;
@@ -47,9 +43,17 @@ fn drawTitleScreen(canvas: *Engine.Canvas) void {
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    // Show title screen
-    var title_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
+    // ───────────────────────────────
+    // Title Screen
+    // ───────────────────────────────
+    var title_engine = try Engine.Engine.init(
+        allocator, 80, 24, 30,
+        Engine.Color{ .r = 10, .g = 10, .b = 10 },
+    );
     defer title_engine.deinit();
+
+    var term = try Engine.TerminalGuard.init();
+    defer term.deinit();
 
     const UpdateFunctions = struct {
         fn update(canvas: *Engine.Canvas) void {
@@ -60,15 +64,11 @@ pub fn main() !void {
 
     title_engine.canvas.setUpdateFn(&UpdateFunctions.update);
 
-    var term = try Engine.TerminalGuard.init();
-    defer term.deinit();
-
     while (title_engine.running) {
         title_engine.clock.tick();
 
         if (try Engine.readKey() != null) {
-            title_engine.running = false;
-            break;
+            break; // exit to game
         }
 
         title_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
@@ -78,19 +78,59 @@ pub fn main() !void {
         title_engine.clock.sleepUntilNextFrame();
     }
 
-    // Start server after title screen
-    std.debug.print("Starting Open World Game Server\n", .{});
-    std.debug.print("Available CPU cores: {d}\n", .{Thread.getCpuCount() catch 1});
+    // ───────────────────────────────
+    // Singleplayer Game Loop
+    // ───────────────────────────────
+    var engine = try Engine.Engine.init(
+        allocator, 80, 24, 30,
+        Engine.Color{ .r = 10, .g = 10, .b = 10 },
+    );
+    defer engine.deinit();
 
-    var server = try Server.GameServer.init(allocator);
-    defer server.deinit();
+    var world = try WorldManager.WorldManager.init(allocator);
+    defer world.deinit();
 
-    // Start server
-    try server.startServer();
+    var player = try Player.createWASDPlayer(allocator, 5, 5);
+    defer player.deinit();
 
-    std.debug.print("Open World Game Server terminated\n", .{});
+    while (engine.running and player.isAlive()) {
+        engine.clock.tick();
+
+        // ── Handle Input ──
+        if (try Engine.readKey()) |key| {
+            const action = player.processInput(key);
+            switch (action) {
+                .UP => player.move(0, -1),
+                .DOWN => player.move(0, 1),
+                .LEFT => player.move(-1, 0),
+                .RIGHT => player.move(1, 0),
+                .ATTACK => {},      // TODO: attack logic
+                .INTERACT => {},    // TODO: interact
+                .OPENINVENTORY => {}, // TODO: open inventory UI
+                else => {
+                    if (key == 'q' or key == 'Q') break; // quit
+                },
+            }
+        }
+
+        // ── Update World ──
+        try world.update(&player);
+
+        // ── Draw Frame ──
+        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        world.draw(&engine.canvas, &player);
+        player.draw(&engine.canvas);
+
+        // HUD
+        engine.canvas.print(0, 0, "HP: {d}/{d}  Lv: {d}  XP: {d}/{d}",
+            .{ player.health, player.max_health, player.level, player.experience, player.experience_to_next_level });
+
+        // Push to terminal
+        engine.canvas.render();
+        engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
+    }
+
+    std.debug.print("Exited single-player world.\n", .{});
 }
 
-pub fn setInput(input: u8) void {
-    _ = input;
-}
