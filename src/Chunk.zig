@@ -111,6 +111,8 @@ pub const Chunk = struct {
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) Chunk {
         var items = std.ArrayList(eng.Item).init(allocator);
+        try items.append(Item.init(1, "Potion", 1));
+        return .{ .coord = coord, .difficulty_level = difficulty, .items = items };
 
         var tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType = undefined;
 
