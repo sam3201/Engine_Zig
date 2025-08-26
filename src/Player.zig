@@ -314,6 +314,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
         bindings,
     );
 
+    player.name = name;
     player.health = health;
     player.max_health = max_health;
     player.xp = xp;
