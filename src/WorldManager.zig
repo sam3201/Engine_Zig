@@ -80,7 +80,7 @@ pub const WorldManager = struct {
                 const coord = Chunk.ChunkCoord{ .x = x, .y = y };
 
                 if (!self.chunks.contains(coord)) {
-                    const chunk = Chunk.Chunk.init(coord, self.player.getLevel());
+                    const chunk = Chunk.Chunk.init(coord, self.player.getLevel(), self.allocator);
                     try self.chunks.put(coord, chunk);
                 }
             }
