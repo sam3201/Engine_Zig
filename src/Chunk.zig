@@ -122,7 +122,7 @@ pub const Chunk = struct {
         var items = std.ArrayList(Item).init(allocator);
         try items.append(Item.init(1, "Potion", 1));
 
-        var tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType = undefined;
+        var items = std.ArrayList(WorldItem).init(allocator);
 
         for (0..CHUNK_SIZE) |y| {
             for (0..CHUNK_SIZE) |x| {
