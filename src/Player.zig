@@ -326,7 +326,6 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     player.id = id;
     player.name = name;
 
-
     return player;
 }
 
