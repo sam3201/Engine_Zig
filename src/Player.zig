@@ -323,7 +323,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     player.experience_to_next_level = experience_to_next_level;
     player.inventory = inventory;
 
-    id: i32 = 0,
+    player.id = id;
     name: []const u8 = "Nameless",
 
 
