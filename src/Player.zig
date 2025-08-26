@@ -250,7 +250,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const max_health: i32 = @intCast(obj.get("max_health").?.integer);
     const xp: i32 = @intCast(obj.get("xp").?.integer);
     const level: i32 = @intCast(obj.get("level").?.integer);
-    const experience: i32 = @intCast(i32, obj.get("experience").?.integer);
+    const experience: i32 = @intCast(obj.get("experience").?.integer);
     const exp_next = @intCast(i32, obj.get("experience_to_next_level").?.integer);
 
     // Load key bindings
