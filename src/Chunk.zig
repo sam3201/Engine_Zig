@@ -119,7 +119,7 @@ pub const Chunk = struct {
     items: std.ArrayList(WorldItem),
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) Chunk {
-        var items = std.ArrayList(WorldItem).init(allocator);
+        const items = std.ArrayList(WorldItem).init(allocator);
 
         const tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE);
         return Chunk{
