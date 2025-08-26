@@ -212,3 +212,71 @@ pub fn createVimPlayer(
 ) !Player {
     return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
 }
+
+pub fn save(self: Player, allocator: std.mem.Allocator, path: []const u8) !void {
+    var file = try std.fs.cwd().createFile(path, .{ .truncate = true });
+    defer file.close();
+
+    var writer = file.writer();
+    try std.json.stringify(.{
+        .name = self.name,
+        .health = self.health,
+        .max_health = self.max_health,
+        .xp = self.xp,
+        .level = self.level,
+        .experience = self.experience,
+        .experience_to_next_level = self.experience_to_next_level,
+        .key_bindings = self.key_bindings,
+    }, .{}, writer);
+}
+
+pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
+    var file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
+    const stat = try file.stat();
+    var buf = try allocator.alloc(u8, stat.size);
+    defer allocator.free(buf);
+
+    _ = try file.readAll(buf);
+
+    var parsed = try std.json.parseFromSlice(std.json.Value, allocator, buf, .{});
+    defer parsed.deinit();
+
+    const obj = parsed.value.object;
+
+    var name = obj.get("name").?.string;
+    const health = @intCast(i32, obj.get("health").?.integer);
+    const max_health = @intCast(i32, obj.get("max_health").?.integer);
+    const xp = @intCast(i32, obj.get("xp").?.integer);
+    const level = @intCast(i32, obj.get("level").?.integer);
+    const experience = @intCast(i32, obj.get("experience").?.integer);
+    const exp_next = @intCast(i32, obj.get("experience_to_next_level").?.integer);
+
+    // Load key bindings
+    const bindings_json = obj.get("key_bindings").?.array;
+    var bindings = try allocator.alloc(KeyBinding, bindings_json.items.len);
+    for (bindings_json.items, 0..) |b, i| {
+        bindings[i] = KeyBinding{
+            .key = @intCast(u8, b.object.get("key").?.integer),
+            .action = @enumFromInt(InputAction, b.object.get("action").?.integer),
+        };
+    }
+
+    var player = try Player.init(
+        allocator,
+        5, 5, 1, 1, '@',
+        eng.Color{ .r = 255, .g = 255, .b = 0 },
+        bindings,
+    );
+
+    player.health = health;
+    player.max_health = max_health;
+    player.xp = xp;
+    player.level = level;
+    player.experience = experience;
+    player.experience_to_next_level = exp_next;
+
+    return player;
+}
+
