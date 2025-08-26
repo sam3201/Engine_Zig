@@ -131,6 +131,10 @@ pub const Chunk = struct {
         };
     }
 
+    pub fn deinit(self: *Chunk) void {
+        self.items.deinit();
+    }
+
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
         var rng = std.Random.DefaultPrng.init(seed);
