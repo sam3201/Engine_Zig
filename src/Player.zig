@@ -314,14 +314,18 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
         bindings,
     );
 
-    player.name = name;
-    player.health = health;
-    player.max_health = max_health;
-    player.xp = xp;
-    player.level = level;
-    player.experience = experience;
-    player.experience_to_next_level = exp_next;
-    player.inventory = inventory;
+    health: i32 = 100,
+    max_health: i32 = 100,
+    xp: i32 = 0,
+    speed: i32 = 1,
+    level: i32 = 1,
+    experience: i32 = 0,
+    experience_to_next_level: i32 = 100,
+    inventory: []Item = &[_]Item{},
+
+    id: i32 = 0,
+    name: []const u8 = "Nameless",
+
 
     return player;
 }
