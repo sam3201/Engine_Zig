@@ -175,23 +175,23 @@ pub const WorldManager = struct {
         self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
     }
 
-fn playerInteract(self: *WorldManager) void {
-    const pos = self.player.getPosition();
-    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+    fn playerInteract(self: *WorldManager) void {
+        const pos = self.player.getPosition();
+        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-    if (self.chunks.get(chunk_coord)) |*chunk| {
-        var i: usize = 0;
-        while (i < chunk.items.items.len) : (i += 1) {
-            const item = chunk.items.items[i];
-            // For simplicity, place item at player pos always
-            // (later we’ll store item.x, item.y)
-            _ = self.player.addItem(item) catch return;
-            chunk.items.orderedRemove(i);
-            std.debug.print("Picked up {s} x{d}\n", .{ item.name, item.quantity });
-            break;
+        if (self.chunks.get(chunk_coord)) |*chunk| {
+            var i: usize = 0;
+            while (i < chunk.items.items.len) : (i += 1) {
+                const item = chunk.items.items[i];
+                // For simplicity, place item at player pos always
+                // (later we’ll store item.x, item.y)
+                _ = self.player.addItem(item) catch return;
+                chunk.items.orderedRemove(i);
+                std.debug.print("Picked up {s} x{d}\n", .{ item.name, item.quantity });
+                break;
+            }
         }
     }
-}
 
     fn playerAttack(self: *WorldManager) void {
         // TODO
