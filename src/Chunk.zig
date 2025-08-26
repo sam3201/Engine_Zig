@@ -109,7 +109,7 @@ pub const Chunk = struct {
     generated: bool = false,
     items: std.ArrayList(eng.Item),
 
-    pub fn init(coord: ChunkCoord, difficulty_level: i32) Chunk {
+    pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) Chunk {
         var tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType = undefined;
 
         for (0..CHUNK_SIZE) |y| {
