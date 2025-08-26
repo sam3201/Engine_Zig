@@ -283,6 +283,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const xp: i32 = @intCast(obj.get("xp").?.integer);
     const level: i32 = @intCast(obj.get("level").?.integer);
     const experience: i32 = @intCast(obj.get("experience").?.integer);
+    const experience_to_next_level: i32 = @intCast(obj.get("experience_to_next_level").?.integer);
     const exp_next: i32 = @intCast(obj.get("experience_to_next_level").?.integer);
     const inv_json = obj.get("inventory").?.array;
     const key_json = obj.get("key_bindings").?.array;
