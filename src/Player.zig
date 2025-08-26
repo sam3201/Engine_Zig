@@ -35,6 +35,7 @@ pub const Player = struct {
     level: i32 = 1,
     experience: i32 = 0,
     experience_to_next_level: i32 = 100,
+    inventory: []Item = &[_]Item{},
 
     id: i32 = 0,
     name: []const u8 = "Nameless",
