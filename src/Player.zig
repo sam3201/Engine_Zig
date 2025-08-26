@@ -129,16 +129,33 @@ pub const Player = struct {
         return self.level;
     }
 
-    pub fn addItem(self: *Player, item: Item) void {
-        for (self.inventory) |*inv_item| {
-            if (existing_item.id == item.id) {
-                existing_item.quantity += 1;
-                return;
-            }
+pub fn addItem(self: *Player, item: Item) !void {
+    // Look for existing item
+    for (self.inventory) |*inv_item| {
+        if (std.mem.eql(u8, inv_item.name, item.name)) {
+            inv_item.quantity += item.quantity;
+            return;
         }
-        self.inventory = self.allocator.resize(self.inventory, self.inventory.len + 1) catch return;
-        self.inventory[self.inventory.len - 1] = item;
     }
+    // Otherwise append
+    self.inventory = try self.allocator.realloc(self.inventory, self.inventory.len + 1);
+    self.inventory[self.inventory.len - 1] = item;
+}
+
+pub fn removeItem(self: *Player, name: []const u8, quantity: i32) void {
+    var i: usize = 0;
+    while (i < self.inventory.len) : (i += 1) {
+        if (std.mem.eql(u8, self.inventory[i].name, name)) {
+            self.inventory[i].quantity -= quantity;
+            if (self.inventory[i].quantity <= 0) {
+                // Remove item entirely
+                std.mem.copyBackwards(Item, self.inventory[i..], self.inventory[i+1..]);
+                self.inventory = self.allocator.shrink(self.inventory, self.inventory.len - 1) catch return;
+            }
+            return;
+        }
+    }
+}
 
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
         canvas.put(self.entity.x, self.entity.y, self.entity.ch);
