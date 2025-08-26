@@ -129,6 +129,14 @@ pub const Chunk = struct {
             .difficulty_level = difficulty_level,
             .items = items,
             .generated = false,
+
+            try items.append(WorldItem{
+                .item = .{ .name = "test item" },
+                .x = 0,
+                .y = 0,
+                .ch = '!',
+                .color = .{ .r = 255, .g = 255, .b = 0 },
+            }),
         };
     }
 
