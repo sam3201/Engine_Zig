@@ -283,6 +283,17 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const level: i32 = @intCast(obj.get("level").?.integer);
     const experience: i32 = @intCast(obj.get("experience").?.integer);
     const exp_next: i32 = @intCast(obj.get("experience_to_next_level").?.integer);
+    const inv_json = obj.get("inventory").?.array;
+var inventory = try allocator.alloc(Item, inv_json.items.len);
+for (inv_json.items, 0..) |it, i| {
+    inventory[i] = Item{
+        .id = @intCast(it.object.get("id").?.integer),
+        .name = it.object.get("name").?.string,
+        .quantity = @intCast(it.object.get("quantity").?.integer),
+    };
+}
+player.inventory = inventory;
+
 
     // Load key bindings
     const bindings_json = obj.get("key_bindings").?.array;
