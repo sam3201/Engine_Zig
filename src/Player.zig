@@ -133,6 +133,19 @@ pub const Player = struct {
     }
 };
 
+pub const PlayerData = struct {
+    name: []const u8,
+    health: i32,
+    max_health: i32,
+    xp: i32,
+    level: i32,
+    experience: i32,
+    experience_to_next_level: i32,
+    key_bindings: []KeyBinding,
+    // TODO: inventory []Item when we add inventory
+};
+
+
 // ─────────────────────────────────────────────────────────────
 // Bindings
 // ─────────────────────────────────────────────────────────────
