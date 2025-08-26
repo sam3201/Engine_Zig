@@ -284,6 +284,8 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const experience: i32 = @intCast(obj.get("experience").?.integer);
     const exp_next: i32 = @intCast(obj.get("experience_to_next_level").?.integer);
     const inv_json = obj.get("inventory").?.array;
+    const key_json = obj.get("key_bindings").?.array;
+    const key_bindings = try allocator.alloc(KeyBinding, key_json.items.len);
     var inventory = try allocator.alloc(Item, inv_json.items.len);
     for (inv_json.items, 0..) |it, i| {
         inventory[i] = Item{
