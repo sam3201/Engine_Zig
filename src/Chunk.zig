@@ -131,7 +131,7 @@ pub const Chunk = struct {
             .tiles = tiles,
             .biome = .Plains,
             .difficulty_level = difficulty_level,
-        .items = items };
+            .items = items,
         };
     }
 
