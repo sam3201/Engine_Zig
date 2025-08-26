@@ -246,7 +246,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const obj = parsed.value.object;
 
     var name = obj.get("name").?.string;
-    const health = @intCast(i32, obj.get("health").?.integer);
+    const health: i32 = @intCast(obj.get("health").?.integer);
     const max_health = @intCast(i32, obj.get("max_health").?.integer);
     const xp = @intCast(i32, obj.get("xp").?.integer);
     const level = @intCast(i32, obj.get("level").?.integer);
