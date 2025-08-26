@@ -315,12 +315,12 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     );
 
     player.health = health;
-    max_health
-    xp
-    speed
-    level
-    experience
-    experience_to_next_level
+    player.max_health = max_health;
+    player.xp = xp;
+    player.speed = speed;
+    player.level = level;
+    player.experience = experience;
+    player.experience_to_next_level = experience_to_next_level;
     inventory
 
     id: i32 = 0,
