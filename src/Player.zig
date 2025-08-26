@@ -145,7 +145,6 @@ pub const PlayerData = struct {
     // TODO: inventory []Item when we add inventory
 };
 
-
 // ─────────────────────────────────────────────────────────────
 // Bindings
 // ─────────────────────────────────────────────────────────────
