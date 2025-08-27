@@ -2,7 +2,7 @@ const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
-const Menu = @import("Menu.zig");
+const Menu = @import("Menu.zig").Menu;`
 const thread = std.Thread;
 
 pub fn main() !void {
