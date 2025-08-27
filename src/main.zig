@@ -28,21 +28,14 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     // ───────────── Title Menu ─────────────
-    var menu = Menu.Menu.init(&[_][]const u8{ "Start Game", "Options", "Exit" });
-    const choice = menu.handleSelection();
-    std.debug.print("You selected: {s}\n", .{menu.options[choice]});
-
-    if (choice == 2) { // Exit
-        return;
-    }
-
-    // ───────────── Prompt Example ─────────────
-    var prompt = Menu.Prompt.init("Enter your name");
-    const player_name = try prompt.run(allocator);
-    defer allocator.free(player_name);
-    std.debug.print("Welcome, {s}!\n", .{player_name});
-
-    // ───────────── Game Init ─────────────
+    // ─    var main_menu = Menu.init(
+        "Main Menu",
+        &[_][]const u8{"Start", "Options", "Quit"},
+        'w', // up
+        's', // down
+        '\n', // confirm (Enter)
+    );
+──────────── Game Init ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         80,
