@@ -1,10 +1,8 @@
-// src/main.zig
-
 const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
-const InputManager = @import("InputManager.zig");
+const Menu = @import("Menu.zig");
 const Thread = std.Thread;
 
 fn drawTitleScreen(canvas: *Engine.Canvas) void {
@@ -24,66 +22,27 @@ fn drawTitleScreen(canvas: *Engine.Canvas) void {
         canvas.put(@intCast(subtitle_start + i), 7, char);
         canvas.fillColor(@intCast(subtitle_start + i), 7, white);
     }
-
-    const instructions = [_][]const u8{
-        "Press any key to start single-player",
-        "Later: Host can open world for others",
-    };
-
-    var y_offset: i32 = 12;
-    for (instructions) |instruction| {
-        const start_x = (80 - instruction.len) / 2;
-        for (instruction, 0..) |char, i| {
-            canvas.put(@intCast(start_x + i), y_offset, char);
-            canvas.fillColor(@intCast(start_x + i), y_offset, white);
-        }
-        y_offset += 2;
-    }
 }
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    // ───────────────────────────────
-    // Title Screen
-    // ───────────────────────────────
-    var title_engine = try Engine.Engine.init(
-        allocator,
-        80,
-        24,
-        30,
-        Engine.Color{ .r = 10, .g = 10, .b = 10 },
-    );
-    defer title_engine.deinit();
-
-    var menu = InputManager.init(&[_][]const u8{ "Start Game", "Options", "Exit" });
-    const choice = menu.handle_input();
+    // ───────────── Title Menu ─────────────
+    var menu = Menu.Menu.init(&[_][]const u8{ "Start Game", "Options", "Exit" });
+    const choice = menu.handleSelection();
     std.debug.print("You selected: {s}\n", .{menu.options[choice]});
 
-    var term = try Engine.TerminalGuard.init();
-    defer term.deinit();
-
-    const UpdateFunctions = struct {
-        fn update(canvas: *Engine.Canvas) void {
-            canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
-            drawTitleScreen(canvas);
-        }
-    };
-    title_engine.canvas.setUpdateFn(&UpdateFunctions.update);
-
-    while (title_engine.running) {
-        title_engine.clock.tick();
-        if (try Engine.readKey() != null) break; // wait for input
-        title_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
-        UpdateFunctions.update(&title_engine.canvas);
-        title_engine.canvas.render();
-        title_engine.canvas.flushToTerminal();
-        title_engine.clock.sleepUntilNextFrame();
+    if (choice == 2) { // Exit
+        return;
     }
 
-    // ───────────────────────────────
-    // Singleplayer Game Loop
-    // ───────────────────────────────
+    // ───────────── Prompt Example ─────────────
+    var prompt = Menu.Prompt.init("Enter your name");
+    const player_name = try prompt.run(allocator);
+    defer allocator.free(player_name);
+    std.debug.print("Welcome, {s}!\n", .{player_name});
+
+    // ───────────── Game Init ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         80,
@@ -102,13 +61,13 @@ pub fn main() !void {
     while (engine.running and player.isAlive()) {
         engine.clock.tick();
 
-        // ── Handle Input ──
+        // Input
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 'Q') break;
             try world.processPlayerInput(key);
         }
 
-        // ── Draw Frame ──
+        // Draw
         engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         world.draw();
         engine.canvas.render();
@@ -118,3 +77,4 @@ pub fn main() !void {
 
     std.debug.print("Exited single-player world.\n", .{});
 }
+
