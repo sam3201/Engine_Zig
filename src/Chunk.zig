@@ -150,7 +150,7 @@ pub const Chunk = struct {
         try self.items.append(wi);
     }
 
-        pub fn findItemAt(self: *Chunk, world_x: i32, world_y: i32) ?usize {
+    pub fn findItemAt(self: *Chunk, world_x: i32, world_y: i32) ?usize {
         var i: usize = 0;
         while (i < self.items.items.len) : (i += 1) {
             const it = self.items.items[i];
