@@ -119,13 +119,12 @@ pub const Chunk = struct {
     items: std.ArrayList(WorldItem),
 
     pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
-
         var self = Chunk{
             .coord = coord,
             .difficulty_level = difficulty_level,
             .allocator = allocator,
-        .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
-        .items = std.ArrayList(WorldItem).init(allocator),
+            .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
+            .items = std.ArrayList(WorldItem).init(allocator),
         };
 
         try self.spawnTestItems();
