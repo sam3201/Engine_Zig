@@ -193,6 +193,7 @@ pub const WorldManager = struct {
             }
         }
     }
+
     fn playerAttack(self: *WorldManager) void {
         // TODO
         _ = self;
