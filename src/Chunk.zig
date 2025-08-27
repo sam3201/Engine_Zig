@@ -146,6 +146,10 @@ pub const Chunk = struct {
         try self.items.append(.{ .item = potion, .x = self.coord.x * CHUNK_SIZE, .y = self.coord.y * CHUNK_SIZE });
     }
 
+        pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
+        try self.items.append(wi);
+    }
+
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
         var rng = std.Random.DefaultPrng.init(seed);
