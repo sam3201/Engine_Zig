@@ -52,7 +52,7 @@ pub const Menu = struct {
 
         // Menu items
         for (self.items, 0..) |item, i| {
-            const y = 5 + i * 2;
+            const y: i32 = 5 + i * 2;
             const start = (canvas.width - item.len) / 2;
             const color = if (i == self.selected) green else white;
 
