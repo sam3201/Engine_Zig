@@ -15,7 +15,7 @@ pub const InputMenu = struct {
     pub fn display(self: *InputMenu) void {
         std.debug.clearScreen();
         std.debug.print("Use arrow keys to move and Enter to select\n\n", .{});
-        for (self.options) |option, idx| {
+        for (self.options) |option| {
             if (idx == self.selected_index) {
                 std.debug.print("> {s}\n", .{option});
             } else {
