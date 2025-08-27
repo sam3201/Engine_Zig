@@ -85,15 +85,15 @@ pub fn main() !void {
 
         const pos = player.getPosition();
         // ───────────── HUD ─────────────
-        const hud1 = std.fmt.allocPrint(
-            allocator,
-            "HP: {d}/{d} | Pos: ({d},{d}) | Chunk: ({d},{d}) | Chunks: {d}",
-            .{ player.health, player.max_health, player.x, player.y, player.chunk_x, player.chunk_y, world.chunk_count },
-        ) catch unreachable;
-        defer allocator.free(hud1);
-        for (hud1, 0..) |c, i| {
-            game_engine.canvas.put(i, 0, c);
-        }
+const hud1 = std.fmt.allocPrint(
+    allocator,
+    "HP: {d}/{d} | Pos: ({d},{d}) | Chunk: ({d},{d}) | Chunks: {d}",
+    .{ player.health, player.max_health, pos.x, pos.y, world.chunk_x, world.chunk_y, world.chunk_count },
+) catch unreachable;
+defer allocator.free(hud1);
+for (hud1, 0..) |c, i| {
+    game_engine.canvas.put(@intCast(i32, i), 0, c);
+}
 
         const hud2 = std.fmt.allocPrint(
             allocator,
