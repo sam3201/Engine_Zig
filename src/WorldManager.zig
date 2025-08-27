@@ -84,14 +84,12 @@ pub const WorldManager = struct {
             var x: i32 = player_chunk.x - self.loaded_radius;
             while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
                 const coord = Chunk.ChunkCoord{ .x = x, .y = y };
-
                 if (!self.chunks.contains(coord)) {
-                    const chunk = Chunk.Chunk.init(coord, self.player.getLevel(), self.allocator);
+                    var chunk = try Chunk.Chunk.init(coord, self.player.getLevel(), self.allocator);
                     try self.chunks.put(coord, chunk);
                 }
             }
         }
-
         self.unloadDistantChunks(player_chunk);
     }
 
