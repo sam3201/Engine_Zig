@@ -1,5 +1,4 @@
 const std = @import("std");
-const rl = @import("raylib");
 
 pub const Menu = struct {
     items: []const []const u8,
