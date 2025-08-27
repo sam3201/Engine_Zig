@@ -4,7 +4,7 @@ const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
-const InputMenu = @import("InputManager.zig");
+const InputManager = @import("InputManager.zig");
 const Thread = std.Thread;
 
 fn drawTitleScreen(canvas: *Engine.Canvas) void {
