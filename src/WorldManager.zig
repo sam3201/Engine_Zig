@@ -45,6 +45,11 @@ pub const WorldManager = struct {
     }
 
     pub fn deinit(self: *WorldManager) void {
+        // deinit each chunk (items, etc.)
+        var it = self.chunks.valueIterator();
+        while (it.next()) |c| {
+            c.deinit();
+        }
         self.chunks.deinit();
         self.player.deinit();
     }
