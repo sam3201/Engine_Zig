@@ -2,46 +2,42 @@ const std = @import("std");
 
 pub const Menu = struct {
     items: []const []const u8,
-    selected: usize,
-    up_key: c_int,
-    down_key: c_int,
-    confirm_key: c_int,
+    selected: usize = 0,
+
+    // Default navigation keys (can be overwritten in main.zig)
+    key_up: u8 = 'w',
+    key_down: u8 = 's',
+    key_select: u8 = '\n',
 
     pub fn init(items: []const []const u8) Menu {
-        return Menu{
-            .items = items,
-            .selected = 0,
-            // Default mappings (can be overridden later)
-            .up_key = rl.KEY_UP,
-            .down_key = rl.KEY_DOWN,
-            .confirm_key = rl.KEY_ENTER,
-        };
+        return Menu{ .items = items };
     }
 
-    /// Allows overwriting keys
-    pub fn setKeys(self: *Menu, up: c_int, down: c_int, confirm: c_int) void {
-        self.up_key = up;
-        self.down_key = down;
-        self.confirm_key = confirm;
+    pub fn setKeys(self: *Menu, up: u8, down: u8, select: u8) void {
+        self.key_up = up;
+        self.key_down = down;
+        self.key_select = select;
     }
 
-    pub fn update(self: *Menu) ?usize {
-        if (rl.IsKeyPressed(self.up_key)) {
-            if (self.selected > 0) self.selected -= 1 else self.selected = self.items.len - 1;
-        }
-        if (rl.IsKeyPressed(self.down_key)) {
-            self.selected = (self.selected + 1) % self.items.len;
-        }
-        if (rl.IsKeyPressed(self.confirm_key)) {
-            return self.selected; // return index of chosen item
+    pub fn update(self: *Menu, key: u8) ?usize {
+        if (key == self.key_up) {
+            if (self.selected > 0) self.selected -= 1;
+        } else if (key == self.key_down) {
+            if (self.selected < self.items.len - 1) self.selected += 1;
+        } else if (key == self.key_select) {
+            return self.selected; // Return chosen item
         }
         return null;
     }
 
-    pub fn draw(self: *Menu, x: f32, y: f32, fontSize: f32) void {
+    pub fn render(self: *Menu) void {
         for (self.items, 0..) |item, i| {
-            const color = if (i == self.selected) rl.RED else rl.DARKGRAY;
-            rl.DrawText(item.ptr, @intFromFloat(x), @intFromFloat(y + @as(f32, @floatFromInt(i)) * fontSize * 1.5), @intFromFloat(fontSize), color);
+            if (i == self.selected) {
+                std.debug.print("> {s}\n", .{item});
+            } else {
+                std.debug.print("  {s}\n", .{item});
+            }
         }
     }
 };
+
