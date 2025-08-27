@@ -122,6 +122,7 @@ pub const Chunk = struct {
         var self = Chunk{
             .coord = coord,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
+            .biome = .Plains,
             .difficulty_level = difficulty_level,
             .allocator = allocator,
             .items = std.ArrayList(WorldItem).init(allocator),
