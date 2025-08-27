@@ -146,7 +146,7 @@ pub const Chunk = struct {
         try self.items.append(.{ .item = potion, .x = self.coord.x * CHUNK_SIZE, .y = self.coord.y * CHUNK_SIZE });
     }
 
-        pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
+    pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
         try self.items.append(wi);
     }
 
