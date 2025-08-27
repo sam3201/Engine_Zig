@@ -21,9 +21,9 @@ pub fn main() !void {
     var menu = Menu.init(
         "Main Menu",
         &[_][]const u8{ "Start Game", "Options", "Quit" },
-        'w',   // up
-        's',   // down
-        '\n',  // select
+        'w', // up
+        's', // down
+        '\n', // select
     );
 
     var menu_choice: ?usize = null;
@@ -87,4 +87,3 @@ pub fn main() !void {
         game_engine.clock.sleepUntilNextFrame();
     }
 }
-
