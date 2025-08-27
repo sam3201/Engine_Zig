@@ -82,4 +82,3 @@ pub const Prompt = struct {
         }
     }
 };
-
