@@ -150,6 +150,15 @@ pub const Chunk = struct {
         try self.items.append(wi);
     }
 
+        pub fn findItemAt(self: *Chunk, world_x: i32, world_y: i32) ?usize {
+        var i: usize = 0;
+        while (i < self.items.items.len) : (i += 1) {
+            const it = self.items.items[i];
+            if (it.x == world_x and it.y == world_y) return i;
+        }
+        return null;
+    }
+
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
         var rng = std.Random.DefaultPrng.init(seed);
