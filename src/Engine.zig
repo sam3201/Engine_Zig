@@ -259,7 +259,7 @@ pub const Engine = struct {
                     self.running = false;
                     break;
                 }
-                main.setInput(byte);
+                //main.setInput(byte);
             }
 
             self.canvas.clear(
