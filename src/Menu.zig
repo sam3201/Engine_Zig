@@ -40,4 +40,3 @@ pub const Menu = struct {
         }
     }
 };
-
