@@ -50,7 +50,7 @@ pub const Menu = struct {
         // Draw title centered
         const title_start = (@as(i32, @intCast(canvas.width)) - @as(i32, @intCast(self.title.len))) / 2;
         for (self.title, 0..) |ch, i| {
-            canvas.put(title_start + @intCast(i), 3, ch);
+            canvas.put(title_start + i, 3, ch);
             canvas.fillColor(title_start + @intCast(i), 3, green);
         }
 
