@@ -1,5 +1,5 @@
 const std = @import("std");
-
+const Player = @import("Player.zig");
 pub const Menu = struct {
     options: []const []const u8,
     selected_index: usize,
