@@ -1,55 +1,50 @@
 const std = @import("std");
+const rl = @import("raylib");
 
 pub const Menu = struct {
-    title: []const u8,
-    options: [][]const u8,
+    items: []const []const u8,
     selected: usize,
+    up_key: c_int,
+    down_key: c_int,
+    confirm_key: c_int,
 
-    // New: custom key bindings (optional)
-    key_up: u32,
-    key_down: u32,
-    key_confirm: u32,
-
-    pub fn init(
-        title: []const u8,
-        options: [][]const u8,
-        key_up: u32,
-        key_down: u32,
-        key_confirm: u32,
-    ) Menu {
+    pub fn init(items: []const []const u8) Menu {
         return Menu{
-            .title = title,
-            .options = options,
+            .items = items,
             .selected = 0,
-            .key_up = key_up,
-            .key_down = key_down,
-            .key_confirm = key_confirm,
+            // Default mappings (can be overridden later)
+            .up_key = rl.KEY_UP,
+            .down_key = rl.KEY_DOWN,
+            .confirm_key = rl.KEY_ENTER,
         };
     }
 
-    pub fn update(self: *Menu, pressed_key: u32) ?usize {
-        if (pressed_key == self.key_up) {
-            if (self.selected == 0) {
-                self.selected = self.options.len - 1;
-            } else {
-                self.selected -= 1;
-            }
-        } else if (pressed_key == self.key_down) {
-            self.selected = (self.selected + 1) % self.options.len;
-        } else if (pressed_key == self.key_confirm) {
-            return self.selected;
+    /// Allows overwriting keys
+    pub fn setKeys(self: *Menu, up: c_int, down: c_int, confirm: c_int) void {
+        self.up_key = up;
+        self.down_key = down;
+        self.confirm_key = confirm;
+    }
+
+    pub fn update(self: *Menu) ?usize {
+        if (rl.IsKeyPressed(self.up_key)) {
+            if (self.selected > 0) self.selected -= 1
+            else self.selected = self.items.len - 1;
+        }
+        if (rl.IsKeyPressed(self.down_key)) {
+            self.selected = (self.selected + 1) % self.items.len;
+        }
+        if (rl.IsKeyPressed(self.confirm_key)) {
+            return self.selected; // return index of chosen item
         }
         return null;
     }
 
-    pub fn draw(self: *const Menu) void {
-        std.debug.print("{s}\n", .{self.title});
-        for (self.options, 0..) |opt, i| {
-            if (i == self.selected) {
-                std.debug.print("> {s}\n", .{opt});
-            } else {
-                std.debug.print("  {s}\n", .{opt});
-            }
+    pub fn draw(self: *Menu, x: f32, y: f32, fontSize: f32) void {
+        for (self.items, 0..) |item, i| {
+            const color = if (i == self.selected) rl.RED else rl.DARKGRAY;
+            rl.DrawText(item.ptr, @intFromFloat(x), @intFromFloat(y + @as(f32, @floatFromInt(i)) * fontSize * 1.5), @intFromFloat(fontSize), color);
         }
     }
 };
+
