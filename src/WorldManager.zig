@@ -221,7 +221,7 @@ pub const WorldManager = struct {
                 // only drop if tile is empty of items (simple rule)
                 chunk.addWorldItem(drop) catch return;
                 self.player.removeItem(inv_item.name, 1);
-                std.debug.print("Dropped {s}\n", .{ inv_item.name });
+                std.debug.print("Dropped {s}\n", .{inv_item.name});
             }
         }
     }
