@@ -83,7 +83,6 @@ pub fn main() !void {
         // Clear screen
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
-
         const pos = player.getPosition();
         // ───────────── HUD ─────────────
         const hud1 = std.fmt.allocPrint(
