@@ -62,4 +62,3 @@ pub const Menu = struct {
         }
     }
 };
-
