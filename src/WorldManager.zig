@@ -206,18 +206,25 @@ pub const WorldManager = struct {
 
     fn playerDropItem(self: *WorldManager) void {
         if (self.player.inventory.len == 0) return;
-
         const pos = self.player.getPosition();
         const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-        if (self.chunks.get(chunk_coord)) |*chunk| {
-            const dropped = self.player.inventory[0];
-            chunk.items.append(dropped) catch return;
-            self.player.removeItem(dropped.name, 1);
-            std.debug.print("Dropped {s}\n", .{dropped.name});
+        if (self.chunks.getPtr(chunk_coord)) |chunk| {
+            const inv_item = self.player.inventory[0];
+            // Drop 1 unit for now
+            const drop = Chunk.WorldItem{
+                .item = .{ .id = inv_item.id, .name = inv_item.name, .quantity = 1 },
+                .x = pos.x,
+                .y = pos.y,
+            };
+            if (chunk.findItemAt(pos.x, pos.y) == null) {
+                // only drop if tile is empty of items (simple rule)
+                chunk.addWorldItem(drop) catch return;
+                self.player.removeItem(inv_item.name, 1);
+                std.debug.print("Dropped {s}\n", .{ inv_item.name });
+            }
         }
     }
-
     fn playerOpenInventory(self: *WorldManager) void {
         // TODO:
         _ = self;
