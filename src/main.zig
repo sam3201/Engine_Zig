@@ -101,7 +101,7 @@ pub fn main() !void {
         ) catch unreachable;
         defer allocator.free(hud2);
         for (hud2, 0..) |c, i| {
-            game_engine.canvas.put(@intCast(i32, i), 1, c);
+            game_engine.canvas.put(i, 1, c);
         }
 
         // ───────────── Draw World ─────────────
