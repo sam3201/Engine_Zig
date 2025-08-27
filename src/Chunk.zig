@@ -124,8 +124,8 @@ pub const Chunk = struct {
             .coord = coord,
             .difficulty_level = difficulty_level,
             .allocator = allocator,
-        .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE);
-        .items = std.ArrayList(WorldItem).init(allocator);
+        .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
+        .items = std.ArrayList(WorldItem).init(allocator),
         };
 
         try self.spawnTestItems();
