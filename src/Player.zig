@@ -63,10 +63,10 @@ pub const Player = struct {
     }
 
     pub fn deinit(self: *Player) void {
-    if (self.key_bindings.len > 0) {
-    self.allocator.free(self.key_bindings);
-}
-}
+        if (self.key_bindings.len > 0) {
+            self.allocator.free(self.key_bindings);
+        }
+    }
 
     pub fn processInput(self: *Player, input: u8) InputAction {
         for (self.key_bindings) |binding| {
