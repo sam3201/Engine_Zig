@@ -28,14 +28,47 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     // ───────────── Title Menu ─────────────
-    // ─    var main_menu = Menu.init(
+    var menu = Menu.init(
         "Main Menu",
-        &[_][]const u8{"Start", "Options", "Quit"},
-        'w', // up
-        's', // down
-        '\n', // confirm (Enter)
+        &[_][]const u8{ "Start", "Options", "Quit" },
+        'w',   // up
+        's',   // down
+        '\n',  // confirm (Enter)
     );
-──────────── Game Init ─────────────
+
+    var menu_running = true;
+    var menu_choice: ?usize = null;
+
+    while (menu_running) {
+        // Clear terminal each frame
+        std.debug.print("\x1B[2J\x1B[H", .{}); // ANSI clear screen
+        drawTitleScreen(undefined); // optionally skip Engine here
+        menu.draw();
+
+        if (try Engine.readKey()) |key| {
+            if (menu.update(key)) |choice| {
+                menu_choice = choice;
+                menu_running = false;
+            }
+        }
+    }
+
+    if (menu_choice) |choice| {
+        switch (choice) {
+            0 => std.debug.print("Starting game...\n", .{}),
+            1 => {
+                std.debug.print("Options not implemented yet.\n", .{});
+                return;
+            },
+            2 => {
+                std.debug.print("Quit selected. Exiting...\n", .{});
+                return;
+            },
+            else => {},
+        }
+    }
+
+    // ───────────── Game Init ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         80,
