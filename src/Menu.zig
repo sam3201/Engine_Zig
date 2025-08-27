@@ -59,7 +59,7 @@ pub const Menu = struct {
         for (self.items, 0..) |item, i| {
             const x_start = (@as(i32, @intCast(canvas.width)) - @as(i32, @intCast(item.len))) / 2;
             for (item, 0..) |ch, j| {
-                const x = x_start + @intCast(j);
+                const x = x_start + j;
                 canvas.put(x, y, ch);
                 if (i == self.selected) {
                     // Highlight selected option
