@@ -128,6 +128,7 @@ pub const Chunk = struct {
             .allocator = allocator,
             .items = std.ArrayList(Item).init(allocator),
         };
+
         try self.spawnTestItems();
         return self;
     }
