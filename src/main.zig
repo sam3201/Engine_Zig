@@ -47,10 +47,7 @@ pub fn main() !void {
     // Title Screen
     // ───────────────────────────────
     var title_engine = try Engine.Engine.init(
-        allocator,
-        80,
-        24,
-        30,
+        allocator, 80, 24, 30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer title_engine.deinit();
@@ -64,16 +61,11 @@ pub fn main() !void {
             drawTitleScreen(canvas);
         }
     };
-
     title_engine.canvas.setUpdateFn(&UpdateFunctions.update);
 
     while (title_engine.running) {
         title_engine.clock.tick();
-
-        if (try Engine.readKey() != null) {
-            break; // exit to game
-        }
-
+        if (try Engine.readKey() != null) break; // wait for input
         title_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         UpdateFunctions.update(&title_engine.canvas);
         title_engine.canvas.render();
@@ -85,15 +77,12 @@ pub fn main() !void {
     // Singleplayer Game Loop
     // ───────────────────────────────
     var engine = try Engine.Engine.init(
-        allocator,
-        80,
-        24,
-        30,
+        allocator, 80, 24, 30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer engine.deinit();
 
-    var player = try Player.createWASDPlayer(allocator, 5, 5);
+    var player = try Player.createWASDPlayer(allocator, 0, 0);
     defer player.deinit();
 
     var world = try WorldManager.WorldManager.init(allocator, &engine.canvas, player);
@@ -104,33 +93,13 @@ pub fn main() !void {
 
         // ── Handle Input ──
         if (try Engine.readKey()) |key| {
-            const action = player.processInput(key);
-            switch (action) {
-                .UP => player.move(0, -1),
-                .DOWN => player.move(0, 1),
-                .LEFT => player.move(-1, 0),
-                .RIGHT => player.move(1, 0),
-                .ATTACK => {}, // TODO: attack logic
-                .INTERACT => {}, // TODO: interact
-                .OPENINVENTORY => {}, // TODO: open inventory UI
-                else => {
-                    if (key == 'q' or key == 'Q') break; // quit
-                },
-            }
+            if (key == 'q' or key == 'Q') break;
+            try world.processPlayerInput(key);
         }
-
-        // ── Update World ──
-        try world.update(&player);
 
         // ── Draw Frame ──
         engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
-        world.draw(&engine.canvas, &player);
-        player.draw(&engine.canvas);
-
-        // HUD
-        engine.canvas.print(0, 0, "HP: {d}/{d}  Lv: {d}  XP: {d}/{d}", .{ player.health, player.max_health, player.level, player.experience, player.experience_to_next_level });
-
-        // Push to terminal
+        world.draw();
         engine.canvas.render();
         engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
@@ -138,3 +107,4 @@ pub fn main() !void {
 
     std.debug.print("Exited single-player world.\n", .{});
 }
+
