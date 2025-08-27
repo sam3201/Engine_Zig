@@ -260,7 +260,7 @@ pub const Engine = struct {
             break;
             }
             main.setInput(byte);
-            
+            }
 
             self.canvas.clear(
                 ' ',
