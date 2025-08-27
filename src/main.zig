@@ -2,7 +2,7 @@ const std = @import("std");
 const Menu = @import("menu.zig").Menu;
 
 pub fn main() !void {
-    var menu = Menu.init(&[_][]const u8{"Start Game", "Options", "Quit"});
+    var menu = Menu.init(&[_][]const u8{ "Start Game", "Options", "Quit" });
 
     // Overwrite navigation keys to use arrow keys or something else
     menu.setKeys('i', 'k', ' '); // e.g. use I/K for nav, space for select
@@ -21,4 +21,3 @@ pub fn main() !void {
         }
     }
 }
-
