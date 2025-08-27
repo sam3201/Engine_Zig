@@ -140,6 +140,14 @@ pub const Chunk = struct {
         self.items.deinit();
     }
 
+        fn spawnTestItems(self: *Chunk) !void {
+        // place a potion near the chunk origin (0,0 local -> world = chunk*SIZE + local)
+        const potion = Item.init(1, "Potion", 1);
+        try self.items.append(.{ .item = potion, .x = self.coord.x * CHUNK_SIZE, .y = self.coord.y * CHUNK_SIZE });
+    }
+
+
+
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
         var rng = std.Random.DefaultPrng.init(seed);
