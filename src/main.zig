@@ -92,7 +92,7 @@ pub fn main() !void {
         ) catch unreachable;
         defer allocator.free(hud1);
         for (hud1, 0..) |c, i| {
-            game_engine.canvas.put(@intCast(i32, i), 0, c);
+            game_engine.canvas.put(i), 0, c);
         }
 
         const hud2 = std.fmt.allocPrint(
