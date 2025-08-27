@@ -159,7 +159,7 @@ pub const Chunk = struct {
         return null;
     }
 
-        pub fn removeItemIndex(self: *Chunk, i: usize) void {
+    pub fn removeItemIndex(self: *Chunk, i: usize) void {
         _ = self.items.orderedRemove(i);
     }
 
