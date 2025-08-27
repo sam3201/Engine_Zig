@@ -232,11 +232,11 @@ pub const WorldManager = struct {
     }
 
     pub fn draw(self: *WorldManager) void {
+        // Draw tiles
         for (0..@intCast(self.canvas_height)) |screen_y| {
             for (0..@intCast(self.canvas_width)) |screen_x| {
                 const world_x = self.camera_x + @as(i32, @intCast(screen_x));
                 const world_y = self.camera_y + @as(i32, @intCast(screen_y));
-
                 const tile = self.getTileAtWorld(world_x, world_y);
 
                 self.canvas.put(@intCast(screen_x), @intCast(screen_y), tile.getChar());
@@ -244,10 +244,23 @@ pub const WorldManager = struct {
             }
         }
 
+        // Draw items (iterate visible chunks)
+        var it = self.chunks.valueIterator();
+        while (it.next()) |chunk| {
+            for (chunk.items.items) |wi| {
+                const sx = wi.x - self.camera_x;
+                const sy = wi.y - self.camera_y;
+                if (sx >= 0 and sx < self.canvas_width and sy >= 0 and sy < self.canvas_height) {
+                    self.canvas.put(sx, sy, wi.ch);
+                    self.canvas.fillColor(sx, sy, wi.color);
+                }
+            }
+        }
+
+        // Draw player
         const pos = self.player.getPosition();
         const screen_x = pos.x - self.camera_x;
         const screen_y = pos.y - self.camera_y;
-
         if (screen_x >= 0 and screen_x < self.canvas_width and screen_y >= 0 and screen_y < self.canvas_height) {
             self.canvas.put(screen_x, screen_y, self.player.entity.ch);
             self.canvas.fillColor(screen_x, screen_y, self.player.entity.color);
