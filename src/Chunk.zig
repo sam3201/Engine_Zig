@@ -124,6 +124,7 @@ pub const Chunk = struct {
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
             .biome = BiomeType.Plains, //Choose random biome
             .difficulty_level = difficulty_level,
+            .generated = false,
             .allocator = allocator,
             .items = std.ArrayList(WorldItem).init(allocator),
         };
