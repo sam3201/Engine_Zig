@@ -51,7 +51,7 @@ pub const Menu = struct {
         const title_start = (@as(i32, @intCast(canvas.width)) - @as(i32, @intCast(self.title.len))) / 2;
         for (self.title, 0..) |ch, i| {
             canvas.put(title_start + i, 3, ch);
-            canvas.fillColor(title_start + @intCast(i), 3, green);
+            canvas.fillColor(title_start + i, 3, green);
         }
 
         // Draw menu options
