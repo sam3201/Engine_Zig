@@ -52,6 +52,11 @@ pub fn main() !void {
     );
     defer title_engine.deinit();
 
+        var menu = InputMenu.init(&[_][]const u8{"Start Game", "Options", "Exit"});
+    const choice = menu.handle_input();
+    std.debug.print("You selected: {s}\n", .{menu.options[choice]});
+
+
     var term = try Engine.TerminalGuard.init();
     defer term.deinit();
 
