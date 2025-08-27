@@ -255,11 +255,11 @@ pub const Engine = struct {
             self.clock.tick();
 
             if (try readKey()) |byte| {
-            if (byte == 'q' or byte == 27) {
-            self.running = false;
-            break;
-            }
-            main.setInput(byte);
+                if (byte == 'q' or byte == 27) {
+                    self.running = false;
+                    break;
+                }
+                main.setInput(byte);
             }
 
             self.canvas.clear(
