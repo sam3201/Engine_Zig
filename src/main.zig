@@ -1,14 +1,14 @@
+// src/main.zig
 const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
-const thread = std.Thread;
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    // Engine for title/menu
+    // ───────────── Title/Menu Engine ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         80,
@@ -27,11 +27,10 @@ pub fn main() !void {
     );
 
     var menu_choice: ?usize = null;
-
     while (engine.running and menu_choice == null) {
         engine.clock.tick();
 
-        if (try Engine.readKey()) |key| {
+        if (Engine.readKey() catch null) |key| { // non-blocking input
             if (menu.update(key)) |choice| {
                 menu_choice = choice;
             }
@@ -56,7 +55,7 @@ pub fn main() !void {
         }
     }
 
-    // ───────────── Game Init ─────────────
+    // ───────────── Game Engine ─────────────
     var game_engine = try Engine.Engine.init(
         allocator,
         80,
@@ -75,15 +74,45 @@ pub fn main() !void {
     while (game_engine.running and player.isAlive()) {
         game_engine.clock.tick();
 
-        if (try Engine.readKey()) |key| {
+        // Non-blocking input
+        if (Engine.readKey() catch null) |key| {
             if (key == 'q' or key == 'Q') break;
             try world.processPlayerInput(key);
         }
 
+        // Clear screen
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+
+        // ───────────── HUD ─────────────
+        const hud1 = std.fmt.allocPrint(
+            allocator,
+            "HP: {d}/{d} | Pos: ({d},{d}) | Chunk: ({d},{d}) | Chunks: {d}",
+            .{ player.hp, player.max_hp, player.x, player.y, player.chunk_x, player.chunk_y, world.chunk_count },
+        ) catch unreachable;
+        defer allocator.free(hud1);
+        for (hud1, 0..) |c, i| {
+            game_engine.canvas.put(@intCast(i32, i), 0, c);
+        }
+
+        const hud2 = std.fmt.allocPrint(
+            allocator,
+            "Biome: {any} | Difficulty: {d}",
+            .{ world.current_biome, world.difficulty },
+        ) catch unreachable;
+        defer allocator.free(hud2);
+        for (hud2, 0..) |c, i| {
+            game_engine.canvas.put(@intCast(i32, i), 1, c);
+        }
+
+        // ───────────── Draw World ─────────────
         world.draw();
+
+        // Render
         game_engine.canvas.render();
         game_engine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
     }
+
+    std.debug.print("Exited game.\n", .{});
 }
+
