@@ -6,8 +6,6 @@ pub const Menu = struct {
     title: []const u8,
     items: []const []const u8,
     selected: usize = 0,
-
-    // Navigation keys (configurable in main.zig)
     key_up: u8,
     key_down: u8,
     key_select: u8,
@@ -33,42 +31,35 @@ pub const Menu = struct {
         if (key == self.key_up) {
             if (self.selected > 0) self.selected -= 1;
         } else if (key == self.key_down) {
-            if (self.selected < self.items.len - 1) self.selected += 1;
+            if (self.selected + 1 < self.items.len) self.selected += 1;
         } else if (key == self.key_select) {
-            return self.selected; // choice confirmed
+            return self.selected;
         }
         return null;
     }
 
     pub fn draw(self: *Menu, canvas: *Engine.Canvas) void {
-        // Clear background
-        canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
-
         const white = Engine.Color{ .r = 255, .g = 255, .b = 255 };
         const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
 
-        // Draw title centered
-        const title_start = (@as(i32, @intCast(canvas.width)) - @as(i32, @intCast(self.title.len))) / 2;
+        // Title
+        const title_start = (canvas.width - self.title.len) / 2;
         for (self.title, 0..) |ch, i| {
-            canvas.put(title_start + i, 3, ch);
-            canvas.fillColor(title_start + i, 3, green);
+            canvas.put(@intCast(title_start + i), 2, ch);
+            canvas.fillColor(@intCast(title_start + i), 2, white);
         }
 
-        // Draw menu options
-        var y: i32 = 8;
+        // Menu items
         for (self.items, 0..) |item, i| {
-            const x_start = (@as(i32, @intCast(canvas.width)) - @as(i32, @intCast(item.len))) / 2;
+            const y = 5 + i * 2;
+            const start = (canvas.width - item.len) / 2;
+            const color = if (i == self.selected) green else white;
+
             for (item, 0..) |ch, j| {
-                const x = x_start + j;
-                canvas.put(x, y, ch);
-                if (i == self.selected) {
-                    // Highlight selected option
-                    canvas.fillColor(x, y, green);
-                } else {
-                    canvas.fillColor(x, y, white);
-                }
+                canvas.put(@intCast(start + j), y, ch);
+                canvas.fillColor(@intCast(start + j), y, color);
             }
-            y += 2;
         }
     }
 };
+
