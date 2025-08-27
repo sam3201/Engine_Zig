@@ -125,7 +125,7 @@ pub const Chunk = struct {
             .biome = BiomeType.Plains, //Choose random biome
             .difficulty_level = difficulty_level,
             .generated = true,
-            .allocator = allocator,
+            //.allocator = allocator,
             .items = std.ArrayList(WorldItem).init(allocator),
         };
 
