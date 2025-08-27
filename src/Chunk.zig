@@ -130,6 +130,15 @@ pub const Chunk = struct {
             .items = items,
             .generated = false,
         };
+
+        try self.items.append(WorldItem{
+            .item = .{ .name = "stone", .count = 1 },
+            .x = 0,
+            .y = 0,
+        })
+
+        return self;
+
     }
 
     pub fn deinit(self: *Chunk) void {
