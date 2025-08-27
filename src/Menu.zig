@@ -45,7 +45,7 @@ pub const Menu = struct {
         // Title
         const title_start = (canvas.width - self.title.len) / 2;
         for (self.title, 0..) |ch, i| {
-            const int_casted: i32 = @intCast(title_start + i);
+            const title_item_i32: i32 = @intCast(title_start + i);
             canvas.put(@intCast(title_start + i), 2, ch);
             canvas.fillColor(@intCast(title_start + i), 2, white);
         }
