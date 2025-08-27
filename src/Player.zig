@@ -150,7 +150,7 @@ pub const Player = struct {
                 if (self.inventory[i].quantity <= 0) {
                     // Remove item entirely
                     std.mem.copyBackwards(Item, self.inventory[i..], self.inventory[i + 1 ..]);
-                    self.inventory = self.allocator.shrink(self.inventory, self.inventory.len - 1) catch return;
+                    self.inventory = self.allocator.realloc(self.inventory, self.inventory.len - 1) catch return;
                 }
                 return;
             }
