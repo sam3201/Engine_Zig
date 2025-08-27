@@ -28,8 +28,7 @@ pub const Menu = struct {
 
     pub fn update(self: *Menu) ?usize {
         if (rl.IsKeyPressed(self.up_key)) {
-            if (self.selected > 0) self.selected -= 1
-            else self.selected = self.items.len - 1;
+            if (self.selected > 0) self.selected -= 1 else self.selected = self.items.len - 1;
         }
         if (rl.IsKeyPressed(self.down_key)) {
             self.selected = (self.selected + 1) % self.items.len;
@@ -47,4 +46,3 @@ pub const Menu = struct {
         }
     }
 };
-
