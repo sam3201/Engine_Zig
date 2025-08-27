@@ -225,6 +225,7 @@ pub const WorldManager = struct {
             }
         }
     }
+
     fn playerOpenInventory(self: *WorldManager) void {
         // TODO:
         _ = self;
