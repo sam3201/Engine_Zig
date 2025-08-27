@@ -138,10 +138,14 @@ pub const Chunk = struct {
     }
 
     fn spawnTestItems(self: *Chunk) !void {
-        // place a potion near the chunk origin (0,0 local -> world = chunk*SIZE + local)
-        const potion = Item.init(1, "Potion", 1);
-        try self.items.append(.{ .item = potion, .x = self.coord.x * CHUNK_SIZE, .y = self.coord.y * CHUNK_SIZE });
-    }
+            try self.items.append(WorldItem{
+            .item = Item{ .id = 1, .name = "Potion", .quantity = 1 },
+            .x = self.coord.x * CHUNK_SIZE + 2,
+            .y = self.coord.y * CHUNK_SIZE + 2,
+            .ch = '!',
+            .color = eng.Color{ .r = 200, .g = 0, .b = 200 },
+        });
+}
 
     pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
         try self.items.append(wi);
