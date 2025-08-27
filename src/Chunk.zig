@@ -122,19 +122,16 @@ pub const Chunk = struct {
         const items = std.ArrayList(WorldItem).init(allocator);
 
         const tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE);
-        var self = Chunk{
-            .coord = coord,
-            .tiles = tiles,
-            .biome = .Plains,
-            .difficulty_level = difficulty_level,
-            .items = items,
-            .generated = false,
-        };
-
-        try self.spawnTestItems();
-
-        return self;
-    }
+pub fn init(coord: ChunkCoord, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    var self = Chunk{
+        .coord = coord,
+        .difficulty_level = difficulty_level,
+        .allocator = allocator,
+        .items = std.ArrayList(Item).init(allocator),
+    };
+    try self.spawnTestItems();
+    return self;
+}
 
     pub fn deinit(self: *Chunk) void {
         self.items.deinit();
