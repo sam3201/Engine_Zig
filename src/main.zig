@@ -47,15 +47,17 @@ pub fn main() !void {
     // Title Screen
     // ───────────────────────────────
     var title_engine = try Engine.Engine.init(
-        allocator, 80, 24, 30,
+        allocator,
+        80,
+        24,
+        30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer title_engine.deinit();
 
-        var menu = InputMenu.init(&[_][]const u8{"Start Game", "Options", "Exit"});
+    var menu = InputMenu.init(&[_][]const u8{ "Start Game", "Options", "Exit" });
     const choice = menu.handle_input();
     std.debug.print("You selected: {s}\n", .{menu.options[choice]});
-
 
     var term = try Engine.TerminalGuard.init();
     defer term.deinit();
@@ -82,7 +84,10 @@ pub fn main() !void {
     // Singleplayer Game Loop
     // ───────────────────────────────
     var engine = try Engine.Engine.init(
-        allocator, 80, 24, 30,
+        allocator,
+        80,
+        24,
+        30,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer engine.deinit();
@@ -112,4 +117,3 @@ pub fn main() !void {
 
     std.debug.print("Exited single-player world.\n", .{});
 }
-
