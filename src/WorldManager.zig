@@ -146,13 +146,12 @@ pub const WorldManager = struct {
             .INTERACT => self.playerInteract(),
             .ATTACK => self.playerAttack(),
             .USEITEM => self.playerUseItem(),
-            .DROPITEM => {},
+            .DROPITEM => self.playerDropItem(),
             .OPENINVENTORY => self.playerOpenInventory(),
             .None => {},
         }
 
         const new_pos = self.player.getPosition();
-
         if (@divFloor(old_pos.x, Chunk.CHUNK_SIZE) != @divFloor(new_pos.x, Chunk.CHUNK_SIZE) or
             @divFloor(old_pos.y, Chunk.CHUNK_SIZE) != @divFloor(new_pos.y, Chunk.CHUNK_SIZE))
         {
