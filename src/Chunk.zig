@@ -159,6 +159,10 @@ pub const Chunk = struct {
         return null;
     }
 
+        pub fn removeItemIndex(self: *Chunk, i: usize) void {
+        _ = self.items.orderedRemove(i);
+    }
+
     pub fn generate(self: *Chunk, player_level: i32) void {
         const seed = self.coord.hash();
         var rng = std.Random.DefaultPrng.init(seed);
