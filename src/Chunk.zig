@@ -122,15 +122,15 @@ pub const Chunk = struct {
         const items = std.ArrayList(WorldItem).init(allocator);
 
         const tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE);
-    var self = Chunk{
-        .coord = coord,
-        .difficulty_level = difficulty_level,
-        .allocator = allocator,
-        .items = std.ArrayList(Item).init(allocator),
-    };
-    try self.spawnTestItems();
-    return self;
-}
+        var self = Chunk{
+            .coord = coord,
+            .difficulty_level = difficulty_level,
+            .allocator = allocator,
+            .items = std.ArrayList(Item).init(allocator),
+        };
+        try self.spawnTestItems();
+        return self;
+    }
 
     pub fn deinit(self: *Chunk) void {
         self.items.deinit();
