@@ -131,11 +131,7 @@ pub const Chunk = struct {
             .generated = false,
         };
 
-        try self.items.append(WorldItem{
-            .item = .{ .name = "stone", .count = 1 },
-            .x = 0,
-            .y = 0,
-        })
+        try self.spawnTestItems();
 
         return self;
 
