@@ -254,13 +254,14 @@ pub const Engine = struct {
         while (self.running) {
             self.clock.tick();
 
-            if (try readKey()) |byte| {
-                if (byte == 'q' or byte == 27) {
-                    self.running = false;
-                    break;
-                }
-                main.setInput(byte);
-            }
+            
+            //if (try readKey()) |byte| {
+            //    if (byte == 'q' or byte == 27) {
+            //        self.running = false;
+            //        break;
+            //    }
+            //    main.setInput(byte);
+            //}
 
             self.canvas.clear(
                 ' ',
