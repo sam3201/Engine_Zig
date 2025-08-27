@@ -34,7 +34,6 @@ pub fn main() !void {
         'w', // up
         's', // down
         '\n', // confirm (Enter)
-              // );
     );
 ──────────── Game Init ─────────────
     var engine = try Engine.Engine.init(
