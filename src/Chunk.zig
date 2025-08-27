@@ -134,7 +134,6 @@ pub const Chunk = struct {
         try self.spawnTestItems();
 
         return self;
-
     }
 
     pub fn deinit(self: *Chunk) void {
