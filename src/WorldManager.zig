@@ -182,20 +182,17 @@ pub const WorldManager = struct {
         const pos = self.player.getPosition();
         const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-        if (self.chunks.get(chunk_coord)) |*chunk| {
-            var i: usize = 0;
-            while (i < chunk.items.items.len) : (i += 1) {
-                const item = chunk.items.items[i];
-                // For simplicity, place item at player pos always
-                // (later we’ll store item.x, item.y)
-                _ = self.player.addItem(item) catch return;
-                chunk.items.orderedRemove(i);
-                std.debug.print("Picked up {s} x{d}\n", .{ item.name, item.quantity });
-                break;
+        if (self.chunks.getPtr(chunk_coord)) |chunk| {
+            if (chunk.findItemAt(pos.x, pos.y)) |idx| {
+                const wi = chunk.items.items[idx];
+                // add to inventory
+                _ = self.player.addItem(wi.item) catch return;
+                chunk.removeItemIndex(idx);
+                // (optional HUD/message)
+                std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
             }
         }
     }
-
     fn playerAttack(self: *WorldManager) void {
         // TODO
         _ = self;
