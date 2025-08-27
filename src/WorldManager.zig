@@ -39,6 +39,7 @@ pub const WorldManager = struct {
         };
 
         try world.updateChunks();
+        world.updateCamera();
 
         return world;
     }
