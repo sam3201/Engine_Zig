@@ -326,6 +326,7 @@ pub const WorldManager = struct {
     }
 
     pub fn randomizeStart(self: *WorldManager) void {
+        const timestamp; 
         var prng = std.Random.DefaultPrng.init(@bitCast(u64, std.time.nanoTimestamp()));
         var rand = prng.random();
 
