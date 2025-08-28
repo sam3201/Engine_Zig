@@ -80,12 +80,11 @@ pub const WorldManager = struct {
         };
     }
 
-    fn biomeForCoord(coord: Chunk.ChunkCoord, seed: u64) Chunk.BiomeType {
-        var rng = std.Random.DefaultPrng.init(coord.hash() ^ seed);
-        const biome_count = Chunk.BiomeCount;
-        const r = rng.random().intRangeLessThan(u32, 0, biome_count);
-        return Chunk.BiomeType(r);
-    }
+fn biomeForCoord(coord: Chunk.ChunkCoord, seed: u64) Chunk.BiomeType {
+    var rng = std.Random.DefaultPrng.init(coord.hash() ^ seed);
+    const r: u32 = rng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
+    return @enumFromInt(r);
+}
 
     pub fn updateChunks(self: *WorldManager) !void {
         const player_chunk = self.getPlayerChunkCoord();
