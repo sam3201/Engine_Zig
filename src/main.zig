@@ -96,15 +96,16 @@ pub fn main() !void {
             game_engine.canvas.put(int32_i, 0, c);
         }
 
-        const hud2 = std.fmt.allocPrint(
-            allocator,
-            "Biome: {any} | Difficulty: {d}",
-            .{ world.current_biome, world.difficulty },
-        ) catch unreachable;
-        defer allocator.free(hud2);
-        for (hud2, 0..) |c, i| {
-            game_engine.canvas.put(i, 1, c);
-        }
+        // const hud2 = std.fmt.allocPrint(
+        //    allocator,
+        //    "Biome: {any} | Difficulty: {d}",
+        //    .{ world.current_biome, world.difficulty },
+        // ) catch unreachable;
+        //defer allocator.free(hud2);
+        //for (hud2, 0..) |c, i| {
+        //    game_engine.canvas.put(i, 1, c);
+        //}
+
         // ───────────── Draw World ─────────────
         world.draw();
 
