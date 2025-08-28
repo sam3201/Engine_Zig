@@ -329,7 +329,6 @@ for (self.player.inventory.items.items) |it| {
         }
     }
     offset += entry.len;
-}
 
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
