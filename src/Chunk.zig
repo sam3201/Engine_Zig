@@ -233,8 +233,8 @@ pub const Chunk = struct {
             var y = start_y;
 
             for (0..@intCast(length)) |_| {
-                if (x >= 0 and x < CHUNK_SIZE and y >= 0 and y < CHUNK_SIZE) {
-                    const idx = @as(usize, @intCast(y * CHUNK_SIZE + x));
+                if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
+                    const idx = @as(usize, @intCast(y * CHUNK_WIDTH + x));
                     self.tiles[idx] = if (self.biome == .Desert) .Desert else .Empty;
                 }
 
