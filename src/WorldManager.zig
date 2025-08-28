@@ -39,7 +39,7 @@ pub const WorldManager = struct {
         };
 
         const start_biome = randomBiome();
-        const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, biome, allocator);
+        const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, start_biome, allocator);
 
         try world.updateChunks();
         try world.updateCamera();
