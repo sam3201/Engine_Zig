@@ -339,10 +339,6 @@ pub const WorldManager = struct {
             4 => .Tundra,
             else => .Volcanic,
         };
-        self.player.setPosition(world_x, world_y);
 
-        // ensure chunks are generated around this position
-        self.updateChunks() catch {};
-        self.updateCamera();
     }
 };
