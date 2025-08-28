@@ -347,6 +347,7 @@ pub fn randomBiome() Chunk.BiomeType {
     var prng = std.Random.DefaultPrng.init(seed);
     var rand = prng.random();
 
+    const biome_count = @typeInfo(Chunk.BiomeType).Enum.fields.len;
     const roll = rand.intRangeLessThan(u32, 0, Chunk.BiomeType.len);
     return switch (roll) {
         0 => .Plains,
