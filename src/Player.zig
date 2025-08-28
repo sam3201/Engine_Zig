@@ -227,22 +227,6 @@ pub fn createPlayer(
     );
 }
 
-pub fn createWASDPlayer(
-    allocator: std.mem.Allocator,
-    start_x: i32,
-    start_y: i32,
-) !Player {
-    return createPlayer(allocator, start_x, start_y, &WASD_BINDINGS);
-}
-
-pub fn createVimPlayer(
-    allocator: std.mem.Allocator,
-    start_x: i32,
-    start_y: i32,
-) !Player {
-    return createPlayer(allocator, start_x, start_y, &ARROW_BINDINGS);
-}
-
 pub fn save(self: Player, path: []const u8) !void {
     var file = try std.fs.cwd().createFile(path, .{ .truncate = true });
     defer file.close();
