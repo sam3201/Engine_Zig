@@ -369,7 +369,24 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
 
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
-        //… your existing init…
+        .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
+        .key_bindings = &[_]KeyBinding{
+            .{ .key = 'k', .action = .UP },
+            .{ .key = 'j', .action = .DOWN },
+            .{ .key = 'h', .action = .LEFT },
+            .{ .key = 'l', .action = .RIGHT },
+            .{ .key = 'e', .action = .INTERACT },
+            .{ .key = ' ', .action = .ATTACK },
+            .{ .key = 'i', .action = .OPENINVENTORY },
+        },
+        .health = 10,
+        .max_health = 10,
+        .xp = 0,
+        .speed = 3,
+        .level = 0,
+        .experience = 0,
+        .experience_to_next_level = 100,
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
+
