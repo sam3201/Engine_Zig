@@ -112,6 +112,7 @@ pub const WorldItem = struct {
 
 pub const Chunk = struct {
     coord: ChunkCoord,
+    biome: BiomeType, 
     tiles: [CHUNK_SIZE * CHUNK_SIZE]TileType,
     biome: BiomeType,
     difficulty_level: i32,
