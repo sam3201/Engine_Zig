@@ -258,32 +258,37 @@ pub const Chunk = struct {
         }
     }
 
-    fn addFeatures(self: *Chunk, random: std.Random) void {
-        if (random.float(f32) < 0.3) {
-            const water_x = random.intRangeAtMost(i32, 2, CHUNK_SIZE - 3);
-            const water_y = random.intRangeAtMost(i32, 2, CHUNK_SIZE - 3);
-            const water_size = random.intRangeAtMost(i32, 2, 4);
+fn addFeatures(self: *Chunk, random: std.Random) void {
+    // occasional lake
+    if (random.float(f32) < 0.15) {
+        const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
+        const lake_y = random.intRangeAtMost(i32, 3, CHUNK_HEIGHT - 4);
+        const size = random.intRangeAtMost(i32, 2, 5);
 
-            for (0..@intCast(water_size)) |dy| {
-                for (0..@intCast(water_size)) |dx| {
-                    const x = water_x + @as(i32, @intCast(dx));
-                    const y = water_y + @as(i32, @intCast(dy));
-                    if (x < CHUNK_WIDTH and x >= 0 and y >= 0 and y < CHUNK_HEIGHT) {
-                        const idx = @as(usize, @intCast(y * CHUNK_WIDTH + x));
-                        self.tiles[idx] = .Water;
-                    }
+        for (0..size) |dy| {
+            for (0..size) |dx| {
+                const x = lake_x + @as(i32, @intCast(dx));
+                const y = lake_y + @as(i32, @intCast(dy));
+                if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
+                    self.tiles[@intCast(y * CHUNK_WIDTH + x)] = .Water;
                 }
-            }
-        }
-
-        const obstacle_density = @min(0.4, @as(f32, @floatFromInt(self.difficulty_level)) * 0.02);
-        for (0..CHUNK_SIZE) |i| {
-            if (random.float(f32) < obstacle_density) {
-                self.tiles[i] = .Stone;
             }
         }
     }
 
+    // relaxed obstacle density
+    const obstacle_density = 0.05; // 5% max
+    for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
+        if (random.float(f32) < obstacle_density) {
+            self.tiles[i] = switch (self.biome) {
+                .Forest => .Tree,
+                .Mountains => .Stone,
+                .Volcanic => .Lava,
+                else => .Stone,
+            };
+        }
+    }
+}
     pub fn getTile(self: Chunk, local_x: i32, local_y: i32) TileType {
         if (local_x < 0 or local_x >= CHUNK_WIDTH or local_y < 0 or local_y >= CHUNK_WIDTH) {
             return .Stone; // Out of bounds
