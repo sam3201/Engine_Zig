@@ -327,7 +327,7 @@ pub const WorldManager = struct {
 
     pub fn randomizeStart(self: *WorldManager) void {
         const timestamp_u64: u64 = @bitCast(std.time.nanoTimestamp());
-        var prng = std.Random.DefaultPrng.init(@bitCast(u64, std.time.nanoTimestamp()));
+        var prng = std.Random.DefaultPrng.init(timestamp_u64);
         var rand = prng.random();
 
         // choose a random chunk within ±50 range
