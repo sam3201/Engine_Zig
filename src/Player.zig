@@ -130,7 +130,7 @@ pub const Player = struct {
         return self.level;
     }
 
-    pub fn addItem(self: *Player) !void {
+    pub fn addItem(self: *Player, item: Inventory.Item) !void {
         try self.inventory.addItem(item);
     }
 
