@@ -171,21 +171,28 @@ pub const Chunk = struct {
         _ = self.items.orderedRemove(i);
     }
 
-    pub fn generate(self: *Chunk, player_level: i32) void {
-        const seed = self.coord.hash();
-        var rng = std.Random.DefaultPrng.init(seed);
-        const random = rng.random();
+pub fn generate(self: *Chunk) void {
+    const primary = self.biome.getPrimaryTile();
+    const secondary = self.biome.getSecondaryTile();
 
-        const distance_from_origin: i32 = @intCast(@abs(self.coord.x) + @abs(self.coord.y));
-        self.biome = self.selectBiome(distance_from_origin, player_level, random);
-        self.difficulty_level = player_level + @divTrunc(distance_from_origin, 3);
+    var rng = std.Random.DefaultPrng.init(self.coord.hash());
 
-        self.generateTerrain(random);
+    for (0..CHUNK_HEIGHT) |y| {
+        for (0..CHUNK_SIZE) |x| {
+            const idx = y * CHUNK_SIZE + x;
+            const roll = rng.random().intRangeAtMost(u8, 0, 100);
 
-        self.addFeatures(random);
-
-        self.generated = true;
+            self.tiles[idx] = switch (self.biome) {
+                .Plains => if (roll < 80) primary else if (roll < 90) .Water else secondary,
+                .Forest => if (roll < 70) primary else if (roll < 85) .Grass else .Water,
+                .Mountains => if (roll < 70) primary else if (roll < 90) .Stone else .Snow,
+                .Desert => if (roll < 80) primary else if (roll < 95) .Stone else .Empty,
+                .Tundra => if (roll < 75) primary else if (roll < 90) .Stone else .Water,
+                .Volcanic => if (roll < 70) primary else if (roll < 85) .Stone else .Lava,
+            };
+        }
     }
+}
 
     fn selectBiome(self: *Chunk, distance: i32, player_level: i32, random: std.Random) BiomeType {
         _ = self;
