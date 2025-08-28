@@ -343,3 +343,11 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
         self.key_bindings[self.key_bindings.len - 1] = KeyBinding{ .key = key, .action = action };
     }
 }
+
+    pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
+        return Player{
+            // … your existing init …
+            .inventory = try Inventory.Inventory.init(allocator),
+        };
+    }
+
