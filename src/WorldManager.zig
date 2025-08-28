@@ -37,9 +37,9 @@ pub const WorldManager = struct {
             .chunks = std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage).init(allocator),
             .canvas_width = @intCast(canvas.width),
             .canvas_height = @intCast(canvas.height),
+            .biome = randomBiome(),
         };
 
-        const biome = randomBiome();
         try world.updateChunks();
         world.updateCamera();
 
