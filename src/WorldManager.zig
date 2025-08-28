@@ -38,6 +38,7 @@ pub const WorldManager = struct {
             .canvas_height = @intCast(canvas.height),
         };
         const start_biome = randomBiome();
+        try world.chunks.put(Chunk.ChunkCoord{ .x = 0, .y = 0 }, try Chunk.Chunk.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, start_biome, allocator));
 
         try world.updateChunks();
         try world.updateCamera();
