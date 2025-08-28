@@ -340,5 +340,4 @@ fn randomBiome(self: *WorldManager) Chunk.biome {
         4 => .Tundra,
         else => .Volcanic,
     };
-
 }
