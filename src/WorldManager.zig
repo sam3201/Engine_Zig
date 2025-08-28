@@ -352,4 +352,3 @@ pub fn randomBiome() Chunk.BiomeType {
 
     return Chunk.BiomeType(roll);
 }
-
