@@ -5,7 +5,7 @@ const eng = @import("Engine.zig");
 const Item = @import("Item.zig").Item;
 const WorldManager = @import("WorldManager.zig");
 
-pub const CHUNK_SIZE: i32 = 32;
+pub const CHUNK_SIZE: i32 = 64;
 
 pub const TileType = enum {
     Empty,
