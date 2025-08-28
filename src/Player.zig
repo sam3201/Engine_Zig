@@ -76,7 +76,6 @@ pub const Player = struct {
                 .{ .key = 'i', .action = .OPENINVENTORY },
             },
             .allocator = allocator,
-            
             .inventory = try Inventory.Inventory.init(allocator),
         };
     }
