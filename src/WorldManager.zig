@@ -330,17 +330,15 @@ pub const WorldManager = struct {
         var prng = std.Random.DefaultPrng.init(timestamp_u64);
         var rand = prng.random();
 
-        // choose a random chunk within ±50 range
-        const start_chunk_x = rand.intRangeAtMost(i32, -50, 50);
-        const start_chunk_y = rand.intRangeAtMost(i32, -50, 50);
-
-        // pick a random tile inside that chunk
-        const local_x = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
-        const local_y = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
-
-        const world_x = start_chunk_x * Chunk.CHUNK_SIZE + local_x;
-        const world_y = start_chunk_y * Chunk.CHUNK_SIZE + local_y;
-
+    const roll = rand.intRangeLessThan(u32, 0, 6);
+    return switch (roll) {
+        0 => .Plains,
+        1 => .Forest,
+        2 => .Mountains,
+        3 => .Desert,
+        4 => .Tundra,
+        else => .Volcanic,
+    };
         self.player.setPosition(world_x, world_y);
 
         // ensure chunks are generated around this position
