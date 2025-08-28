@@ -260,7 +260,7 @@ pub const Chunk = struct {
                 for (0..@intCast(water_size)) |dx| {
                     const x = water_x + @as(i32, @intCast(dx));
                     const y = water_y + @as(i32, @intCast(dy));
-                    if (x < CHUNK_SIZE and y < CHUNK_SIZE) {
+                    if (x < CHUNK_WIDTH and x >= 0 and y >= 0 and y < CHUNK_HEIGHT) {
                         const idx = @as(usize, @intCast(y * CHUNK_SIZE + x));
                         self.tiles[idx] = .Water;
                     }
