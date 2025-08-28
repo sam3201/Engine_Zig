@@ -324,7 +324,6 @@ pub const WorldManager = struct {
             }
         }
     }
-};
 
 pub fn randomizeStart(self: *WorldManager) void {
     var prng = std.rand.DefaultPrng.init(@intCast(@as(u64, std.time.timestamp())));
@@ -347,3 +346,5 @@ pub fn randomizeStart(self: *WorldManager) void {
     self.updateChunks() catch {};
     self.updateCamera();
 }
+
+};
