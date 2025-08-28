@@ -325,21 +325,20 @@ pub const WorldManager = struct {
             }
         }
     }
-
-    pub fn randomizeStart(self: *WorldManager) void {
-        _ = self;
-        const timestamp_u64: u64 = @intCast(std.time.nanoTimestamp());
-        var prng = std.Random.DefaultPrng.init(timestamp_u64);
-        var rand = prng.random();
-
-        const roll = rand.intRangeLessThan(u32, 0, 6);
-        return switch (roll) {
-            0 => .Plains,
-            1 => .Forest,
-            2 => .Mountains,
-            3 => .Desert,
-            4 => .Tundra,
-            else => .Volcanic,
-        };
-    }
 };
+
+fn randomBiome() Chunk.Biome {
+    var prng = std.Random.DefaultPrng.init(@bitCast(u64, std.time.nanoTimestamp()));
+    var rand = prng.random();
+
+    const roll = rand.intRangeLessThan(u32, 0, 6);
+    return switch (roll) {
+        0 => .Plains,
+        1 => .Forest,
+        2 => .Mountains,
+        3 => .Desert,
+        4 => .Tundra,
+        else => .Volcanic,
+    };
+}
+
