@@ -134,21 +134,9 @@ pub const Player = struct {
         try self.inventory.addItem(item);
     }
 
-    pub fn removeItem(self: *Player, name: []const u8, quantity: i32) void {
-        var i: usize = 0;
-        while (i < self.inventory.len) : (i += 1) {
-            if (std.mem.eql(u8, self.inventory[i].name, name)) {
-                self.inventory[i].quantity -= quantity;
-                if (self.inventory[i].quantity <= 0) {
-                    // Remove item entirely
-                    std.mem.copyBackwards(Item, self.inventory[i..], self.inventory[i + 1 ..]);
-                    self.inventory = self.allocator.realloc(self.inventory, self.inventory.len - 1) catch return;
-                }
-                return;
-            }
-        }
+    pub fn removeItem(self: *Player, name: []const u8, amount: u32) void {
+        self.inventory.removeItem(name, amount);
     }
-
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
         canvas.put(self.entity.x, self.entity.y, self.entity.ch);
         canvas.fillColor(self.entity.x, self.entity.y, self.entity.color);
