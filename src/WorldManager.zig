@@ -341,4 +341,3 @@ fn randomBiome() Chunk.Biome {
         else => .Volcanic,
     };
 }
-
