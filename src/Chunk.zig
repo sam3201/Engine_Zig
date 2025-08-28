@@ -129,7 +129,7 @@ pub const Chunk = struct {
             .items = std.ArrayList(WorldItem).init(allocator),
         };
 
-                self.generateTerrain(std.rand.DefaultPrng.init(coord.hash()).random()); 
+        self.generateTerrain(std.rand.DefaultPrng.init(coord.hash()).random()); 
         try self.spawnTestItems();
         return self;
     }
