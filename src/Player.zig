@@ -350,3 +350,10 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
+
+pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
+    return Player{
+        //… your existing init…
+        .inventory = try Inventory.Inventory.init(allocator),
+    };
+}
