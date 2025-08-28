@@ -131,8 +131,8 @@ pub const Player = struct {
     }
 
     pub fn addItem(self: *Player) !void {
-            try self.inventory.addItem(item);
-}
+        try self.inventory.addItem(item);
+    }
 
     pub fn removeItem(self: *Player, name: []const u8, quantity: i32) void {
         var i: usize = 0;
