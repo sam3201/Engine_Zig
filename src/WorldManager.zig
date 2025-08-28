@@ -327,7 +327,7 @@ pub const WorldManager = struct {
     }
 };
 
-fn randomBiome(chunk_coord: ChunkCoord) Chunk.biome {
+fn randomBiome() Chunk.biome {
     var prng = std.Random.DefaultPrng.init(std.time.nanoTimestamp());
     var rand = prng.random();
 
