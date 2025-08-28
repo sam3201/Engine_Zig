@@ -304,6 +304,33 @@ fn playerDropItem(self: *WorldManager) void {
         else
             eng.Color{ .r = 0, .g = 255, .b = 0 };
 
+        var inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
+defer self.allocator.free(inv_str);
+
+for (inv_str, 0..) |ch, i| {
+    const y: i32 = 2;
+    if (i < self.canvas.width) {
+        self.canvas.put(@intCast(i), y, ch);
+        self.canvas.fillColor(@intCast(i), y, eng.Color{ .r = 200, .g = 200, .b = 200 });
+    }
+}
+
+var offset: usize = inv_str.len;
+for (self.player.inventory.items.items) |it| {
+    const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.name, it.quantity }) catch continue;
+    defer self.allocator.free(entry);
+
+    for (entry, 0..) |ch, j| {
+        const y: i32 = 2;
+        const x: usize = offset + j;
+        if (x < self.canvas.width) {
+            self.canvas.put(@intCast(x), y, ch);
+            self.canvas.fillColor(@intCast(x), y, eng.Color{ .r = 180, .g = 180, .b = 0 });
+        }
+    }
+    offset += entry.len;
+}
+
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
                 self.canvas.put(@intCast(i), 0, ' ');
@@ -341,34 +368,6 @@ fn playerDropItem(self: *WorldManager) void {
             }
         }
     }
-
-var inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
-defer self.allocator.free(inv_str);
-
-for (inv_str, 0..) |ch, i| {
-    const y: i32 = 2;
-    if (i < self.canvas.width) {
-        self.canvas.put(@intCast(i), y, ch);
-        self.canvas.fillColor(@intCast(i), y, eng.Color{ .r = 200, .g = 200, .b = 200 });
-    }
-}
-
-var offset: usize = inv_str.len;
-for (self.player.inventory.items.items) |it| {
-    const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.name, it.quantity }) catch continue;
-    defer self.allocator.free(entry);
-
-    for (entry, 0..) |ch, j| {
-        const y: i32 = 2;
-        const x: usize = offset + j;
-        if (x < self.canvas.width) {
-            self.canvas.put(@intCast(x), y, ch);
-            self.canvas.fillColor(@intCast(x), y, eng.Color{ .r = 180, .g = 180, .b = 0 });
-        }
-    }
-    offset += entry.len;
-}
-
 };
 
 pub fn randomBiome() Chunk.BiomeType {
