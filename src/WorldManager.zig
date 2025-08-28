@@ -3,7 +3,7 @@
 const std = @import("std");
 const eng = @import("Engine.zig");
 const Player = @import("Player.zig");
-const Chunk = @import("Chunk.zig");
+const Chunk = @import("Chunk.zig").Chunk;
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
