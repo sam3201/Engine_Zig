@@ -281,7 +281,7 @@ pub const Chunk = struct {
             return .Stone; // Out of bounds
         }
 
-        const idx = @as(usize, @intCast(local_y * CHUNK_SIZE + local_x));
+        const idx = @as(usize, @intCast(local_y * CHUNK_WIDTH + local_x));
         return self.tiles[idx];
     }
 
