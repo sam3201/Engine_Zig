@@ -17,9 +17,9 @@ pub fn main() !void {
     // ───────────── Game Engine ─────────────
     var engine = try Engine.Engine.init(
         allocator,
-        80,
-        24,
-        30,
+        WIDTH,
+        HEIGHT,
+        FPS,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer engine.deinit();
