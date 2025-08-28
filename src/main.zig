@@ -87,7 +87,7 @@ pub fn main() !void {
         // ───────────── HUD ─────────────
         const hud1 = std.fmt.allocPrint(
             allocator,
-            "HP: {d}/{d} | Pos: ({d},{d})", 
+            "HP: {d}/{d} | Pos: ({d},{d})",
             .{ player.health, player.max_health, pos.x, pos.y, world.chunk_x, world.chunk_y, world.chunk_count },
         ) catch unreachable;
         defer allocator.free(hud1);
