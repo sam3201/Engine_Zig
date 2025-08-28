@@ -63,23 +63,6 @@ pub const Player = struct {
         };
     }
 
-        pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
-        return Player{
-            .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
-            .key_bindings = &[_]KeyBinding{
-                .{ .key = 'w', .action = .UP },
-                .{ .key = 's', .action = .DOWN },
-                .{ .key = 'a', .action = .LEFT },
-                .{ .key = 'd', .action = .RIGHT },
-                .{ .key = 'e', .action = .INTERACT },
-                .{ .key = ' ', .action = .ATTACK },
-                .{ .key = 'i', .action = .OPENINVENTORY },
-            },
-            .allocator = allocator,
-            .inventory = try Inventory.Inventory.init(allocator),
-        };
-    }
-
     pub fn deinit(self: *Player) void {
         if (self.key_bindings.len > 0) {
             self.allocator.free(self.key_bindings);
