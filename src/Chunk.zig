@@ -130,7 +130,6 @@ pub const Chunk = struct {
         };
 
                 self.generateTerrain(std.rand.DefaultPrng.init(coord.hash()).random()); 
-
         try self.spawnTestItems();
         return self;
     }
