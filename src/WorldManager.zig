@@ -325,26 +325,25 @@ pub const WorldManager = struct {
         }
     }
 
-pub fn randomizeStart(self: *WorldManager) void {
-    var prng = std.rand.DefaultPrng.init(@intCast(@as(u64, std.time.timestamp())));
-    const rand = prng.random();
+    pub fn randomizeStart(self: *WorldManager) void {
+        var prng = std.rand.DefaultPrng.init(@intCast(@as(u64, std.time.timestamp())));
+        const rand = prng.random();
 
-    // choose a random chunk within ±50 range
-    const start_chunk_x = rand.intRangeAtMost(i32, -50, 50);
-    const start_chunk_y = rand.intRangeAtMost(i32, -50, 50);
+        // choose a random chunk within ±50 range
+        const start_chunk_x = rand.intRangeAtMost(i32, -50, 50);
+        const start_chunk_y = rand.intRangeAtMost(i32, -50, 50);
 
-    // pick a random tile inside that chunk
-    const local_x = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
-    const local_y = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
+        // pick a random tile inside that chunk
+        const local_x = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
+        const local_y = rand.intRangeAtMost(i32, 0, Chunk.CHUNK_SIZE - 1);
 
-    const world_x = start_chunk_x * Chunk.CHUNK_SIZE + local_x;
-    const world_y = start_chunk_y * Chunk.CHUNK_SIZE + local_y;
+        const world_x = start_chunk_x * Chunk.CHUNK_SIZE + local_x;
+        const world_y = start_chunk_y * Chunk.CHUNK_SIZE + local_y;
 
-    self.player.setPosition(world_x, world_y);
+        self.player.setPosition(world_x, world_y);
 
-    // ensure chunks are generated around this position
-    self.updateChunks() catch {};
-    self.updateCamera();
-}
-
+        // ensure chunks are generated around this position
+        self.updateChunks() catch {};
+        self.updateCamera();
+    }
 };
