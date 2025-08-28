@@ -82,7 +82,7 @@ pub const WorldManager = struct {
 
     fn biomeForCoord(coord: Chunk.ChunkCoord, seed: u64) Chunk.BiomeType {
         var rng = std.Random.DefaultPrng.init(coord.hash() ^ seed);
-        const biome_count = Chunk.BiomeCount
+        const biome_count = Chunk.BiomeCount;
         const r = rng.random().intRangeLessThan(u32, 0, biome_count);
         return Chunk.BiomeType(r);
     }
