@@ -67,8 +67,7 @@ pub const Player = struct {
         if (self.key_bindings.len > 0) {
             self.allocator.free(self.key_bindings);
         }
-                self.inventory.deinit();
-
+        self.inventory.deinit();
     }
 
     pub fn processInput(self: *Player, input: u8) InputAction {
