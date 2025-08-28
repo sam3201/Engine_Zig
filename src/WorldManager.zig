@@ -37,7 +37,7 @@ pub const WorldManager = struct {
             .canvas_width = @intCast(canvas.width),
             .canvas_height = @intCast(canvas.height),
         };
-    const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, biome, allocator);
+        const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, biome, allocator);
 
         try world.updateChunks();
         try world.updateCamera();
