@@ -290,7 +290,7 @@ pub const Chunk = struct {
             return;
         }
 
-        const idx = @as(usize, @intCast(local_y * CHUNK_SIZE + local_x));
+        const idx = @as(usize, @intCast(local_y * CHUNK_WIDTH + local_x));
         self.tiles[idx] = tile;
     }
 };
