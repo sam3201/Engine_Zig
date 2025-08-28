@@ -96,7 +96,7 @@ pub const WorldManager = struct {
             while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
                 const coord = Chunk.ChunkCoord{ .x = x, .y = y };
                 if (!self.chunks.contains(coord)) {
-                    const player_level: i32 = self.player.level;
+                    const player_level: i32 = @intCast(self.player.level);
                     const biome = biomeForCoord(coord, self.player.level); // pick one for new chunk
                     const chunk = try Chunk.Chunk.init(coord, biome, self.player.level, self.allocator);
                     try self.chunks.put(coord, chunk);
