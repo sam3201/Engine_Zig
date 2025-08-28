@@ -39,7 +39,7 @@ pub const WorldManager = struct {
         };
 
         const self = &world;
-        _ = self.randomizeStart();
+        self.randomizeStart();
         try world.updateChunks();
         world.updateCamera();
 
