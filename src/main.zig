@@ -48,7 +48,7 @@ pub fn main() !void {
         engine.clock.sleepUntilNextFrame();
     }
 
-    if (menu_choice) |choice| {
+    if (title_menu_choice) |choice| {
         switch (choice) {
             0 => std.debug.print("Starting game...\n", .{}),
             1 => {
