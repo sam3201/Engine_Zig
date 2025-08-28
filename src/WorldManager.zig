@@ -38,6 +38,7 @@ pub const WorldManager = struct {
             .canvas_height = @intCast(canvas.height),
         };
 
+        const self = &world;
         @this().randomizeStart();
         try world.updateChunks();
         world.updateCamera();
