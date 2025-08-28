@@ -43,7 +43,7 @@ pub const WorldManager = struct {
         try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
 
         try world.updateChunks();
-        try world.updateCamera();
+        world.updateCamera();
 
         return world;
     }
