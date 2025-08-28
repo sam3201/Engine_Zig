@@ -349,6 +349,5 @@ pub fn randomBiome() Chunk.BiomeType {
 
     const biome_count = @typeInfo(Chunk.BiomeType).Enum.fields.len;
     const roll = rand.intRangeLessThan(u32, 0, biome_count);
-        return @enumFromInt(Chunk.BiomeType, roll);
-
+    return @enumFromInt(Chunk.BiomeType, roll);
 }
