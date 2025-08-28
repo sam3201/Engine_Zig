@@ -131,17 +131,8 @@ pub const Player = struct {
     }
 
     pub fn addItem(self: *Player) !void {
-        // Look for existing item
-        for (self.inventory) |*inv_item| {
-            if (std.mem.eql(u8, inv_item.name, item.name)) {
-                inv_item.quantity += item.quantity;
-                return;
-            }
-        }
-        // Otherwise append
-        self.inventory = try self.allocator.realloc(self.inventory, self.inventory.len + 1);
-        self.inventory[self.inventory.len - 1] = item;
-    }
+            try self.inventory.addItem(item);
+}
 
     pub fn removeItem(self: *Player, name: []const u8, quantity: i32) void {
         var i: usize = 0;
