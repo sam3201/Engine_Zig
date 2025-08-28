@@ -339,6 +339,5 @@ pub const WorldManager = struct {
             4 => .Tundra,
             else => .Volcanic,
         };
-
     }
 };
