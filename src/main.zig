@@ -8,7 +8,7 @@ const Menu = @import("Menu.zig").Menu;
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    // ───────────── Title/Menu Engine ─────────────
+    // ───────────── Engine ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         80,
