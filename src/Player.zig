@@ -360,7 +360,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .max_health = 10,
         .xp = 0,
         .speed = 3,
-        .level = 1,
+        .level = 0,
         .experience = 0,
         .experience_to_next_level = 100,
 
