@@ -333,7 +333,7 @@ fn randomBiome() Chunk.BiomeType {
     var prng = std.Random.DefaultPrng.init(seed);
     var rand = prng.random();
 
-    const roll = rand.intRangeLessThan(u32, 0, 6);
+    const roll = rand.intRangeLessThan(u32, 0, Chunk.BiomeType.len);
     return switch (roll) {
         0 => .Plains,
         1 => .Forest,
