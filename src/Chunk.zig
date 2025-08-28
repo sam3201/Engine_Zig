@@ -269,7 +269,7 @@ pub const Chunk = struct {
         }
 
         const obstacle_density = @min(0.4, @as(f32, @floatFromInt(self.difficulty_level)) * 0.02);
-        for (0..CHUNK_SIZE * CHUNK_SIZE) |i| {
+        for (0..CHUNK_SIZE) |i| {
             if (random.float(f32) < obstacle_density) {
                 self.tiles[i] = .Stone;
             }
