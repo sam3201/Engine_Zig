@@ -24,6 +24,7 @@ pub const KeyBinding = struct {
 };
 
 pub const Player = struct {
+    inventory: []Item = &[_]Item{},
     entity: Entity.Entity,
     key_bindings: []KeyBinding,
     allocator: std.mem.Allocator,
