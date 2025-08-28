@@ -210,7 +210,7 @@ pub const Chunk = struct {
         const primary_tile = self.biome.getPrimaryTile();
         const secondary_tile = self.biome.getSecondaryTile();
 
-        for (0..CHUNK_SIZE * CHUNK_SIZE) |i| {
+        for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
             if (random.float(f32) < 0.7) {
                 self.tiles[i] = primary_tile;
             } else {
