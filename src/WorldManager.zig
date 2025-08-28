@@ -80,24 +80,24 @@ pub const WorldManager = struct {
         };
     }
 
-    pub fn updateChunks(self: *WorldManager) !void {
-        const player_chunk = self.getPlayerChunkCoord();
+    fn unlopub fn updateChunks(self: *WorldManager) !void {
+    const player_chunk = self.getPlayerChunkCoord();
 
-        var y: i32 = player_chunk.y - self.loaded_radius;
-        while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
-            var x: i32 = player_chunk.x - self.loaded_radius;
-            while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
-                const coord = Chunk.ChunkCoord{ .x = x, .y = y };
-                if (!self.chunks.contains(coord)) {
-                    const chunk = try Chunk.Chunk.init(coord, self.player.getLevel(), self.player.getBiome(), self.allocator);
-                    try self.chunks.put(coord, chunk);
-                }
+    var y: i32 = player_chunk.y - self.loaded_radius;
+    while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
+        var x: i32 = player_chunk.x - self.loaded_radius;
+        while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
+            const coord = Chunk.ChunkCoord{ .x = x, .y = y };
+            if (!self.chunks.contains(coord)) {
+                const biome = randomBiome(); // pick one for new chunk
+                const chunk = try Chunk.Chunk.init(coord, biome, self.player.level, self.allocator);
+                try self.chunks.put(coord, chunk);
             }
         }
-        self.unloadDistantChunks(player_chunk);
     }
-
-    fn unloadDistantChunks(self: *WorldManager, player_chunk: Chunk.ChunkCoord) void {
+    self.unloadDistantChunks(player_chunk);
+}
+adDistantChunks(self: *WorldManager, player_chunk: Chunk.ChunkCoord) void {
         const unload_radius = self.loaded_radius + 2;
 
         var iterator = self.chunks.iterator();
