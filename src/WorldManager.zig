@@ -37,8 +37,8 @@ pub const WorldManager = struct {
             .canvas_width = @intCast(canvas.width),
             .canvas_height = @intCast(canvas.height),
         };
-
-        const biome = try world.player.getLevel().getBiome(0, 0);
+        
+        const start_biome = randomBiome();
         const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, biome, allocator);
 
         try world.updateChunks();
