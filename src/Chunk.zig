@@ -171,30 +171,30 @@ pub const Chunk = struct {
         _ = self.items.orderedRemove(i);
     }
 
-pub fn generate(self: *Chunk) void {
-    const primary = self.biome.getPrimaryTile();
-    const secondary = self.biome.getSecondaryTile();
-    var rng = std.Random.DefaultPrng.init(self.coord.hash());
+    pub fn generate(self: *Chunk) void {
+        const primary = self.biome.getPrimaryTile();
+        const secondary = self.biome.getSecondaryTile();
+        var rng = std.Random.DefaultPrng.init(self.coord.hash());
 
-    for (0..CHUNK_HEIGHT) |y| {
-        for (0..CHUNK_WIDTH) |x| {
-            const idx = y * CHUNK_WIDTH + x;
-            const roll = rng.random().intRangeAtMost(u8, 0, 100);
+        for (0..CHUNK_HEIGHT) |y| {
+            for (0..CHUNK_WIDTH) |x| {
+                const idx = y * CHUNK_WIDTH + x;
+                const roll = rng.random().intRangeAtMost(u8, 0, 100);
 
-            self.tiles[idx] = switch (self.biome) {
-                .Plains => if (roll < 85) primary else if (roll < 90) .Tree else .Empty,
-                .Forest => if (roll < 65) primary else if (roll < 85) .Grass else .Water,
-                .Mountains => if (roll < 75) primary else if (roll < 85) .Stone else .Snow,
-                .Desert => if (roll < 90) primary else if (roll < 95) .Stone else .Empty,
-                .Tundra => if (roll < 80) primary else if (roll < 90) .Stone else .Snow,
-                .Volcanic => if (roll < 70) primary else if (roll < 85) .Stone else .Lava,
-            };
+                self.tiles[idx] = switch (self.biome) {
+                    .Plains => if (roll < 85) primary else if (roll < 90) .Tree else .Empty,
+                    .Forest => if (roll < 65) primary else if (roll < 85) .Grass else .Water,
+                    .Mountains => if (roll < 75) primary else if (roll < 85) .Stone else .Snow,
+                    .Desert => if (roll < 90) primary else if (roll < 95) .Stone else .Empty,
+                    .Tundra => if (roll < 80) primary else if (roll < 90) .Stone else .Snow,
+                    .Volcanic => if (roll < 70) primary else if (roll < 85) .Stone else .Lava,
+                };
+            }
         }
-    }
 
-    // sprinkle some water or obstacles gently
-    self.addFeatures(rng.random());
-}
+        // sprinkle some water or obstacles gently
+        self.addFeatures(rng.random());
+    }
     fn selectBiome(self: *Chunk, distance: i32, player_level: i32, random: std.Random) BiomeType {
         _ = self;
 
