@@ -80,7 +80,6 @@ pub const Player = struct {
         };
     }
 
-
     pub fn deinit(self: *Player) void {
         if (self.key_bindings.len > 0) {
             self.allocator.free(self.key_bindings);
