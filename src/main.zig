@@ -36,8 +36,8 @@ pub fn main() !void {
         engine.clock.tick();
 
         if (Engine.readKey() catch null) |key| { // non-blocking input
-            if (menu.update(key)) |choice| {
-                menu_choice = choice;
+            if (title_menu.update(key)) |choice| {
+                title_menu_choice = choice;
             }
         }
 
