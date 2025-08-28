@@ -343,11 +343,13 @@ pub const WorldManager = struct {
 };
 
 pub fn randomBiome() Chunk.BiomeType {
-    const seed: u64 = @intCast(std.time.milliTimestamp());
-    var prng = std.Random.DefaultPrng.init(seed);
-    var rand = prng.random();
+    const seed: u64 = @intCast(u64, std.time.milliTimestamp());
+    var prng = std.rand.DefaultPrng.init(seed);
+    var rand_val = prng.random();
 
-    const biome_count = @typeInfo(Chunk.BiomeType).Enum.fields.len;
-    const roll = rand.intRangeLessThan(u32, 0, biome_count);
+    const biome_count = @typeInfo(Chunk.BiomeType).EnumFieldCount;
+    const roll = rand_val.intRangeLessThan(u32, 0, biome_count);
+
     return Chunk.BiomeType(roll);
 }
+
