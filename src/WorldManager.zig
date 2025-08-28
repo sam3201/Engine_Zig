@@ -329,8 +329,8 @@ pub const WorldManager = struct {
 };
 
 fn randomBiome() Chunk.BiomeType {
-    const seed: u64 = @intCast(@as(u64, @truncate(std.time.milliTimestamp())));
-    var prng = std.Random.DefaultPrng.init(seed);
+    const seed: u64 = @intCast(std.time.milliTimestamp());
+var prng = std.Random.DefaultPrng.init(seed);
     var rand = prng.random();
 
     const roll = rand.intRangeLessThan(u32, 0, Chunk.BiomeType.len);
