@@ -130,7 +130,7 @@ pub const Player = struct {
         return self.level;
     }
 
-    pub fn addItem(self: *Player, item: Item) !void {
+    pub fn addItem(self: *Player) !void {
         // Look for existing item
         for (self.inventory) |*inv_item| {
             if (std.mem.eql(u8, inv_item.name, item.name)) {
