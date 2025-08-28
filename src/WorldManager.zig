@@ -124,8 +124,8 @@ pub const WorldManager = struct {
 
         if (self.chunks.get(chunk_coord)) |chunk| {
             return chunk.getBiome(local_coord.x, local_coord.y);
-        }        
-    } 
+        }
+    }
     pub fn getTileAtWorld(self: WorldManager, world_x: i32, world_y: i32) Chunk.TileType {
         const chunk_coord = worldToChunkCoord(world_x, world_y);
         const local_coord = worldToLocalCoord(world_x, world_y);
