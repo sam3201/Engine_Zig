@@ -286,7 +286,7 @@ pub const Chunk = struct {
     }
 
     pub fn setTile(self: *Chunk, local_x: i32, local_y: i32, tile: TileType) void {
-        if (local_x < 0 or local_x >= CHUNK_SIZE or local_y < 0 or local_y >= CHUNK_SIZE) {
+        if (local_x < 0 or local_x >= CHUNK_WIDTH or local_y < 0 or local_y >= CHUNK_HEIGHT) {
             return;
         }
 
