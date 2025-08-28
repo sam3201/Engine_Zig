@@ -92,7 +92,7 @@ pub fn main() !void {
         ) catch unreachable;
         defer allocator.free(hud1);
         for (hud1, 0..) |c, i| {
-            const int32_i = @intCast(i);
+            const int32_i: i32 = @intCast(i);
             game_engine.canvas.put(i, 0, c);
         }
 
