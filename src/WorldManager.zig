@@ -328,7 +328,7 @@ pub const WorldManager = struct {
     }
 };
 
-fn randomBiome() Chunk.BiomeType {
+pub fn randomBiome() Chunk.BiomeType {
     const seed: u64 = @intCast(std.time.milliTimestamp());
     var prng = std.Random.DefaultPrng.init(seed);
     var rand = prng.random();
