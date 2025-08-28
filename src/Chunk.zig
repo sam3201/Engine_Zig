@@ -301,7 +301,7 @@ pub const Chunk = struct {
         self.tiles[idx] = tile;
     }
     pub fn save(self: *Chunk, allocator: std.mem.Allocator, dir: []const u8) !void {
-        var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, self.coord.x, self.coord.y });
+        const filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, self.coord.x, self.coord.y });
         defer allocator.free(filename);
 
         var file = try std.fs.cwd().createFile(filename, .{ .truncate = true });
