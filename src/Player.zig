@@ -157,10 +157,6 @@ pub const Player = struct {
         }
     }
 
-    pub fn getBiome(self: Player) Biome {
-        return WorldManager.getBiome(self.entity.x, self.entity.y);
-    }
-
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
         canvas.put(self.entity.x, self.entity.y, self.entity.ch);
         canvas.fillColor(self.entity.x, self.entity.y, self.entity.color);
