@@ -347,8 +347,7 @@ pub fn randomBiome() Chunk.BiomeType {
     const seed: u64 = @intCast(std.time.milliTimestamp());
     var prng = std.Random.DefaultPrng.init(seed);
     var rand_val = prng.random();
-@typeInfo(MyEnum).@enum.fields.len;
-    const biome_count = @typeInfo(Chunk.BiomeType).EnumFieldCount;
+    const biome_count = @enumToInt(Chunk.BiomeType.Volcanic) + 1; 
     const roll = rand_val.intRangeLessThan(u32, 0, biome_count);
 
     return Chunk.BiomeType(roll);
