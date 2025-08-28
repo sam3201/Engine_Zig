@@ -347,7 +347,7 @@ pub fn randomBiome() Chunk.BiomeType {
     const seed: u64 = @intCast(std.time.milliTimestamp());
     var prng = std.Random.DefaultPrng.init(seed);
     var rand_val = prng.random();
-    const roll = rand_val.intRangeLessThan(u32, 0, Chunk.BiomeType.count);
+    const roll = rand_val.intRangeLessThan(u32, 0, Chunk.count);
 
     return Chunk.BiomeType(roll);
 }
