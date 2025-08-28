@@ -6,7 +6,7 @@ const Item = @import("Item.zig").Item;
 const WorldManager = @import("WorldManager.zig");
 
 pub const CHUNK_WIDTH: i32 = 80;
-pub const CHUNK_HEIGHT: i32 = 80;
+pub const CHUNK_HEIGHT: i32 = 24;
 pub const CHUNK_SIZE: i32 = CHUNK_WIDTH * CHUNK_HEIGHT;
 
 pub const TileType = enum {
