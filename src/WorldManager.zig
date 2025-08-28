@@ -344,7 +344,7 @@ pub const WorldManager = struct {
 
 pub fn randomBiome() Chunk.BiomeType {
     const seed: u64 = @intCast(std.time.milliTimestamp());
-    var prng = std.Random.DefaultPrnginit(seed);
+    var prng = std.Random.DefaultPrng.init(seed);
     var rand_val = prng.random();
 
     const biome_count = @typeInfo(Chunk.BiomeType).EnumFieldCount;
