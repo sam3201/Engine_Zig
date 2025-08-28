@@ -15,6 +15,7 @@ pub const WorldManager = struct {
     canvas_height: i32,
     camera_x: i32 = 0,
     camera_y: i32 = 0,
+    biome: Chunk.BiomeType = .Plains,
 
     const ChunkContext = struct {
         pub fn hash(self: @This(), coord: Chunk.ChunkCoord) u64 {
