@@ -12,7 +12,7 @@ pub fn main() !void {
     // ───────────── Constants ─────────────
     const WIDTH = 80;
     const HEIGHT = 24;
-    const FPS = 60;
+    const FPS = 30;
 
     // ───────────── Game Engine ─────────────
     var engine = try Engine.Engine.init(
