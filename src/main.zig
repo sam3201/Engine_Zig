@@ -6,6 +6,7 @@ const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
 
 pub fn main() !void {
+    // ───────────── Allocator ─────────────
     const allocator = std.heap.page_allocator;
 
     // ───────────── Constants ─────────────
