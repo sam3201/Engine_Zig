@@ -330,15 +330,15 @@ pub const WorldManager = struct {
         var prng = std.Random.DefaultPrng.init(timestamp_u64);
         var rand = prng.random();
 
-    const roll = rand.intRangeLessThan(u32, 0, 6);
-    return switch (roll) {
-        0 => .Plains,
-        1 => .Forest,
-        2 => .Mountains,
-        3 => .Desert,
-        4 => .Tundra,
-        else => .Volcanic,
-    };
+        const roll = rand.intRangeLessThan(u32, 0, 6);
+        return switch (roll) {
+            0 => .Plains,
+            1 => .Forest,
+            2 => .Mountains,
+            3 => .Desert,
+            4 => .Tundra,
+            else => .Volcanic,
+        };
         self.player.setPosition(world_x, world_y);
 
         // ensure chunks are generated around this position
