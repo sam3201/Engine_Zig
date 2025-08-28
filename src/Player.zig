@@ -3,7 +3,7 @@
 const std = @import("std");
 const eng = @import("Engine.zig");
 const Entity = @import("Entity.zig");
-const Item = @import("Item.zig").Item;
+const Inventory = @import("Inventory.zig"); 
 
 pub const InputAction = enum {
     UP,
