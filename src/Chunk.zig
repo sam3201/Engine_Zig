@@ -301,33 +301,32 @@ pub const Chunk = struct {
         self.tiles[idx] = tile;
     }
     pub fn save(self: *Chunk, allocator: std.mem.Allocator, dir: []const u8) !void {
-    var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{dir, self.coord.x, self.coord.y});
-    defer allocator.free(filename);
+        var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, self.coord.x, self.coord.y });
+        defer allocator.free(filename);
 
-    var file = try std.fs.cwd().createFile(filename, .{ .truncate = true });
-    defer file.close();
+        var file = try std.fs.cwd().createFile(filename, .{ .truncate = true });
+        defer file.close();
 
-    try file.writeAll(std.mem.sliceAsBytes(&self.tiles));
-}
+        try file.writeAll(std.mem.sliceAsBytes(&self.tiles));
+    }
 
-pub fn load(coord: ChunkCoord, allocator: std.mem.Allocator, dir: []const u8) !?Chunk {
-    var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{dir, coord.x, coord.y});
-    defer allocator.free(filename);
+    pub fn load(coord: ChunkCoord, allocator: std.mem.Allocator, dir: []const u8) !?Chunk {
+        var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, coord.x, coord.y });
+        defer allocator.free(filename);
 
-    var file = std.fs.cwd().openFile(filename, .{}) catch return null;
-    defer file.close();
+        var file = std.fs.cwd().openFile(filename, .{}) catch return null;
+        defer file.close();
 
-    var tiles: [CHUNK_SIZE * CHUNK_HEIGHT]TileType = undefined;
-    _ = try file.readAll(std.mem.sliceAsBytes(&tiles));
+        var tiles: [CHUNK_SIZE * CHUNK_HEIGHT]TileType = undefined;
+        _ = try file.readAll(std.mem.sliceAsBytes(&tiles));
 
-    return Chunk{
-        .coord = coord,
-        .tiles = tiles,
-        .biome = .Plains, // TODO: read biome from file too
-        .difficulty_level = 1,
-        .items = std.ArrayList(WorldItem).init(allocator),
-        .generated = true,
-    };
-}
-
+        return Chunk{
+            .coord = coord,
+            .tiles = tiles,
+            .biome = .Plains, // TODO: read biome from file too
+            .difficulty_level = 1,
+            .items = std.ArrayList(WorldItem).init(allocator),
+            .generated = true,
+        };
+    }
 };
