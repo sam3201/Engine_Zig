@@ -304,7 +304,7 @@ fn playerDropItem(self: *WorldManager) void {
         else
             eng.Color{ .r = 0, .g = 255, .b = 0 };
 
-        var inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
+        const inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
 defer self.allocator.free(inv_str);
 
 for (inv_str, 0..) |ch, i| {
@@ -329,6 +329,7 @@ for (self.player.inventory.items.items) |it| {
         }
     }
     offset += entry.len;
+}
 
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
