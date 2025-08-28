@@ -24,7 +24,6 @@ pub const KeyBinding = struct {
 };
 
 pub const Player = struct {
-    inventory: Inventory.Inventory,
     entity: Entity.Entity,
     key_bindings: []KeyBinding,
     allocator: std.mem.Allocator,
@@ -36,6 +35,7 @@ pub const Player = struct {
     level: i32 = 1,
     experience: i32 = 0,
     experience_to_next_level: i32 = 100,
+    inventory: Inventory.Inventory,
 
     id: i32 = 0,
     name: []const u8 = "Nameless",
