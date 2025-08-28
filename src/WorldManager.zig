@@ -81,9 +81,9 @@ pub const WorldManager = struct {
     }
 
     fn biomeForCoord(coord: Chunk.ChunkCoord, seed: u64) Chunk.BiomeType {
-        var prng = std.Random.DefaultPrng.init(coord.hash() ^ seed);
+        var rng = std.Random.DefaultPrng.init(coord.hash() ^ seed);
         const biome_count = @typeInfo(Chunk.BiomeType).EnumFieldCount;
-        const r = rng.random().intRangeLessThan(u32, 0, biome_count);
+        const r = rng.random().intRangeLessThan(u32, 0, biome_count); 
         return Chunk.BiomeType(r);
     }
 
