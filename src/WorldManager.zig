@@ -195,21 +195,43 @@ pub const WorldManager = struct {
         self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
     }
 
-    fn playerInteract(self: *WorldManager) void {
-        const pos = self.player.getPosition();
-        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+fn playerInteract(self: *WorldManager) void {
+    const pos = self.player.getPosition();
+    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-        if (self.chunks.getPtr(chunk_coord)) |chunk| {
-            if (chunk.findItemAt(pos.x, pos.y)) |idx| {
-                const wi = chunk.items.items[idx];
-                // add to inventory
-                _ = self.player.addItem(wi.item) catch return;
-                chunk.removeItemIndex(idx);
-                // (optional HUD/message)
-                std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
-            }
+    if (self.chunks.getPtr(chunk_coord)) |chunk| {
+        if (chunk.findItemAt(pos.x, pos.y)) |idx| {
+            const wi = chunk.items.items[idx];
+            const item = .{ .id = wi.item.id, .name = wi.item.name, .quantity = wi.item.quantity };
+            _ = self.player.addItem(item) catch return;
+            chunk.removeItemIndex(idx);
+
+            std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
         }
     }
+}
+
+fn playerDropItem(self: *WorldManager) void {
+    if (self.player.inventory.len() == 0) return;
+
+    const pos = self.player.getPosition();
+    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+
+    if (self.chunks.getPtr(chunk_coord)) |chunk| {
+        const item = self.player.inventory.getItem(0).?;
+        const drop = Chunk.WorldItem{
+            .item = .{ .id = item.id, .name = item.name, .quantity = 1 },
+            .x = pos.x,
+            .y = pos.y,
+        };
+
+        if (chunk.findItemAt(pos.x, pos.y) == null) {
+            chunk.addWorldItem(drop) catch return;
+            self.player.removeItem(item.name, 1);
+            std.debug.print("Dropped {s}\n", .{ item.name });
+        }
+    }
+}
 
     fn playerAttack(self: *WorldManager) void {
         // TODO
