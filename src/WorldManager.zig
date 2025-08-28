@@ -347,4 +347,3 @@ pub fn randomizeStart(self: *WorldManager) void {
     self.updateChunks() catch {};
     self.updateCamera();
 }
-
