@@ -118,7 +118,7 @@ pub const WorldManager = struct {
         }
     }
 
-    pub fn getBiome(self: WorldManager) BiomeType {
+    pub fn getBiome(self: WorldManager) Chunk.BiomeType {
         return self.player.getBiome();
     }
     }
