@@ -328,6 +328,8 @@ pub const WorldManager = struct {
 };
 
 fn randomBiome() Chunk.BiomeType {
+        const seed: u64 = @intCast(@as(u64, @truncate(std.time.nanoTimestamp())));
+
     var prng = std.Random.DefaultPrng.init(std.time.nanoTimestamp());
     var rand = prng.random();
 
