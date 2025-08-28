@@ -158,7 +158,7 @@ pub const Player = struct {
     }
 
     pub fn getBiome(self: Player) Biome {
-        return self.biome;
+        return WorldManager.getBiome(self.entity.x, self.entity.y);
     }
 
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
