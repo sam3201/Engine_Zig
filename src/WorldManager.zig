@@ -341,5 +341,4 @@ pub const WorldManager = struct {
             else => .Volcanic,
         };
     }
-    self.current_biome = self.randomizeStart();
 };
