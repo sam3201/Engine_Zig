@@ -88,6 +88,9 @@ pub const BiomeType = enum {
     }
 };
 
+pub const BIOME_COUNT: u32 = 6;
+
+
 pub const ChunkCoord = struct {
     x: i32,
     y: i32,
