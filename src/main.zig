@@ -23,7 +23,7 @@ pub fn main() !void {
     defer term.deinit();
 
     // ───────────── Menu ─────────────
-    var menu = Menu.init(
+    var title_menu = Menu.init(
         "Main Menu",
         &[_][]const u8{ "Start Game", "Options", "Quit" },
         'w', // up
