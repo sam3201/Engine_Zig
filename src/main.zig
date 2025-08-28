@@ -8,9 +8,11 @@ const Menu = @import("Menu.zig").Menu;
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
+    // ───────────── Constants ─────────────
     const WIDTH = 80;
     const HEIGHT = 24;
     const FPS = 60;
+    
     // ───────────── Game Engine ─────────────
     var engine = try Engine.Engine.init(
         allocator,
