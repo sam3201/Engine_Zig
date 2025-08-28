@@ -18,6 +18,10 @@ pub fn main() !void {
     );
     defer engine.deinit();
 
+    var term = try Engine.TerminalGuard.init();
+defer term.deinit();
+
+
     var menu = Menu.init(
         "Main Menu",
         &[_][]const u8{ "Start Game", "Options", "Quit" },
