@@ -123,7 +123,6 @@ pub const Chunk = struct {
             .coord = coord,
             .biome = biome_type,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_SIZE * CHUNK_SIZE),
-            .biome = BiomeType.Plains, //Choose random biome
             .difficulty_level = difficulty_level,
             .generated = true,
             //.allocator = allocator,
