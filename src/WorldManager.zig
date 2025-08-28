@@ -119,6 +119,7 @@ pub const WorldManager = struct {
     }
 
     pub fn getBiome(self: WorldManager) Chunk.BiomeType {
+        _ = self;
         // return self.player.getBiome();
     }
     pub fn getTileAtWorld(self: WorldManager, world_x: i32, world_y: i32) Chunk.TileType {
