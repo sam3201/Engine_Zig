@@ -178,7 +178,7 @@ pub const Chunk = struct {
         var rng = std.Random.DefaultPrng.init(self.coord.hash());
 
         for (0..CHUNK_HEIGHT) |y| {
-            for (0..CHUNK_SIZE) |x| {
+            for (0..CHUNK_HEIGHT) |x| {
                 const idx = y * CHUNK_SIZE + x;
                 const roll = rng.random().intRangeAtMost(u8, 0, 100);
 
