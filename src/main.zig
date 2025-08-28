@@ -91,7 +91,8 @@ pub fn main() !void {
             .{ player.health, player.max_health, pos.x, pos.y },
         ) catch unreachable;
         defer allocator.free(hud1);
-        for (hud1, 0..) |c, @intCast(i)| {
+        for (hud1, 0..) |c, i| {
+            const int32_i = @intCast(i);
             game_engine.canvas.put(i, 0, c);
         }
 
