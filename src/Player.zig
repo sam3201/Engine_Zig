@@ -137,6 +137,7 @@ pub const Player = struct {
     pub fn removeItem(self: *Player, name: []const u8, amount: u32) void {
         self.inventory.removeItem(name, amount);
     }
+
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
         canvas.put(self.entity.x, self.entity.y, self.entity.ch);
         canvas.fillColor(self.entity.x, self.entity.y, self.entity.color);
