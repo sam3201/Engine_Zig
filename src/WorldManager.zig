@@ -41,7 +41,7 @@ pub const WorldManager = struct {
         };
 
         try world.updateChunks();
-        world.updateCamera();
+        try world.updateCamera();
 
         return world;
     }
