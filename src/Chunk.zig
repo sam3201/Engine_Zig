@@ -311,7 +311,7 @@ pub const Chunk = struct {
     }
 
     pub fn load(coord: ChunkCoord, allocator: std.mem.Allocator, dir: []const u8) !?Chunk {
-        var filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, coord.x, coord.y });
+        const filename = try std.fmt.allocPrint(allocator, "{s}/chunk_{d}_{d}.bin", .{ dir, coord.x, coord.y });
         defer allocator.free(filename);
 
         var file = std.fs.cwd().openFile(filename, .{}) catch return null;
