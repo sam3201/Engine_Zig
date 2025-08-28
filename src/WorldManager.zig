@@ -38,6 +38,7 @@ pub const WorldManager = struct {
             .canvas_height = @intCast(canvas.height),
         };
 
+        const biome = self.randomBiome();
         try world.updateChunks();
         world.updateCamera();
 
