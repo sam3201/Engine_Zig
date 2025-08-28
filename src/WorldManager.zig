@@ -3,7 +3,7 @@
 const std = @import("std");
 const eng = @import("Engine.zig");
 const Player = @import("Player.zig");
-const Chunk = @import("Chunk.zig").Chunk;
+const Chunk = @import("Chunk.zig");
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
@@ -39,7 +39,7 @@ pub const WorldManager = struct {
         };
 
         const start_biome = randomBiome();
-        const chunk = try Chunk.init(.{ .x = 0, .y = 0 }, start_biome, 1, allocator);
+        const chunk = try Chunk.Chunk.init(.{ .x = 0, .y = 0 }, start_biome, 1, allocator);
         try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
 
         try world.updateChunks();
