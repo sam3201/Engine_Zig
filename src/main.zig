@@ -76,6 +76,8 @@ pub fn main() !void {
     var world = try WorldManager.WorldManager.init(allocator, &game_engine.canvas, player);
     defer world.deinit();
 
+    world.randomizeStart();
+
     while (game_engine.running and player.isAlive()) {
         game_engine.clock.tick();
 
