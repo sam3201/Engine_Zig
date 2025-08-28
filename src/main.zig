@@ -31,8 +31,8 @@ pub fn main() !void {
         '\n', // select
     );
 
-    var menu_choice: ?usize = null;
-    while (engine.running and menu_choice == null) {
+    var title_menu_choice: ?usize = null;
+    while (engine.running and title_menu_choice == null) {
         engine.clock.tick();
 
         if (Engine.readKey() catch null) |key| { // non-blocking input
