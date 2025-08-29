@@ -173,7 +173,7 @@ pub const Chunk = struct {
 
     pub fn generate(self: *Chunk) void {
         const primary = self.biome.getPrimaryTile();
-        const secondary = self.biome.getSecondaryTile();
+        // const secondary = self.biome.getSecondaryTile();
         var rng = std.Random.DefaultPrng.init(self.coord.hash());
 
         for (0..CHUNK_HEIGHT) |y| {
