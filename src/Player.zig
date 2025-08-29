@@ -79,6 +79,10 @@ pub const Player = struct {
         return InputAction.None;
     }
 
+    pub fn setName(self: *Player, name: []const u8) void {
+        
+    }
+
     pub fn move(self: *Player, dx: i32, dy: i32) void {
         self.entity.update(dx * self.speed, dy * self.speed);
     }
