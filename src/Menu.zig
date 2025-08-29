@@ -28,16 +28,15 @@ pub const Menu = struct {
     }
 
     pub fn updateOption(self: *Menu, key: u8, player: *Player) void {
-    // For now: if we're on "Change Name" and the user presses a letter key, update player.name
-    if (self.items[self.selected] == "Change Name") {
-        if (key >= 'a' and key <= 'z') {
-            var buf: [32]u8 = undefined;
-            const len = std.fmt.bufPrint(&buf, "{c}", .{key}) catch return;
-            player.setName(buf[0..len]);
+        // For now: if we're on "Change Name" and the user presses a letter key, update player.name
+        if (self.items[self.selected] == "Change Name") {
+            if (key >= 'a' and key <= 'z') {
+                var buf: [32]u8 = undefined;
+                const len = std.fmt.bufPrint(&buf, "{c}", .{key}) catch return;
+                player.setName(buf[0..len]);
+            }
         }
     }
-}
-
 
     pub fn update(self: *Menu, key: u8) ?usize {
         if (key == self.key_up) {
