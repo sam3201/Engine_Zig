@@ -33,7 +33,7 @@ pub const Menu = struct {
         if (std.mem.eql(u8, self.items[self.selected], "Change Name")) {
             if (key >= 'a' and key <= 'z') {
                 var buf: [32]usize = undefined;
-                const len= std.fmt.bufPrint(&buf, "{c}", .{key}) catch return;
+                const len = std.fmt.bufPrint(&buf, "{c}", .{key}) catch return;
                 player.setName(buf[0..len]);
             }
         }
