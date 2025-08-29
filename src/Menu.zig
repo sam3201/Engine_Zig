@@ -32,7 +32,7 @@ pub const Menu = struct {
         // For now: if we're on "Change Name" and the user presses a letter key, update player.name
         if (std.mem.eql(u8, self.items[self.selected], "Change Name")) {
             if (key >= 'a' and key <= 'z') {
-                var buf: [32]u8 = undefined;
+                var buf: [32]usize = undefined;
                 const len: i32 = std.fmt.bufPrint(&buf, "{c}", .{key}) catch return;
                 player.setName(buf[0..len]);
             }
