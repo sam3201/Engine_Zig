@@ -28,7 +28,7 @@ pub fn main() !void {
     var term = try Engine.TerminalGuard.init();
     defer term.deinit();
 
-    // ───────────── Menu ─────────────
+    // ───────────── Menus ─────────────
     var title_menu = Menu.init(
         "Main Menu",
         &[_][]const u8{ "Start Game", "Options", "Quit" },
@@ -36,6 +36,14 @@ pub fn main() !void {
         's', // down
         '\n', // select
     );
+
+    var options_menu = Menu.init(
+    "Options",
+    &[_][]const u8{ "Change Name", "Key Bindings", "Back" },
+    'w', 's', '\n',
+);
+
+var show_menu = false;
 
     var title_menu_choice: ?usize = null;
     while (engine.running and title_menu_choice == null) {
