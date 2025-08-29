@@ -103,7 +103,6 @@ pub fn main() !void {
             "HP: {d}/{d} | Pos: ({d},{d})",
             .{ player.health, player.max_health, pos.x, pos.y },
         ) catch unreachable;
-
         defer allocator.free(hud1);
         for (hud1, 0..) |c, i| {
             const int32_i: i32 = @intCast(i);
