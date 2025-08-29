@@ -80,7 +80,7 @@ pub const Player = struct {
     }
 
     pub fn setName(self: *Player, name: []const u8) void {
-        
+        self.name = name;
     }
 
     pub fn move(self: *Player, dx: i32, dy: i32) void {
