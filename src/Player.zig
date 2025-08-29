@@ -347,6 +347,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
+
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
