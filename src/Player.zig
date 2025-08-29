@@ -337,7 +337,6 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     .{ .key = ' ', .action = .ATTACK },
     .{ .key = 'i', .action = .OPENINVENTORY },
 }[0..],
-        },
         .health = 10,
         .max_health = 10,
         .xp = 0,
