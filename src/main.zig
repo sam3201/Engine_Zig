@@ -144,6 +144,12 @@ pub fn main() !void {
         //}
 
         // ───────────── Draw World ─────────────
+        if (show_menu) {
+    options_menu.draw(&game_engine.canvas);
+} else {
+    world.draw();
+}
+
         world.draw();
 
         // Render
