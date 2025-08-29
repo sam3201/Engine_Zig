@@ -1,7 +1,7 @@
 // src/Chunk.zig
 
 const std = @import("std");
-const Engine = @import("Engine.zig");
+const Engineine = @import("Engineine.zig");
 const Inventory = @import("Inventory.zig");
 const WorldManager = @import("WorldManager.zig");
 
@@ -36,18 +36,18 @@ pub const TileType = enum {
         };
     }
 
-    pub fn getColor(self: TileType) Engine.Color {
+    pub fn getColor(self: TileType) Engineine.Color {
         return switch (self) {
-            .Empty => Eng.Color{ .r = 64, .g = 64, .b = 64 },
-            .Wall => Engine.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
-            .Grass => Engine.Color{ .r = 0, .g = 128, .b = 0 },
-            .Stone => Engine.Color{ .r = 128, .g = 128, .b = 128 },
-            .Water => Engine.Color{ .r = 0, .g = 0, .b = 255 },
-            .Tree => Engine.Color{ .r = 0, .g = 100, .b = 0 },
-            .Mountain => Engine.Color{ .r = 100, .g = 100, .b = 100 },
-            .Desert => Engine.Color{ .r = 200, .g = 180, .b = 100 },
-            .Snow => Engine.Color{ .r = 255, .g = 255, .b = 255 },
-            .Lava => Engine.Color{ .r = 255, .g = 50, .b = 0 },
+            .Empty => Engine.Color{ .r = 64, .g = 64, .b = 64 },
+            .Wall => Engineine.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
+            .Grass => Engineine.Color{ .r = 0, .g = 128, .b = 0 },
+            .Stone => Engineine.Color{ .r = 128, .g = 128, .b = 128 },
+            .Water => Engineine.Color{ .r = 0, .g = 0, .b = 255 },
+            .Tree => Engineine.Color{ .r = 0, .g = 100, .b = 0 },
+            .Mountain => Engineine.Color{ .r = 100, .g = 100, .b = 100 },
+            .Desert => Engineine.Color{ .r = 200, .g = 180, .b = 100 },
+            .Snow => Engineine.Color{ .r = 255, .g = 255, .b = 255 },
+            .Lava => Engineine.Color{ .r = 255, .g = 50, .b = 0 },
         };
     }
 
@@ -112,7 +112,7 @@ pub const WorldItem = struct {
     x: i32,
     y: i32,
     ch: u8 = '!', // render as '!' for now
-    color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
+    color: Engineine.Color = .{ .r = 255, .g = 255, .b = 0 },
 };
 
 pub const Chunk = struct {
@@ -150,7 +150,7 @@ pub const Chunk = struct {
             .x = self.coord.x * CHUNK_WIDTH + 2,
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = '!',
-            .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
+            .color = Engineine.Color{ .r = 200, .g = 0, .b = 200 },
         });
     }
 
@@ -235,12 +235,12 @@ pub const Chunk = struct {
         for (0..@intCast(num_paths)) |_| {
             const start_x = random.intRangeAtMost(i32, 0, CHUNK_WIDTH - 1);
             const start_y = random.intRangeAtMost(i32, 0, CHUNK_HEIGHT - 1);
-            const lEngineth = random.intRangeAtMost(i32, 5, 15);
+            const lEngineineth = random.intRangeAtMost(i32, 5, 15);
 
             var x = start_x;
             var y = start_y;
 
-            for (0..@intCast(lEngineth)) |_| {
+            for (0..@intCast(lEngineineth)) |_| {
                 if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
                     const idx = @as(usize, @intCast(y * CHUNK_WIDTH + x));
                     self.tiles[idx] = if (self.biome == .Desert) .Desert else .Empty;
