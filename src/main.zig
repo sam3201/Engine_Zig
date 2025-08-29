@@ -104,7 +104,7 @@ pub fn main() !void {
             } else if (show_menu) {
                 if (options_menu.update(key)) |choice| {
                     switch (choice) {
-                        0 => player.changeName(),
+                        0 => player.setName(),
                         1 => std.debug.print("Key bindings not implemented yet.\n", .{}),
                         2 => show_menu = false,
                         else => {},
