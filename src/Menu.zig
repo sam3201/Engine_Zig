@@ -1,6 +1,7 @@
 // src/Menu.zig
 const std = @import("std");
 const Engine = @import("Engine.zig");
+const Player = @import("Player.zig");
 
 pub const Menu = struct {
     title: []const u8,
