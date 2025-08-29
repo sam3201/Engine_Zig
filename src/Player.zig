@@ -394,4 +394,3 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
-
