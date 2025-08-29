@@ -341,7 +341,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
             .{ .key = 'e', .action = .INTERACT },
             .{ .key = ' ', .action = .ATTACK },
             .{ .key = 'i', .action = .OPENINVENTORY },
-        }[0..], // ✅ fixes the type mismatch
+        }[0..], 
         .health = 10,
         .max_health = 10,
         .xp = 0,
@@ -352,6 +352,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
+
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
