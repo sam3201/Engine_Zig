@@ -49,7 +49,7 @@ pub const Player = struct {
         height: i32,
         ch: u8,
         color: eng.Color,
-        key_bindings: []KeyBinding,
+        key_bindings: []const KeyBinding,
     ) !Player {
         const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
         @memcpy(owned_bindings, key_bindings);
