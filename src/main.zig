@@ -149,9 +149,6 @@ pub fn main() !void {
 } else {
     world.draw();
 }
-
-        world.draw();
-
         // Render
         game_engine.canvas.render();
         game_engine.canvas.flushToTerminal();
