@@ -104,7 +104,7 @@ pub fn main() !void {
             } else if (show_menu) {
                 if (options_menu.update(key)) |choice| {
                     switch (choice) {
-                        0 => std.debug.print("Change name not implemented yet.\n", .{}),    
+                        0 => std.debug.print("Change name not implemented yet.\n", .{}),
                         1 => std.debug.print("Key bindings not implemented yet.\n", .{}),
                         2 => show_menu = false,
                         else => {},
@@ -145,10 +145,10 @@ pub fn main() !void {
 
         // ───────────── Draw World ─────────────
         if (show_menu) {
-    options_menu.draw(&game_engine.canvas);
-} else {
-    world.draw();
-}
+            options_menu.draw(&game_engine.canvas);
+        } else {
+            world.draw();
+        }
         // Render
         game_engine.canvas.render();
         game_engine.canvas.flushToTerminal();
