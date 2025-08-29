@@ -108,7 +108,7 @@ pub const ChunkCoord = struct {
 };
 
 pub const WorldItem = struct {
-    item: Item,
+    item: Inventory.Item,
     x: i32,
     y: i32,
     ch: u8 = '!', // render as '!' for now
