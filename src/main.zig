@@ -99,10 +99,10 @@ pub fn main() !void {
         const pos = player.getPosition();
         // ───────────── HUD ─────────────
         const hud1 = std.fmt.allocPrint(
-    allocator,
-    "HP: {d}/{d} | Pos: ({d},{d})",
-    .{ player.health, player.max_health, pos.x, pos.y },
-) catch unreachable;
+            allocator,
+            "HP: {d}/{d} | Pos: ({d},{d})",
+            .{ player.health, player.max_health, pos.x, pos.y },
+        ) catch unreachable;
 
         defer allocator.free(hud1);
         for (hud1, 0..) |c, i| {
