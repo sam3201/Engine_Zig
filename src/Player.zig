@@ -261,7 +261,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     }
     const inv = try allocator.alloc(Inventory.Item, inv_json.items.len);
     for (inv_json.items, 0..) |it, i| {
-        inv[i] = Item{
+        inv[i] = Inventory.Item{
             .id = @intCast(it.object.get("id").?.integer),
             .name = it.object.get("name").?.string,
             .quantity = @intCast(it.object.get("quantity").?.integer),
