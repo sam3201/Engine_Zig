@@ -235,7 +235,7 @@ pub const Chunk = struct {
         for (0..@intCast(num_paths)) |_| {
             const start_x = random.intRangeAtMost(i32, 0, CHUNK_WIDTH - 1);
             const start_y = random.intRangeAtMost(i32, 0, CHUNK_HEIGHT - 1);
-            const lEngineineth = random.intRangeAtMost(i32, 5, 15);
+            const length = random.intRangeAtMost(i32, 5, 15);
 
             var x = start_x;
             var y = start_y;
