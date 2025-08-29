@@ -1,7 +1,80 @@
-samueldasari@MacBookAir src % ls
-build.sh                Engine.zig              Item.zig                Player.zig              World.zig
-Chunk.zig               Entity.zig              main.zig                root.zig                WorldManager.zig
-Client.zig              Inventory.zig           Menu.zig                Server.zig
+samueldasari@MacBookAir src % zig build run
+run
+└─ run Engine
+   └─ install
+      └─ install Server
+         └─ zig build-exe Server Debug native 3 errors
+Chunk.zig:176:15: error: unused local constant
+        const secondary = self.biome.getSecondaryTile();
+              ^~~~~~~~~
+Player.zig:262:37: error: use of undeclared identifier 'Item'
+    const inv = try allocator.alloc(Item, inv_json.items.len);
+                                    ^~~~
+Player.zig:330:42: error: expected type 'i32', found 'mem.Allocator'
+        .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
+                                         ^~~~~~~~~
+/opt/homebrew/Cellar/zig/0.14.1/lib/zig/std/mem/Allocator.zig:1:1: note: struct declared here
+//! The standard memory allocation interface.
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Entity.zig:31:20: note: parameter type declared here
+    pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, color: eng.Color) Entity {
+                   ^~~
+referenced by:
+    init: Server.zig:33:62
+    main: Server.zig:318:37
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
+error: the following command failed with 3 compilation errors:
+/opt/homebrew/Cellar/zig/0.14.1/bin/zig build-exe -ODebug -Mroot=/Users/samueldasari/Personal/Engine/src/Server.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Server --zig-lib-dir /opt/homebrew/Cellar/zig/0.14.1/lib/zig/ --listen=- 
+run
+└─ run Engine
+   └─ zig build-exe Engine Debug native 3 errors
+Chunk.zig:176:15: error: unused local constant
+        const secondary = self.biome.getSecondaryTile();
+              ^~~~~~~~~
+Player.zig:262:37: error: use of undeclared identifier 'Item'
+    const inv = try allocator.alloc(Item, inv_json.items.len);
+                                    ^~~~
+Player.zig:330:42: error: expected type 'i32', found 'mem.Allocator'
+        .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
+                                         ^~~~~~~~~
+/opt/homebrew/Cellar/zig/0.14.1/lib/zig/std/mem/Allocator.zig:1:1: note: struct declared here
+//! The standard memory allocation interface.
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Entity.zig:31:20: note: parameter type declared here
+    pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, color: eng.Color) Entity {
+                   ^~~
+referenced by:
+    main: main.zig:79:45
+    main: /opt/homebrew/Cellar/zig/0.14.1/lib/zig/std/start.zig:660:37
+    3 reference(s) hidden; use '-freference-trace=5' to see all references
+error: the following command failed with 3 compilation errors:
+/opt/homebrew/Cellar/zig/0.14.1/bin/zig build-exe -ODebug -Mroot=/Users/samueldasari/Personal/Engine/src/main.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Engine --zig-lib-dir /opt/homebrew/Cellar/zig/0.14.1/lib/zig/ --listen=- 
+run
+└─ run Engine
+   └─ install
+      └─ install Client
+         └─ zig build-exe Client Debug native 2 errors
+Chunk.zig:176:15: error: unused local constant
+        const secondary = self.biome.getSecondaryTile();
+              ^~~~~~~~~
+Player.zig:262:37: error: use of undeclared identifier 'Item'
+    const inv = try allocator.alloc(Item, inv_json.items.len);
+                                    ^~~~
+error: the following command failed with 2 compilation errors:
+/opt/homebrew/Cellar/zig/0.14.1/bin/zig build-exe -ODebug -Mroot=/Users/samueldasari/Personal/Engine/src/Client.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Client --zig-lib-dir /opt/homebrew/Cellar/zig/0.14.1/lib/zig/ --listen=- 
+Build Summary: 0/9 steps succeeded; 3 failed
+run transitive failure
+└─ run Engine transitive failure
+   ├─ zig build-exe Engine Debug native 3 errors
+   └─ install transitive failure
+      ├─ install Server transitive failure
+      │  └─ zig build-exe Server Debug native 3 errors
+      ├─ install Client transitive failure
+      │  └─ zig build-exe Client Debug native 2 errors
+      └─ install Engine transitive failure
+         └─ zig build-exe Engine Debug native (reused)
+error: the following build command failed with exit code 1:
+/Users/samueldasari/Personal/Engine/.zig-cache/o/73f56698f39ad06a77f2116471e23cbd/build /opt/homebrew/Cellar/zig/0.14.1/bin/zig /opt/homebrew/Cellar/zig/0.14.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0x608c7509 -Z30aa7aaeff2067eb run
 samueldasari@MacBookAir src % cat *
 #!/usr/bin/env bash 
 
@@ -187,8 +260,7 @@ pub const Chunk = struct {
 
         for (0..CHUNK_HEIGHT) |y| {
             for (0..CHUNK_WIDTH) |x| {
-                const idx = y * CHUNK_WIDTH + x;
-                const roll = rng.random().intRangeAtMost(u8, 0, 100);
+                const idx = y * CHUNK_WIDTH + x;                                                                                            const roll = rng.random().intRangeAtMost(u8, 0, 100);
 
                 self.tiles[idx] = switch (self.biome) {
                     .Plains => if (roll < 85) primary else if (roll < 90) .Tree else .Empty,
@@ -245,7 +317,6 @@ pub const Chunk = struct {
             const start_x = random.intRangeAtMost(i32, 0, CHUNK_WIDTH - 1);
             const start_y = random.intRangeAtMost(i32, 0, CHUNK_HEIGHT - 1);
             const length = random.intRangeAtMost(i32, 5, 15);
-
             var x = start_x;
             var y = start_y;
 
@@ -261,8 +332,7 @@ pub const Chunk = struct {
                     1 => x -= 1,
                     2 => y += 1,
                     3 => y -= 1,
-                    else => {},
-                }
+                    else => {},                                                                                                             }
             }
         }
     }
