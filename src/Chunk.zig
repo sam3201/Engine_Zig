@@ -36,7 +36,7 @@ pub const TileType = enum {
         };
     }
 
-    pub fn getColor(self: TileType) Engineine.Color {
+    pub fn getColor(self: TileType) Engine.Color {
         return switch (self) {
             .Empty => Engine.Color{ .r = 64, .g = 64, .b = 64 },
             .Wall => Engineine.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
