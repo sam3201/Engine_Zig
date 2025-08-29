@@ -377,7 +377,7 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .key_bindings = @constCast((&[_]KeyBinding{
             .{ .key = "up", .action = .UP },
             .{ .key = "down", .action = .DOWN },
-            .{ .key = "left", .action = .LEFT }, 
+            .{ .key = "left", .action = .LEFT },
             .{ .key = "right", .action = .RIGHT },
             .{ .key = 'e', .action = .INTERACT },
             .{ .key = ' ', .action = .ATTACK },
