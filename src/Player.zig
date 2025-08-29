@@ -331,6 +331,7 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
+        .allocator = allocator,
         .entity = Entity.Entity.init(
             x,
             y,
