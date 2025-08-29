@@ -98,24 +98,24 @@ pub fn main() !void {
         game_engine.clock.tick();
 
         // Non-blocking input
-if (Engine.readKey() catch null) |key| {
-    if (key == 'm' or key == 27) { // ESC or 'm'
-        show_menu = !show_menu;
-    } else if (show_menu) {
-        if (options_menu.update(key)) |choice| {
-            switch (choice) {
-                0 => Menu.changeName(&player), 
-                1 => std.debug.print("Key bindings not implemented yet.\n", .{}),
-                2 => show_menu = false,
-                else => {},
+        if (Engine.readKey() catch null) |key| {
+            if (key == 'm' or key == 27) { // ESC or 'm'
+                show_menu = !show_menu;
+            } else if (show_menu) {
+                if (options_menu.update(key)) |choice| {
+                    switch (choice) {
+                        0 => Menu.changeName(&player),
+                        1 => std.debug.print("Key bindings not implemented yet.\n", .{}),
+                        2 => show_menu = false,
+                        else => {},
+                    }
+                } else {
+                    options_menu.updateOption(key, &player);
+                }
+            } else {
+                try world.processPlayerInput(key);
             }
-        } else {
-            options_menu.updateOption(key, &player);
         }
-    } else {
-        try world.processPlayerInput(key);
-    }
-}
 
         // Clear screen
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
