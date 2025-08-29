@@ -1,7 +1,7 @@
 // src/Chunk.zig
 
 const std = @import("std");
-const eng = @import("Engine.zig");
+const Engine = @import("Engine.zig");
 const Inventory = @import("Inventory.zig");
 const WorldManager = @import("WorldManager.zig");
 
