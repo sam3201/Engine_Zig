@@ -328,16 +328,16 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
-        .key_bindings = &[_]KeyBinding{
-            .{ .key = 'w', .action = .UP },
-            .{ .key = 's', .action = .DOWN },
-            .{ .key = 'a', .action = .LEFT },
-            .{ .key = 'd', .action = .RIGHT },
-            .{ .key = 'e', .action = .INTERACT },
-            .{ .key = ' ', .action = .ATTACK },
-            .{ .key = 'i', .action = .OPENINVENTORY },
-        },
-        .health = 10,
+        .hea.key_bindings = &[_]KeyBinding{
+    .{ .key = 'w', .action = .UP },
+    .{ .key = 's', .action = .DOWN },
+    .{ .key = 'a', .action = .LEFT },
+    .{ .key = 'd', .action = .RIGHT },
+    .{ .key = 'e', .action = .INTERACT },
+    .{ .key = ' ', .action = .ATTACK },
+    .{ .key = 'i', .action = .OPENINVENTORY },
+}[0..],
+lth = 10,
         .max_health = 10,
         .xp = 0,
         .speed = 3,
