@@ -182,7 +182,7 @@ pub const Chunk = struct {
                 const roll = rng.random().intRangeAtMost(u8, 0, 100);
 
                 self.tiles[idx] = switch (self.biome) {
-                    .Plains => if (roll < 85) primary else if (roll < 90) .Tree else .Empty, 
+                    .Plains => if (roll < 85) primary else if (roll < 90) .Tree else .Empty,
                     .Forest => if (roll < 65) primary else if (roll < 85) .Grass else .Water,
                     .Mountains => if (roll < 75) primary else if (roll < 85) .Stone else .Snow,
                     .Desert => if (roll < 90) primary else if (roll < 95) .Stone else .Empty,
