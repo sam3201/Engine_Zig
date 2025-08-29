@@ -38,12 +38,14 @@ pub fn main() !void {
     );
 
     var options_menu = Menu.init(
-    "Options",
-    &[_][]const u8{ "Change Name", "Key Bindings", "Back" },
-    'w', 's', '\n',
-);
+        "Options",
+        &[_][]const u8{ "Change Name", "Key Bindings", "Back" },
+        'w',
+        's',
+        '\n',
+    );
 
-var show_menu = false;
+    var show_menu = false;
 
     var title_menu_choice: ?usize = null;
     while (engine.running and title_menu_choice == null) {
