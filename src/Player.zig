@@ -327,7 +327,7 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
-        .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
+        .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
         .key_bindings = &[_]KeyBinding{
             .{ .key = 'w', .action = .UP },
             .{ .key = 's', .action = .DOWN },
@@ -347,7 +347,6 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .inventory = try Inventory.Inventory.init(allocator),
     };
 }
-
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .entity = try Entity.Entity.init(allocator, x, y, 1, 1, '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
