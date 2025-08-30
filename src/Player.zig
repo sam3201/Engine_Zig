@@ -264,7 +264,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     for (bindings_json.items, 0..) |b, i| {
         bindings[i] = KeyBinding{
             .key = @intCast(b.object.get("key").?.integer),
-            .action = @enumFromInt(b.object.get("action")?.integer),
+            .action = @enumFromInt(b.object.get("action").?.integer),
         };
     }
 
