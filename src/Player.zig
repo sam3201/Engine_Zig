@@ -15,8 +15,8 @@ pub const InputAction = enum {
     USEITEM,
     DROPITEM,
     OPENINVENTORY,
-    //OPENMENU,
     None,
+    //OPENMENU,
 };
 
 pub const KeyBinding = struct {
