@@ -6,15 +6,12 @@ const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
 
 pub fn main() !void {
-    // ───────────── Allocator ─────────────
     const allocator = std.heap.page_allocator;
 
-    // ───────────── Constants ─────────────
     const WIDTH = 80;
     const HEIGHT = 24;
     const FPS = 30;
 
-    // ───────────── Game Engine ─────────────
     var engine = try Engine.Engine.init(
         allocator,
         WIDTH,
@@ -24,11 +21,10 @@ pub fn main() !void {
     );
     defer engine.deinit();
 
-    // ───────────── Terminal Guard ─────────────
     var term = try Engine.TerminalGuard.init();
     defer term.deinit();
 
-    // ───────────── Menus ─────────────
+    // ───────────── Title Menu ─────────────
     var title_menu = Menu.init(
         "Main Menu",
         &[_][]const u8{ "Start Game", "Options", "Quit" },
@@ -37,21 +33,11 @@ pub fn main() !void {
         '\n', // select
     );
 
-    var options_menu = Menu.init(
-        "Options",
-        &[_][]const u8{ "Change Name", "Key Bindings", "Back" },
-        'w',
-        's',
-        '\n',
-    );
-
-    var show_menu = false;
-
     var title_menu_choice: ?usize = null;
     while (engine.running and title_menu_choice == null) {
         engine.clock.tick();
 
-        if (Engine.readKey() catch null) |key| { // non-blocking input
+        if (Engine.readKey() catch null) |key| {
             if (title_menu.update(key)) |choice| {
                 title_menu_choice = choice;
             }
@@ -67,21 +53,18 @@ pub fn main() !void {
     if (title_menu_choice) |choice| {
         switch (choice) {
             0 => std.debug.print("Starting game...\n", .{}),
-            1 => {
-                std.debug.print("Options not implemented yet.\n", .{});
-                return;
-            },
+            1 => try optionsMenu(allocator, &engine),
             2 => return,
             else => {},
         }
     }
 
-    // ───────────── Game Engine ─────────────
+    // ───────────── Game Start ─────────────
     var game_engine = try Engine.Engine.init(
         allocator,
-        80,
-        24,
-        30,
+        WIDTH,
+        HEIGHT,
+        FPS,
         Engine.Color{ .r = 10, .g = 10, .b = 10 },
     );
     defer game_engine.deinit();
@@ -92,64 +75,35 @@ pub fn main() !void {
     var world = try WorldManager.WorldManager.init(allocator, &game_engine.canvas, player);
     defer world.deinit();
 
-    // world.randomizeStart();
-
     while (game_engine.running and player.isAlive()) {
         game_engine.clock.tick();
 
-        // Non-blocking input
         if (Engine.readKey() catch null) |key| {
-            if (key == 'm' or key == 27) { // ESC or 'm'
-                show_menu = !show_menu;
-            } else if (show_menu) {
-                if (options_menu.update(key)) |choice| {
-                    switch (choice) {
-                        0 => std.debug.print("Change name not implemented yet.\n", .{}),
-                        1 => std.debug.print("Key bindings not implemented yet.\n", .{}),
-                        2 => show_menu = false,
-                        else => {},
-                    }
-                } else {
-                    options_menu.updateOption(key, &player);
-                }
-            } else {
-                try world.processPlayerInput(key);
+            if (key == 'q' or key == 'Q') break;
+            try world.processPlayerInput(key);
+
+            // Open in-game menu (not pausing server, just overlay)
+            if (key == 'm' or key == 'M') {
+                try ingameMenu(allocator, &game_engine, &player);
             }
         }
 
-        // Clear screen
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
         const pos = player.getPosition();
-        // ───────────── HUD ─────────────
         const hud1 = std.fmt.allocPrint(
             allocator,
-            "{s} | HP: {d}/{d} | Pos: ({d},{d})",
-            .{ player.name, player.health, player.max_health, pos.x, pos.y },
+            "HP: {d}/{d} | Pos: ({d},{d}) | Name: {s}",
+            .{ player.health, player.max_health, pos.x, pos.y, player.name },
         ) catch unreachable;
         defer allocator.free(hud1);
+
         for (hud1, 0..) |c, i| {
-            const int32_i: i32 = @intCast(i);
-            game_engine.canvas.put(int32_i, 0, c);
+            game_engine.canvas.put(@intCast(i), 0, c);
         }
 
-        // const hud2 = std.fmt.allocPrint(
-        //    allocator,
-        //    "Biome: {any} | Difficulty: {d}",
-        //    .{ world.current_biome, world.difficulty },
-        // ) catch unreachable;
-        //defer allocator.free(hud2);
-        //for (hud2, 0..) |c, i| {
-        //    game_engine.canvas.put(i, 1, c);
-        //}
+        world.draw();
 
-        // ───────────── Draw World ─────────────
-        if (show_menu) {
-            options_menu.draw(&game_engine.canvas);
-        } else {
-            world.draw();
-        }
-        // Render
         game_engine.canvas.render();
         game_engine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
@@ -157,3 +111,81 @@ pub fn main() !void {
 
     std.debug.print("Exited game.\n", .{});
 }
+
+// ───────────── Options Menu (from Title) ─────────────
+fn optionsMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    var options = Menu.init(
+        "Options",
+        &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
+        'w', 's', '\n',
+    );
+
+    var choice: ?usize = null;
+    while (engine.running and choice == null) {
+        engine.clock.tick();
+
+        if (Engine.readKey() catch null) |key| {
+            if (options.update(key)) |c| {
+                choice = c;
+            }
+        }
+
+        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        options.draw(&engine.canvas);
+        engine.canvas.render();
+        engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
+    }
+
+    if (choice) |c| {
+        switch (c) {
+            0 => std.debug.print("Name change not implemented yet (title).\n", .{}),
+            1 => std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{}),
+            else => {},
+        }
+    }
+}
+
+// ───────────── In-Game Menu ─────────────
+fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
+    var menu = Menu.init(
+        "In-Game Menu",
+        &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
+        'w', 's', '\n',
+    );
+
+    var choice: ?usize = null;
+    while (engine.running and choice == null) {
+        engine.clock.tick();
+
+        if (Engine.readKey() catch null) |key| {
+            if (menu.update(key)) |c| {
+                choice = c;
+            }
+        }
+
+        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        menu.draw(&engine.canvas);
+        engine.canvas.render();
+        engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
+    }
+
+    if (choice) |c| {
+        switch (c) {
+            0 => {
+                std.debug.print("Enter new name: ", .{});
+                var buf: [64]u8 = undefined;
+                const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\n');
+                if (line) |name| {
+                    player.name = try allocator.dupe(u8, name);
+                }
+            },
+            1 => {
+                std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
+            },
+            else => {},
+        }
+    }
+}
+
