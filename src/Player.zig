@@ -259,7 +259,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const name_dup = try allocator.dupe(u8, name_src);
 
     // Key bindings
-    const bindings_json = obj.get("key_bindings")?.array;
+    const bindings_json = obj.get("key_bindings").?.array;
     var bindings = try allocator.alloc(KeyBinding, bindings_json.items.len);
     for (bindings_json.items, 0..) |b, i| {
         bindings[i] = KeyBinding{
