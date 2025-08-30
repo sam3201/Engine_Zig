@@ -379,28 +379,3 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
 
     return p;
 }
-
-pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
-    var p = try Player.init(
-        allocator,
-        x,
-        y,
-        1, // width
-        1, // height
-        '@',
-        eng.Color{ .r = 255, .g = 255, .b = 0 },
-        ARROW_BINDINGS[0..],
-    );
-
-    p.name = "Player";
-    p.health = 10;
-    p.max_health = 10;
-    p.xp = 0;
-    p.speed = 3;
-    p.level = 0;
-    p.experience = 0;
-    p.experience_to_next_level = 100;
-    p.inventory = try Inventory.Inventory.init(allocator);
-
-    return p;
-}
