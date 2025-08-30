@@ -71,7 +71,6 @@ pub const Player = struct {
             .key_bindings = owned_bindings,
             .allocator = allocator,
             .inventory = inv,
-            
         };
     }
 
