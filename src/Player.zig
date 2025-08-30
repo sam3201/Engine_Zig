@@ -331,7 +331,6 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
-        .allocator = allocator,
         .entity = Entity.Entity.init(
             x,
             y,
@@ -341,7 +340,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
             '@',
             eng.Color{ .r = 255, .g = 255, .b = 0 },
         ),
-        .key_bindings = @constCast((&[_]KeyBinding{
+        .key_bindings = (&[_]KeyBinding{
             .{ .key = 'w', .action = .UP },
             .{ .key = 's', .action = .DOWN },
             .{ .key = 'a', .action = .LEFT },
@@ -349,7 +348,7 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
             .{ .key = 'e', .action = .INTERACT },
             .{ .key = ' ', .action = .ATTACK },
             .{ .key = 'i', .action = .OPENINVENTORY },
-        })[0..]),
+        })[0..], // ← wrapped in parentheses, then slice
         .name = "Player",
         .health = 10,
         .max_health = 10,
@@ -359,9 +358,34 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .experience = 0,
         .experience_to_next_level = 100,
         .inventory = try Inventory.Inventory.init(allocator),
+        .allocator = allocator, // don’t forget this!
     };
 }
 
+pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
+    return Player{
+        .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
+        .key_bindings = (&[_]KeyBinding{
+            .{ .key = 'h', .action = .UP },
+            .{ .key = 'j', .action = .DOWN },
+            .{ .key = 'k', .action = .LEFT },
+            .{ .key = 'l', .action = .RIGHT },
+            .{ .key = 'e', .action = .INTERACT },
+            .{ .key = ' ', .action = .ATTACK },
+            .{ .key = 'i', .action = .OPENINVENTORY },
+        })[0..],
+        .name = "Player",
+        .health = 10,
+        .max_health = 10,
+        .xp = 0,
+        .speed = 3,
+        .level = 0,
+        .experience = 0,
+        .experience_to_next_level = 100,
+        .inventory = try Inventory.Inventory.init(allocator),
+        .allocator = allocator,
+    };
+}
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .allocator = allocator,
