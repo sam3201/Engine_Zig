@@ -375,7 +375,7 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         ),
         .key_bindings = (&[_]KeyBinding{
             .{ .key = "up", .action = .UP },
-            .{ .key =  "down", .action = .DOWN },
+            .{ .key = "down", .action = .DOWN },
             .{ .key = "left", .action = .LEFT },
             .{ .key = "right", .action = .RIGHT },
             .{ .key = 'e', .action = .INTERACT },
@@ -394,5 +394,3 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .allocator = allocator, // don’t forget this!
     };
 }
-
-
