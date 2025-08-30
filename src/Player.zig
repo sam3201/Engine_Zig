@@ -276,7 +276,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
             const item_id: i32 = @intCast(it.object.get("id").?.integer);
             const item_name_src = it.object.get("name").?.string;
             const item_name_dup = try allocator.dupe(u8, item_name_src);
-            const item_qty = @intCast(it.object.get("quantity").?.integer);
+            const item_qty: u32 = @intCast(it.object.get("quantity").?.integer);
             try inv_list.addItem(Inventory.Item{ .id = item_id, .name = item_name_dup, .quantity = item_qty });
         }
     }
