@@ -7,8 +7,8 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "Engine",
         .root_source_file = .path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .target = .target,
+        .optimize = .optimize,
     });
 
     const server = b.addExecutable(.{
