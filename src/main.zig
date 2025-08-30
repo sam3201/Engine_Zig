@@ -53,7 +53,7 @@ pub fn main() !void {
     if (title_menu_choice) |choice| {
         switch (choice) {
             0 => std.debug.print("Starting game...\n", .{}),
-            1 => try optionsMenu(allocator, &engine),
+            1 => try optionsMenu(&engine),
             2 => return,
             else => {},
         }
