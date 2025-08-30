@@ -273,7 +273,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const inv_json = obj.get("inventory").?.array;
     if (inv_json.items.len > 0) {
         for (inv_json.items, 0..) |it, i| {
-            const item_id = @intCast(it.object.get("id").?.integer);
+            const item_id: i32 = @intCast(it.object.get("id").?.integer);
             const item_name_src = it.object.get("name").?.string;
             const item_name_dup = try allocator.dupe(u8, item_name_src);
             const item_qty = @intCast(it.object.get("quantity").?.integer);
