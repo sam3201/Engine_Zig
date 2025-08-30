@@ -391,6 +391,6 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .experience = 0,
         .experience_to_next_level = 100,
         .inventory = try Inventory.Inventory.init(allocator),
-        .allocator = allocator, // don’t forget this!
+        .allocator = allocator
     };
 }
