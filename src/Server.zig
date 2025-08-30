@@ -158,7 +158,6 @@ pub const GameServer = struct {
         self.next_client_id += 1;
 
         const new_player = PlayerModule.createArrow(self.allocator, 30, 15) catch {
-            
         }
             _ = writer.write("Failed to create player\n") catch {};
             self.mutex.unlock();
