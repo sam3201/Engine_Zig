@@ -71,7 +71,7 @@ pub const Player = struct {
             .key_bindings = owned_bindings,
             .allocator = allocator,
             .inventory = inv,
-            // other fields will take their defaults (health, max_health, etc.)
+            
         };
     }
 
