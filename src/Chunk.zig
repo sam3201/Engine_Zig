@@ -146,7 +146,7 @@ pub const Chunk = struct {
 
     fn spawnTestItems(self: *Chunk) !void {
         try self.items.append(WorldItem{
-            .item = Inventory.Item{ .id = 0, .count = 1 },
+            .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
             .x = self.coord.x * CHUNK_WIDTH + 2,
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = '!',
