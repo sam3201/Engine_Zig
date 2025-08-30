@@ -1,4 +1,4 @@
-samueldasari@MacBookAir src % zig build run
+samueldasari@MacBookAir src % sh build.sh 
 run
 └─ run Engine
    └─ zig build-exe Engine Debug native 2 errors
@@ -54,8 +54,9 @@ run transitive failure
       ├─ install Server transitive failure
       │  └─ zig build-exe Server Debug native 2 errors
       └─ install Engine transitive failure
-         └─ zig build-exe Engine Debug native (reused)                                                        error: the following build command failed with exit code 1:                                                   /Users/samueldasari/Personal/Engine/.zig-cache/o/73f56698f39ad06a77f2116471e23cbd/build /opt/homebrew/Cellar/zig/0.14.1/bin/zig /opt/homebrew/Cellar/zig/0.14.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0xa87f249e -Z1d23793e53de1458 run
-samueldasari@MacBookAir src % nvim /private/var/folders/mn/cz8scjd57qs_xm0rbjtbt7sw0000gn/T/elBmjpIlA8yhwuW_kz_n6w/screen.txt 
+         └─ zig build-exe Engine Debug native (reused)
+error: the following build command failed with exit code 1:
+/Users/samueldasari/Personal/Engine/.zig-cache/o/73f56698f39ad06a77f2116471e23cbd/build /opt/homebrew/Cellar/zig/0.14.1/bin/zig /opt/homebrew/Cellar/zig/0.14.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0xc69cda78 -Z66cdae8891ba4901 run
 samueldasari@MacBookAir src % cat *
 #!/usr/bin/env bash 
 
@@ -251,8 +252,7 @@ pub const Chunk = struct {
                     .Desert => if (roll < 90) primary else if (roll < 95) .Stone else .Empty,
                     .Tundra => if (roll < 80) primary else if (roll < 90) .Stone else .Snow,
                     .Volcanic => if (roll < 70) primary else if (roll < 85) .Stone else .Lava,
-                };
-            }
+                };                                                                                                        }
         }
 
         // sprinkle some water or obstacles gently
@@ -265,9 +265,7 @@ pub const Chunk = struct {
             return .Plains;
         }
 
-        if (player_level < 5) {
-            const biomes = [_]BiomeType{ .Plains, .Forest };
-            return biomes[random.intRangeAtMost(usize, 0, biomes.len - 1)];
+        if (player_level < 5) {                                                                                           const biomes = [_]BiomeType{ .Plains, .Forest };                                                              return biomes[random.intRangeAtMost(usize, 0, biomes.len - 1)];
         } else if (player_level < 15) {
             const biomes = [_]BiomeType{ .Plains, .Forest, .Mountains, .Desert };
             return biomes[random.intRangeAtMost(usize, 0, biomes.len - 1)];
@@ -323,8 +321,7 @@ pub const Chunk = struct {
 
     fn addFeatures(self: *Chunk, random: std.Random) void {
         // occasional lake
-        if (random.float(f32) < 0.15) {
-            const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
+        if (random.float(f32) < 0.15) {                                                                                   const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
             const lake_y = random.intRangeAtMost(i32, 3, CHUNK_HEIGHT - 4);
             const size = random.intRangeAtMost(i32, 2, 5);
 
@@ -342,8 +339,7 @@ pub const Chunk = struct {
         // relaxed obstacle density
         const obstacle_density = 0.05; // 5% max
         for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
-            if (random.float(f32) < obstacle_density) {
-                self.tiles[i] = switch (self.biome) {
+            if (random.float(f32) < obstacle_density) {                                                                       self.tiles[i] = switch (self.biome) {
                     .Forest => .Tree,
                     .Mountains => .Stone,
                     .Volcanic => .Lava,
@@ -2488,5 +2484,5 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
-samueldasari@MacBookAir src % nvim 
+samueldasari@MacBookAir src % 
 
