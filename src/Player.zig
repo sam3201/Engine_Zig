@@ -420,6 +420,39 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     };
 }
 
+pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
+    return Player{
+        .entity = Entity.Entity.init(
+            x,
+            y,
+            1,
+            1,
+            Entity.RenderableType.PLAYER.toId(),
+            '@',
+            eng.Color{ .r = 255, .g = 255, .b = 0 },
+        ),
+        .key_bindings = (&[_]KeyBinding{
+            .{ .key = 'w', .action = .UP },
+            .{ .key = 's', .action = .DOWN },
+            .{ .key = 'a', .action = .LEFT },
+            .{ .key = 'd', .action = .RIGHT },
+            .{ .key = 'e', .action = .INTERACT },
+            .{ .key = ' ', .action = .ATTACK },
+            .{ .key = 'i', .action = .OPENINVENTORY },
+        })[0..], // ← wrapped in parentheses, then slice
+        .name = "Player",
+        .health = 10,
+        .max_health = 10,
+        .xp = 0,
+        .speed = 3,
+        .level = 0,
+        .experience = 0,
+        .experience_to_next_level = 100,
+        .inventory = try Inventory.Inventory.init(allocator),
+        .allocator = allocator, // don’t forget this!
+    };
+}
+
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     return Player{
         .entity = Entity.Entity.init(x, y, 1, 1, Entity.RenderableType.PLAYER.toId(), '@', eng.Color{ .r = 255, .g = 255, .b = 0 }),
@@ -444,3 +477,4 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .allocator = allocator,
     };
 }
+
