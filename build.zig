@@ -56,3 +56,4 @@ pub fn build(b: *std.Build) void {
     const wasm_step = b.step("wasm", "Build for WASM");
     wasm_step.dependOn(&b.addInstallArtifact(wasm_exe, .{}).step);
 }
+
