@@ -178,15 +178,15 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
     if (choice) |c| {
         switch (c) {
             0 => {
-    std.debug.print("Enter new name: ", .{});
-    var buf: [64]u8 = undefined;
-    const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\n');
-    if (line) |name| {
-        player.*.name = try allocator.dupe(u8, name);
-        // persist player to file (player.json in current dir)
-        try Player.save(player.*, "player.json");
-    }
-},
+                std.debug.print("Enter new name: ", .{});
+                var buf: [64]u8 = undefined;
+                const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&buf, '\n');
+                if (line) |name| {
+                    player.*.name = try allocator.dupe(u8, name);
+                    // persist player to file (player.json in current dir)
+                    try Player.save(player.*, "player.json");
+                }
+            },
 
             1 => {
                 std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
