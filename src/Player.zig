@@ -64,7 +64,7 @@ pub const Player = struct {
             color,
         );
 
-        var inv = try Inventory.Inventory.init(allocator);
+        const inv = try Inventory.Inventory.init(allocator);
 
         return Player{
             .entity = entity,
