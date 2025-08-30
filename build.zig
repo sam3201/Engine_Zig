@@ -4,41 +4,34 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "Engine",
-        .root_source_file = b.path("src/main.zig"),
+    // Engine executable
+    const exe = b.addExecutable("Engine", b.path("src/main.zig"), .{
         .target = target,
         .optimize = optimize,
     });
 
-    const server = b.addExecutable(.{
-        .name = "Server",
-        .root_source_file = b.path("src/Server.zig"),
+    // Server executable
+    const server = b.addExecutable("Server", b.path("src/Server.zig"), .{
         .target = target,
         .optimize = optimize,
     });
-
     b.installArtifact(server);
 
-    const client = b.addExecutable(.{
-        .name = "Client",
-        .root_source_file = b.path("src/Client.zig"),
+    // Client executable
+    const client = b.addExecutable("Client", b.path("src/Client.zig"), .{
         .target = target,
         .optimize = optimize,
     });
-
     b.installArtifact(client);
 
-    // Add conditional compilation based on target
+    // Conditional WASM build
     if (target.result.cpu.arch == .wasm32) {
-        // For WASM builds, include WASM exports
-        exe.root_module.addAnonymousImport("wasm_exports", .{
-            .root_source_file = b.path("src/wasm_exports.zig"),
-        });
+        exe.addModuleAnonymous("wasm_exports", b.path("src/wasm_exports.zig"), .{});
     }
 
     b.installArtifact(exe);
 
+    // Run command
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
 
@@ -49,14 +42,13 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
+    // WASM target build step
     const wasm_target_query = std.Target.Query{
         .cpu_arch = .wasm32,
         .os_tag = .freestanding,
     };
 
-    const wasm_exe = b.addExecutable(.{
-        .name = "Engine",
-        .root_source_file = b.path("src/main.zig"),
+    const wasm_exe = b.addExecutable("Engine", b.path("src/main.zig"), .{
         .target = b.resolveTargetQuery(wasm_target_query),
         .optimize = optimize,
     });
@@ -64,3 +56,4 @@ pub fn build(b: *std.Build) void {
     const wasm_step = b.step("wasm", "Build for WASM");
     wasm_step.dependOn(&b.addInstallArtifact(wasm_exe, .{}).step);
 }
+
