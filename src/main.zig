@@ -117,7 +117,9 @@ fn optionsMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     var options = Menu.init(
         "Options",
         &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
-        'w', 's', '\n',
+        'w',
+        's',
+        '\n',
     );
 
     var choice: ?usize = null;
@@ -151,7 +153,9 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
     var menu = Menu.init(
         "In-Game Menu",
         &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
-        'w', 's', '\n',
+        'w',
+        's',
+        '\n',
     );
 
     var choice: ?usize = null;
@@ -188,4 +192,3 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
         }
     }
 }
-
