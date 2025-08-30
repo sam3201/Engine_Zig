@@ -333,19 +333,17 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 }
 
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
-    // Use the global WASD_BINDINGS slice (no inline temporary slice)
     var p = try Player.init(
         allocator,
         x,
         y,
-        1, // width
-        1, // height
+        1,
+        1,
         '@',
         eng.Color{ .r = 255, .g = 255, .b = 0 },
         WASD_BINDINGS[0..],
     );
 
-    // set gameplay defaults
     p.name = "Player";
     p.health = 10;
     p.max_health = 10;
@@ -354,11 +352,33 @@ pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     p.level = 0;
     p.experience = 0;
     p.experience_to_next_level = 100;
-    p.inventory = try Inventory.Inventory.init(allocator);
 
     return p;
 }
 
+pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
+    var p = try Player.init(
+        allocator,
+        x,
+        y,
+        1,
+        1,
+        '@',
+        eng.Color{ .r = 255, .g = 255, .b = 0 },
+        ARROW_BINDINGS[0..],
+    );
+
+    p.name = "Player";
+    p.health = 10;
+    p.max_health = 10;
+    p.xp = 0;
+    p.speed = 3;
+    p.level = 0;
+    p.experience = 0;
+    p.experience_to_next_level = 100;
+
+    return p;
+}
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
     var p = try Player.init(
         allocator,
