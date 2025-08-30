@@ -263,7 +263,7 @@ pub const Chunk = struct {
         if (random.float(f32) < 0.15) {
             const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
             const lake_y = random.intRangeAtMost(i32, 3, CHUNK_HEIGHT - 4);
-            const size = random.intRangeAtMost(i32, 2, 5);
+            const size = random.intRangeAtMost(usize, 2, 5);
 
             for (0..size) |dy| {
                 for (0..size) |dx| {
