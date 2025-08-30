@@ -330,54 +330,54 @@ pub fn setKeyBinding(self: *Player, action: InputAction, key: u8) void {
 }
 
 pub fn createWASDPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
-    return Player{
-        .entity = Entity.Entity.init(
-            x,
-            y,
-            1,
-            1,
-            Entity.RenderableType.PLAYER.toId(),
-            '@',
-            eng.Color{ .r = 255, .g = 255, .b = 0 },
-        ),
-        .key_bindings = (&[_]KeyBinding{
-            .{ .key = 'w', .action = .UP },
-            .{ .key = 's', .action = .DOWN },
-            .{ .key = 'a', .action = .LEFT },
-            .{ .key = 'd', .action = .RIGHT },
-            .{ .key = 'e', .action = .INTERACT },
-            .{ .key = ' ', .action = .ATTACK },
-            .{ .key = 'i', .action = .OPENINVENTORY },
-        })[0..],
-        .name = "Player",
-        .health = 10,
-        .max_health = 10,
-        .xp = 0,
-        .speed = 3,
-        .level = 0,
-        .experience = 0,
-        .experience_to_next_level = 100,
-        .inventory = try Inventory.Inventory.init(allocator),
-        .allocator = allocator, // don’t forget this!
-    };
+    // Use the global WASD_BINDINGS slice (no inline temporary slice)
+    var p = try Player.init(
+        allocator,
+        x,
+        y,
+        1, // width
+        1, // height
+        '@',
+        eng.Color{ .r = 255, .g = 255, .b = 0 },
+        WASD_BINDINGS[0..],
+    );
+
+    // set gameplay defaults
+    p.name = "Player";
+    p.health = 10;
+    p.max_health = 10;
+    p.xp = 0;
+    p.speed = 3;
+    p.level = 0;
+    p.experience = 0;
+    p.experience_to_next_level = 100;
+    p.inventory = try Inventory.Inventory.init(allocator);
+
+    return p;
 }
 
 pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
-    return Player{ .entity = Entity.Entity.init(
+    var p = try Player.init(
+        allocator,
         x,
         y,
-        1,
-        1,
-        Entity.RenderableType.PLAYER.toId(),
+        1, // width
+        1, // height
         '@',
         eng.Color{ .r = 255, .g = 255, .b = 0 },
-    ), .key_bindings = (&[_]KeyBinding{
-        .{ .key = "up", .action = .UP },
-        .{ .key = "down", .action = .DOWN },
-        .{ .key = "left", .action = .LEFT },
-        .{ .key = "right", .action = .RIGHT },
-        .{ .key = 'e', .action = .INTERACT },
-        .{ .key = ' ', .action = .ATTACK },
-        .{ .key = 'i', .action = .OPENINVENTORY },
-    })[0..], .name = "Player", .health = 10, .max_health = 10, .xp = 0, .speed = 3, .level = 0, .experience = 0, .experience_to_next_level = 100, .inventory = try Inventory.Inventory.init(allocator), .allocator = allocator };
+        ARROW_BINDINGS[0..],
+    );
+
+    p.name = "Player";
+    p.health = 10;
+    p.max_health = 10;
+    p.xp = 0;
+    p.speed = 3;
+    p.level = 0;
+    p.experience = 0;
+    p.experience_to_next_level = 100;
+    p.inventory = try Inventory.Inventory.init(allocator);
+
+    return p;
 }
+
