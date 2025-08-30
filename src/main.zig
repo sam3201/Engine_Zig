@@ -113,7 +113,7 @@ pub fn main() !void {
 }
 
 // ───────────── Options Menu (from Title) ─────────────
-fn optionsMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+fn optionsMenu(engine: *Engine.Engine) !void {
     var options = Menu.init(
         "Options",
         &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
