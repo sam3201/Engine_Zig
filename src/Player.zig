@@ -379,6 +379,7 @@ pub fn createArrowPlayer(allocator: std.mem.Allocator, x: i32, y: i32) !Player {
         .{ .key = 'e', .action = .INTERACT },
         .{ .key = ' ', .action = .ATTACK },
         .{ .key = 'i', .action = .OPENINVENTORY },
-    })[0..], .name = "Player", .health = 10, .max_health = 10, .xp = 0, .speed = 3, .level = 0, .experience = 0, .experience_to_next_level = 100, .inventory = try Inventory.Inventory.init(allocator), .allocator = allocator };
+    })[0..]
+    .name = "Player", .health = 10, .max_health = 10, .xp = 0, .speed = 3, .level = 0, .experience = 0, .experience_to_next_level = 100, .inventory = try Inventory.Inventory.init(allocator), .allocator = allocator };
 }
 
