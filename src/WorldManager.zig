@@ -195,43 +195,43 @@ pub const WorldManager = struct {
         self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
     }
 
-fn playerInteract(self: *WorldManager) void {
-    const pos = self.player.getPosition();
-    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+    fn playerInteract(self: *WorldManager) void {
+        const pos = self.player.getPosition();
+        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-    if (self.chunks.getPtr(chunk_coord)) |chunk| {
-        if (chunk.findItemAt(pos.x, pos.y)) |idx| {
-            const wi = chunk.items.items[idx];
-            const item = .{ .id = wi.item.id, .name = wi.item.name, .quantity = wi.item.quantity };
-            _ = self.player.addItem(item) catch return;
-            chunk.removeItemIndex(idx);
+        if (self.chunks.getPtr(chunk_coord)) |chunk| {
+            if (chunk.findItemAt(pos.x, pos.y)) |idx| {
+                const wi = chunk.items.items[idx];
+                const item = .{ .id = wi.item.id, .name = wi.item.name, .quantity = wi.item.quantity };
+                _ = self.player.addItem(item) catch return;
+                chunk.removeItemIndex(idx);
 
-            std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
+                std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
+            }
         }
     }
-}
 
-fn playerDropItem(self: *WorldManager) void {
-    if (self.player.inventory.len() == 0) return;
+    fn playerDropItem(self: *WorldManager) void {
+        if (self.player.inventory.len() == 0) return;
 
-    const pos = self.player.getPosition();
-    const chunk_coord = worldToChunkCoord(pos.x, pos.y);
+        const pos = self.player.getPosition();
+        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
-    if (self.chunks.getPtr(chunk_coord)) |chunk| {
-        const item = self.player.inventory.getItem(0).?;
-        const drop = Chunk.WorldItem{
-            .item = .{ .id = item.id, .name = item.name, .quantity = 1 },
-            .x = pos.x,
-            .y = pos.y,
-        };
+        if (self.chunks.getPtr(chunk_coord)) |chunk| {
+            const item = self.player.inventory.getItem(0).?;
+            const drop = Chunk.WorldItem{
+                .item = .{ .id = item.id, .name = item.name, .quantity = 1 },
+                .x = pos.x,
+                .y = pos.y,
+            };
 
-        if (chunk.findItemAt(pos.x, pos.y) == null) {
-            chunk.addWorldItem(drop) catch return;
-            self.player.removeItem(item.name, 1);
-            std.debug.print("Dropped {s}\n", .{ item.name });
+            if (chunk.findItemAt(pos.x, pos.y) == null) {
+                chunk.addWorldItem(drop) catch return;
+                self.player.removeItem(item.name, 1);
+                std.debug.print("Dropped {s}\n", .{item.name});
+            }
         }
     }
-}
 
     fn playerAttack(self: *WorldManager) void {
         // TODO
@@ -305,31 +305,31 @@ fn playerDropItem(self: *WorldManager) void {
             eng.Color{ .r = 0, .g = 255, .b = 0 };
 
         const inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
-defer self.allocator.free(inv_str);
+        defer self.allocator.free(inv_str);
 
-for (inv_str, 0..) |ch, i| {
-    const y: i32 = 2;
-    if (i < self.canvas.width) {
-        self.canvas.put(@intCast(i), y, ch);
-        self.canvas.fillColor(@intCast(i), y, eng.Color{ .r = 200, .g = 200, .b = 200 });
-    }
-}
-
-var offset: usize = inv_str.len;
-for (self.player.inventory.items.items) |it| {
-    const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.name, it.quantity }) catch continue;
-    defer self.allocator.free(entry);
-
-    for (entry, 0..) |ch, j| {
-        const y: i32 = 2;
-        const x: usize = offset + j;
-        if (x < self.canvas.width) {
-            self.canvas.put(@intCast(x), y, ch);
-            self.canvas.fillColor(@intCast(x), y, eng.Color{ .r = 180, .g = 180, .b = 0 });
+        for (inv_str, 0..) |ch, i| {
+            const y: i32 = 2;
+            if (i < self.canvas.width) {
+                self.canvas.put(@intCast(i), y, ch);
+                self.canvas.fillColor(@intCast(i), y, eng.Color{ .r = 200, .g = 200, .b = 200 });
+            }
         }
-    }
-    offset += entry.len;
-}
+
+        var offset: usize = inv_str.len;
+        for (self.player.inventory.items.items) |it| {
+            const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.name, it.quantity }) catch continue;
+            defer self.allocator.free(entry);
+
+            for (entry, 0..) |ch, j| {
+                const y: i32 = 2;
+                const x: usize = offset + j;
+                if (x < self.canvas.width) {
+                    self.canvas.put(@intCast(x), y, ch);
+                    self.canvas.fillColor(@intCast(x), y, eng.Color{ .r = 180, .g = 180, .b = 0 });
+                }
+            }
+            offset += entry.len;
+        }
 
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
