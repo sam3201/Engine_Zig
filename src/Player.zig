@@ -246,48 +246,39 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     const obj = parsed.value.object;
 
     const id: i32 = @intCast(obj.get("id").?.integer);
-    const name = obj.get("name").?.string;
+    const name_src = obj.get("name")?.string;
     const health: i32 = @intCast(obj.get("health").?.integer);
-    const speed = obj.get("speed").?.integer;
+    const speed: i32 = @intCast(obj.get("speed").?.integer);
     const max_health: i32 = @intCast(obj.get("max_health").?.integer);
     const xp: i32 = @intCast(obj.get("xp").?.integer);
     const level: i32 = @intCast(obj.get("level").?.integer);
     const experience: i32 = @intCast(obj.get("experience").?.integer);
     const experience_to_next_level: i32 = @intCast(obj.get("experience_to_next_level").?.integer);
-    const inv_json = obj.get("inventory").?.array;
-    const key_json = obj.get("key_bindings").?.array;
-    const key_bindings = try allocator.alloc(KeyBinding, key_json.items.len);
-    for (key_json.items, 0..) |b, i| {
-        key_bindings[i] = KeyBinding{
-            .key = @intCast(b.object.get("key").?.integer),
-            .action = @enumFromInt(b.object.get("action").?.integer),
-        };
-    }
-    const inv = try allocator.alloc(Inventory.Item, inv_json.items.len);
-    for (inv_json.items, 0..) |it, i| {
-        inv[i] = Inventory.Item{
-            .id = @intCast(it.object.get("id").?.integer),
-            .name = it.object.get("name").?.string,
-            .quantity = @intCast(it.object.get("quantity").?.integer),
-        };
-    }
-    var inventory = try allocator.alloc(Inventory.Item, inv_json.items.len);
-    for (inv_json.items, 0..) |it, i| {
-        inventory[i] = Inventory.Item{
-            .id = @intCast(it.object.get("id").?.integer),
-            .name = it.object.get("name").?.string,
-            .quantity = @intCast(it.object.get("quantity").?.integer),
-        };
-    }
 
-    // Load key bindings
-    const bindings_json = obj.get("key_bindings").?.array;
+    // Duplicate name so it survives after parser deinit
+    const name_dup = try allocator.dupe(u8, name_src);
+
+    // Key bindings
+    const bindings_json = obj.get("key_bindings")?.array;
     var bindings = try allocator.alloc(KeyBinding, bindings_json.items.len);
     for (bindings_json.items, 0..) |b, i| {
         bindings[i] = KeyBinding{
             .key = @intCast(b.object.get("key").?.integer),
-            .action = @enumFromInt(b.object.get("action").?.integer),
+            .action = @enumFromInt(b.object.get("action")?.integer),
         };
+    }
+
+    // Inventory: build Inventory and duplicate item names
+    var inv_list = try Inventory.Inventory.init(allocator);
+    const inv_json = obj.get("inventory")?.array;
+    if (inv_json.items.len > 0) {
+        for (inv_json.items, 0..) |it, i| {
+            const item_id = @intCast(it.object.get("id").?.integer);
+            const item_name_src = it.object.get("name")?.string;
+            const item_name_dup = try allocator.dupe(u8, item_name_src);
+            const item_qty = @intCast(it.object.get("quantity")?.integer);
+            try inv_list.addItem(Inventory.Item{ .id = item_id, .name = item_name_dup, .quantity = item_qty });
+        }
     }
 
     var player = try Player.init(
@@ -301,6 +292,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
         bindings,
     );
 
+    // assign fields
     player.health = health;
     player.max_health = max_health;
     player.xp = xp;
@@ -308,9 +300,9 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
     player.level = level;
     player.experience = experience;
     player.experience_to_next_level = experience_to_next_level;
-    player.inventory = inventory;
+    player.inventory = inv_list;
     player.id = id;
-    player.name = name;
+    player.name = name_dup;
 
     return player;
 }
