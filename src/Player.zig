@@ -270,7 +270,7 @@ pub fn load(allocator: std.mem.Allocator, path: []const u8) !Player {
 
     // Inventory: build Inventory and duplicate item names
     var inv_list = try Inventory.Inventory.init(allocator);
-    const inv_json = obj.get("inventory")?.array;
+    const inv_json = obj.get("inventory").?.array;
     if (inv_json.items.len > 0) {
         for (inv_json.items, 0..) |it, i| {
             const item_id = @intCast(it.object.get("id").?.integer);
