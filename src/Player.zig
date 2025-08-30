@@ -15,7 +15,7 @@ pub const InputAction = enum {
     USEITEM,
     DROPITEM,
     OPENINVENTORY,
-    OPENMENU,
+    //OPENMENU,
     None,
 };
 
