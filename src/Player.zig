@@ -41,39 +41,39 @@ pub const Player = struct {
     id: i32 = 0,
     name: []const u8 = "Nameless",
 
-pub fn init(
-    allocator: std.mem.Allocator,
-    start_x: i32,
-    start_y: i32,
-    width: i32,
-    height: i32,
-    ch: u8,
-    color: eng.Color,
-    key_bindings: []const KeyBinding,
-) !Player {
-    const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
-    @memcpy(owned_bindings, key_bindings);
+    pub fn init(
+        allocator: std.mem.Allocator,
+        start_x: i32,
+        start_y: i32,
+        width: i32,
+        height: i32,
+        ch: u8,
+        color: eng.Color,
+        key_bindings: []const KeyBinding,
+    ) !Player {
+        const owned_bindings = try allocator.alloc(KeyBinding, key_bindings.len);
+        @memcpy(owned_bindings, key_bindings);
 
-    const entity = Entity.Entity.init(
-        start_x,
-        start_y,
-        width,
-        height,
-        Entity.RenderableType.PLAYER.toId(),
-        ch,
-        color,
-    );
+        const entity = Entity.Entity.init(
+            start_x,
+            start_y,
+            width,
+            height,
+            Entity.RenderableType.PLAYER.toId(),
+            ch,
+            color,
+        );
 
-    var inv = try Inventory.Inventory.init(allocator);
+        var inv = try Inventory.Inventory.init(allocator);
 
-    return Player{
-        .entity = entity,
-        .key_bindings = owned_bindings,
-        .allocator = allocator,
-        .inventory = inv,
-        // other fields will take their defaults (health, max_health, etc.)
-    };
-}
+        return Player{
+            .entity = entity,
+            .key_bindings = owned_bindings,
+            .allocator = allocator,
+            .inventory = inv,
+            // other fields will take their defaults (health, max_health, etc.)
+        };
+    }
 
     pub fn deinit(self: *Player) void {
         if (self.key_bindings.len > 0) {
