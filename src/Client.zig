@@ -36,8 +36,15 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
-        defer allocator.free(line);
+        var buffer = std.ArrayList(u8).init(allocator);
+defer buffer.deinit();
+
+// Stream until delimiter into buffer
+try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
+
+// Convert to slice
+const line = buffer.toOwnedSlice();
+defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
 
