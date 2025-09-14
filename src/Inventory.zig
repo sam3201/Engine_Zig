@@ -5,8 +5,8 @@ const std = @import("std");
 pub const Item = struct {
     pub const ItemType = enum {
         Weapon = struct {
-            type: enum { Pistol, Shotgun }, 
-    },
+            type: enum { Pistol, Shotgun },
+        },
         Armor,
         Consumable,
     };
