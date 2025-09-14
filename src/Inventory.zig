@@ -19,7 +19,6 @@ pub const ItemType = enum {
     };
 
     pub const None = enum(u8) { None = ' ' };
-
 };
 
 pub const Item = struct {
