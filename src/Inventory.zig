@@ -16,6 +16,20 @@ pub const Item = struct {
             .allocator = allocator,
         };
     }
+
+    pub fn deinit(self: *Item) void {
+        self.allocator.free(self.name);
+    }
+
+    pub fn copy(self: Item) Item {
+        return Item{
+            .id = self.id,
+            .name = self.allocator.dupe(u8, self.name) catch unreachable,
+            .quantity = self.quantity,
+            .allocator = self.allocator,
+        };
+    }
+
 };
 
 pub const Inventory = struct {
