@@ -144,7 +144,7 @@ pub const Chunk = struct {
         };
 
         // Initialize the items ArrayList at runtime
-        var items = std.ArrayList(WorldItem).init(allocator);
+        var self.items = std.ArrayList(WorldItem).init(allocator);
         self.items.allocator = allocator;
         self.items = items;
 
