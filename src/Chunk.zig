@@ -144,8 +144,8 @@ pub const Chunk = struct {
         };
 
         // Initialize the items ArrayList at runtime
-        var self.items = std.ArrayList(WorldItem).init(allocator);
-        self.items.allocator = allocator;
+        var items = std.ArrayList(WorldItem).init(allocator);
+        items.allocator = allocator;
         self.items = items;
 
         // generate terrain
