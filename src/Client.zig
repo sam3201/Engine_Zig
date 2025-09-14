@@ -37,7 +37,8 @@ pub fn renderGameState(
 
     while (true) {
         const line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
-        defer allocator.free(line);
+
+defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
 
