@@ -140,8 +140,8 @@ pub const Chunk = struct {
             .items = undefined,
         };
 
-var items = std.ArrayListUnmanaged(WorldItem){};
-try items.ensureTotalCapacity(allocator, 8);
+        var items = std.ArrayListUnmanaged(WorldItem){};
+        try items.ensureTotalCapacity(allocator, 8);
 
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
