@@ -54,7 +54,7 @@ pub const Clock = struct {
 
     pub fn tick(self: *Clock) void {
         self.last = self.now;
-        self.now = @intCast(std.time.nanoTimestamp());
+        self.now = std.time.nanoTimestamp();
     }
 
     pub fn sleepUntilNextFrame(self: *Clock) void {
