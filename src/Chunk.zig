@@ -140,7 +140,7 @@ pub const Chunk = struct {
             .items = undefined,
         };
 
-        itemsvar items = std.ArrayList(WorldItem).init(allocator);
+        var items = std.ArrayList(WorldItem).init(allocator);
 try items.append(WorldItem.init(coord, item_type, quantity, allocator));
 .allocator = allocator;
         self.items = items;
