@@ -126,7 +126,7 @@ pub const Chunk = struct {
     coord: ChunkCoord,
     tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType,
     biome: BiomeType,
-    difficulty_level: i32,
+    difficulty: i32,
     generated: bool = false,
     items: std.ArrayList(WorldItem),
 
