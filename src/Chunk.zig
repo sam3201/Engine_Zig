@@ -152,7 +152,7 @@ pub const Chunk = struct {
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = '!',
             .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
-        });
+        }, allocator);
 
         try self.spawnTestItems();
         return self;
