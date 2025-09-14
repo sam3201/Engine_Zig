@@ -122,15 +122,6 @@ pub const ItemType = enum {
         Potion,
         Food,
     };
-
-    Sword,
-    Axe,
-    Pickaxe,
-    Leather,
-    Chain,
-    Iron,
-    Potion,
-    Food,
 };
 
 pub const WorldItem = struct {
