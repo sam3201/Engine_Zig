@@ -60,7 +60,6 @@ pub const Clock = struct {
     pub fn sleepUntilNextFrame(self: *Clock) void {
     const sleep_ns: f64 = @floatFromInt(self.target - now_ns_f64); 
     sleep_ns = @intFromFloat(sleep_ns);
-    const sleep_ns: u64 = @intCast(@intFromFloat(self.target - now_ns_f64));
     if (sleep_ns > 0) {
     std.Thread.sleep(sleep_ns);
 }
