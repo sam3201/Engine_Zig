@@ -146,7 +146,13 @@ pub const Chunk = struct {
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
-        self.items = items;
+        try self.items.append(WorldItem{
+            .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
+            .x = self.coord.x * CHUNK_WIDTH + 2,
+            .y = self.coord.y * CHUNK_HEIGHT + 2,
+            .ch = '!',
+            .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
+        });
 
         try self.spawnTestItems();
         return self;
