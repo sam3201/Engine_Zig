@@ -18,7 +18,7 @@ pub const ItemType = enum {
         Food = 'f',
     };
 
-    private const None = enum(u8) { None = ' ' };
+    pub const None = enum(u8) { None = ' ' };
 
 };
 
