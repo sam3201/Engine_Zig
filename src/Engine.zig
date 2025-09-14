@@ -140,7 +140,7 @@ pub const Canvas = struct {
     }
 
     pub fn flushToTerminal(self: *Canvas) void {
-    const stdout = std.io.getStdOut().writer();
+        const stdout = std.io.getStdOut().writer();
 
         _ = stdout.write("\x1b[H") catch {};
 
