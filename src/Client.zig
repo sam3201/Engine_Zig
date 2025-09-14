@@ -7,6 +7,7 @@ const PlayerModule = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_stream: ?*net.Stream = null;
+    var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
@@ -31,8 +32,7 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    var read_buf: [4096]u8 = undefined;
-    var reader = stream.reader(read_buf[0..]);
+    var reader = stream.reader(g_read_buf[0..]);
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
