@@ -8,7 +8,7 @@ pub const Item = struct {
     quantity: u32,
     allocator: std.mem.Allocator,
 
-    pub fn init(id: u32, name: []const u8, quantity: u32) Item {
+    pub fn init(id: u32, name: []const u8, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
             .id = id,
             .name = name,
