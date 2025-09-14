@@ -3,17 +3,17 @@
 const std = @import("std");
 
 pub const ItemType = enum {
-    const Weapon = enum(u8) {
+    pub const Weapon = enum(u8) {
         Sword = 's',
         Axe = 'a',
         Pickaxe = 'p',
     };
-    const Armor = enum(u8) {
+    pub const Armor = enum(u8) {
         Leather = 'l',
         Chain = 'c',
         Iron = 'i',
     };
-    const Consumable = enum(u8) {
+    pub const Consumable = enum(u8) {
         Potion = 'p',
         Food = 'f',
     };
