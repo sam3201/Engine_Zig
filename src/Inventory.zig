@@ -2,14 +2,15 @@
 
 const std = @import("std");
 
-pub const ItemType = enum {
+pub const Item = struct {
+pub const ItemType = union(enum) {
     None,
     Weapon,
     Armor,
     Consumable,
 };
 
-pub const Item = struct {
+
     item_type: ItemType,
     allocator: std.mem.Allocator,
 
