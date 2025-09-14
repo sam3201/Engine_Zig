@@ -17,7 +17,6 @@ pub const Item = struct {
     pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
             .item_type = item_type,
-            .variant_char = variant_char,
             .quantity = quantity,
         };
     }
