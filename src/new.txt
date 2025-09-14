@@ -2510,3 +2510,94 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
+
+samueldasari@MacBookAir src % sh build.sh 
+run
+└─ run exe Engine
+   └─ install
+      └─ install Server
+         └─ compile exe Server Debug native 1 errors
+WorldManager.zig:43:38: error: expected 7 argument(s), found 4
+        const chunk = try Chunk.Chunk.init(.{ .x = 0, .y = 0 }, start_biome, 0, allocator);
+                          ~~~~~~~~~~~^~~~~
+Chunk.zig:133:9: note: function declared here
+    pub fn init(coord: ChunkCoord, id: u32, item_type: Inventory.ItemType, quantity: u32, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:
+    init: Server.zig:34:63
+    main: Server.zig:318:37
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
+error: the following command failed with 1 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep server_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Server.zig -Mserver_mod=/Users/samueldasari/Personal/Engine/src/Server.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Server --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+run
+└─ run exe Engine
+   └─ install
+      └─ install Engine
+         └─ compile exe Engine Debug native 3 errors
+Engine.zig:61:52: error: incompatible types: 'f64' and 'i128'
+        const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));
+                                       ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+Engine.zig:61:44: note: type 'f64' here
+        const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));
+                                       ~~~~^~~~~~~
+Engine.zig:61:54: note: type 'i128' here
+        const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));                                                                                                    ^~~~~~~~~~~~~~~~~~~~~~                                                 referenced by:                                                                                                                  main: main.zig:50:41
+    callMain [inlined]: /opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/start.zig:627:37
+    callMainWithArgs [inlined]: /opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/start.zig:587:20
+    main: /opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/start.zig:602:28
+    1 reference(s) hidden; use '-freference-trace=5' to see all references
+Engine.zig:142:35: error: root source file struct 'Io' has no member named 'getStdOut'
+        const stdout_file = std.io.getStdOut();
+                            ~~~~~~^~~~~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
+const builtin = @import("builtin");
+^~~~~                                                                                                                       WorldManager.zig:43:38: error: expected 7 argument(s), found 4        const chunk = try Chunk.Chunk.init(.{ .x = 0, .y = 0 }, start_biome, 0, allocator);
+                          ~~~~~~~~~~~^~~~~
+Chunk.zig:133:9: note: function declared here
+    pub fn init(coord: ChunkCoord, id: u32, item_type: Inventory.ItemType, quantity: u32, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+error: the following command failed with 3 compilation errors:
+                                                              /opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep engine_mod -Mroot=/Users/samueldasari/Personal/Engine/src/main.zig -Mengine_mod=/Users/samueldasari/Personal/Engine/src/main.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Engine --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-                                                                                                                   run
+└─ run exe Engine
+   └─ install
+      └─ install Client
+         └─ compile exe Client Debug native 3 errors
+Client.zig:34:42: error: no field named 'buffer' in struct 'net.Stream'
+    const reader = stream.reader(&stream.buffer);
+                                         ^~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/net.zig:1901:20: note: struct declared here                                     pub const Stream = struct {
+                   ^~~~~~                                                                                                   referenced by:                                                                                                                  update: Client.zig:106:32
+    main: Client.zig:124:31                                                                                                     4 reference(s) hidden; use '-freference-trace=6' to see all references                                                  Engine.zig:61:52: error: incompatible types: 'f64' and 'i128'                                                                       const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));
+                                       ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~                                                 Engine.zig:61:44: note: type 'f64' here
+        const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));                                       ~~~~^~~~~~~
+Engine.zig:61:54: note: type 'i128' here
+        const sleep_ns: u64 = @intCast(self.target - (self.now - self.last));
+                                                     ^~~~~~~~~~~~~~~~~~~~~~
+Engine.zig:142:35: error: root source file struct 'Io' has no member named 'getStdOut'
+        const stdout_file = std.io.getStdOut();
+                            ~~~~~~^~~~~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
+const builtin = @import("builtin");
+^~~~~
+error: the following command failed with 3 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep client_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Client.zig -Mclient_mod=/Users/samueldasari/Personal/Engine/src/Client.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Client --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+
+Build Summary: 0/9 steps succeeded; 3 failed
+run transitive failure
+└─ run exe Engine transitive failure
+   ├─ compile exe Engine Debug native 3 errors
+   └─ install transitive failure                                                                                                  ├─ install Engine transitive failure                                                                                        │  └─ compile exe Engine Debug native (reused)                                                                              ├─ install Server transitive failure
+      │  └─ compile exe Server Debug native 1 errors
+      └─ install Client transitive failure
+         └─ compile exe Client Debug native 3 errors
+
+error: the following build command failed with exit code 1:
+/Users/samueldasari/Personal/Engine/.zig-cache/o/ee4d8af7703c8c1f3a35ee1fce3965f9/build /opt/homebrew/Cellar/zig/0.15.1/bin/zig /opt/homebrew/Cellar/zig/0.15.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0x41aeea61 -Z866b2c6033e1034f run
+samueldasari@MacBookAir src % nvim WorldManager.zig 
+samueldasari@MacBookAir src % cat * > new.txt
+^C
+samueldasari@MacBookAir src % rm new.txt 
+samueldasari@MacBookAir src % cat * > new.txt
+samueldasari@MacBookAir src % nvim new.txt 
+samueldasari@MacBookAir src % 
+
