@@ -23,9 +23,10 @@ pub const ItemType = union(enum) {
         Food = 'f',
     };
     pub const None = enum(u8) {
-        Empty = ' ',
+        None = ' ',
     };
 };
+
 pub const Item = struct {
     type: ItemType,
     char: u8,
