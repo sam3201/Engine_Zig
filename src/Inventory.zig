@@ -38,8 +38,7 @@ pub const Item = struct {
 
     pub fn copy(self: Item) Item {
         return Item{
-            .id = self.id,
-            .name = self.allocator.dupe(u8, self.name) catch unreachable,
+            .type = self.type,
             .quantity = self.quantity,
             .allocator = self.allocator,
         };
