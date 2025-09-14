@@ -97,7 +97,7 @@ pub const Canvas = struct {
 
     pub fn deinit(self: *Canvas) void {
         for (self.scene.items) |*r| r.deinit();
-        self.scene.deinit();
+        self.scene.deinit(self.allocator);
         self.allocator.free(self.colors);
         self.allocator.free(self.buf);
     }
