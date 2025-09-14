@@ -9,6 +9,8 @@ const Chunk = @import("Chunk.zig");
 var g_stream: ?*net.Stream = null;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
+var read_buf: [4096]u8 = undefined;
+var reader = stream.reader(read_buf[0..]);
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
