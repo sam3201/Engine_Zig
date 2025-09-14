@@ -145,7 +145,6 @@ pub const Chunk = struct {
         items.allocator = allocator;
         self.items = items;
 
-        // generate terrain
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
