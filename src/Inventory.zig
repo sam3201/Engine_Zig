@@ -2,54 +2,36 @@
 
 const std = @import("std");
 
-pub const ItemType = union(enum) {
-    Weapon: Weapon,
-    Armor: Armor,
-    Consumable: Consumable,
-    None: None,
-
-    pub const Weapon = enum(u8) {
-        Sword = 's',
-        Axe = 'a',
-        Pickaxe = 'p',
-    };
-    pub const Armor = enum(u8) {
-        Leather = 'l',
-        Chain = 'c',
-        Iron = 'i',
-    };
-    pub const Consumable = enum(u8) {
-        Potion = 'p',
-        Food = 'f',
-    };
-    pub const None = enum(u8) {
-        None = ' ',
-    };
+pub const ItemType = enum {
+    None,
+    Weapon,
+    Armor,
+    Consumable,
 };
 
 pub const Item = struct {
-    type: ItemType,
-    char: u8,
+    item_type: ItemType,
+    variant_char: u8,        // the glyph for this item (e.g. 's' for sword, 'p' for potion)
     quantity: u32,
-    allocator: std.mem.Allocator,
 
-    pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item{switch (item_type) {
-            .Weapon => |weapon| return Item{ .type = item_type, .char = weapon, .quantity = quantity, .allocator = allocator },
-            .Armor => |armor| return Item{ .type = item_type, .char = armor, .quantity = quantity, .allocator = allocator },
-            .Consumable => |consumable| return Item{ .type = item_type, .char = consumable, .quantity = quantity, .allocator = allocator },
-        }};
+    pub fn init(item_type: ItemType, variant_char: u8, quantity: u32) Item {
+        return Item{
+            .item_type = item_type,
+            .variant_char = variant_char,
+            .quantity = quantity,
+        };
     }
 
     pub fn deinit(self: *Item) void {
-        self.allocator.free(self.name);
+        // nothing heap-allocated inside Item anymore
+        _ = self;
     }
 
     pub fn copy(self: Item) Item {
         return Item{
-            .type = self.type,
+            .item_type = self.item_type,
+            .variant_char = self.variant_char,
             .quantity = self.quantity,
-            .allocator = self.allocator,
         };
     }
 };
@@ -66,12 +48,15 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
+        // no per-item heap allocations to free (if you later store names or dup strings,
+        // free them here)
         self.items.deinit();
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
+        // combine by type+variant_char
         for (self.items.items) |*it| {
-            if (std.mem.eql(u8, it.name, item.name)) {
+            if (it.item_type == item.item_type and it.variant_char == item.variant_char) {
                 it.quantity += item.quantity;
                 return;
             }
@@ -79,10 +64,10 @@ pub const Inventory = struct {
         try self.items.append(item);
     }
 
-    pub fn removeItem(self: *Inventory, name: []const u8, amount: u32) void {
+    pub fn removeItem(self: *Inventory, item_type: ItemType, variant_char: u8, amount: u32) void {
         var i: usize = 0;
         while (i < self.items.items.len) : (i += 1) {
-            if (std.mem.eql(u8, self.items.items[i].name, name)) {
+            if (self.items.items[i].item_type == item_type and self.items.items[i].variant_char == variant_char) {
                 if (self.items.items[i].quantity > amount) {
                     self.items.items[i].quantity -= amount;
                 } else {
@@ -102,3 +87,4 @@ pub const Inventory = struct {
         return self.items.items.len;
     }
 };
+
