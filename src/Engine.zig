@@ -57,14 +57,14 @@ pub const Clock = struct {
         self.now = @intCast(std.time.nanoTimestamp());
     }
 
-    pub fn sleepUntilNextFrame(self: *Clock) void {
-        const frame_last_f64: f64 = @floatFromInt(self.last);
-        const frame_end: f64 = frame_last_f64 + self.target;
-        const now_f64: f64 = @floatFromInt(self.now);
-        const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
-        const sleep_ns: u64 = @intFromFloat(diff);
-        std.Thread.sleep(sleep_ns);
-    }
+pub fn sleepUntilNextFrame(self: *Clock) void {
+    const frame_last_f64: f64 = @floatFromInt(self.last);
+    const frame_end: f64 = frame_last_f64 + self.target;
+    const now_f64: f64 = @floatFromInt(self.now);
+    const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
+    const sleep_ns: u64 = @intFromFloat(diff);
+    std.Thread.sleep(sleep_ns); // ✅ correct for 0.15
+}
 
     pub fn deinit(self: *Clock) void {
         _ = self;
