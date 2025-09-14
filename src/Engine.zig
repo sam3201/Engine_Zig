@@ -42,7 +42,7 @@ pub const Clock = struct {
 
     pub fn init(fps: f64) Clock {
         return .{
-            .target = std.time.sleep.ns(std.time.ns_per_s) / fps,
+            .target = @divTrunc(std.time.ns_per_s, fps),
             .last = std.time.nanoTimestamp(),
             .now = std.time.nanoTimestamp(),
         };
