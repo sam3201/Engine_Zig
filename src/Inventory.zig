@@ -11,7 +11,7 @@ pub const ItemType = enum {
 
 pub const Item = struct {
     item_type: ItemType,
-    variant_char: u8, // the glyph for this item (e.g. 's' for sword, 'p' for potion)
+    variant_char: u8, 
     quantity: u32,
 
     pub fn init(item_type: ItemType, variant_char: u8, quantity: u32) Item {
