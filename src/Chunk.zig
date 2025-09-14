@@ -132,18 +132,15 @@ pub const Chunk = struct {
     items: std.ArrayList(WorldItem),
 
     pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
-        // create chunk with placeholder items (will initialize items next)
         var self = Chunk{
             .coord = coord,
             .biome = biome,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
             .difficulty_level = difficulty_level,
             .generated = true,
-            // temporarily fill items with an uninitialized value — we'll set it below
             .items = undefined,
         };
 
-        // Initialize the items ArrayList at runtime
         var items = std.ArrayList(WorldItem).init(allocator);
         items.allocator = allocator;
         self.items = items;
