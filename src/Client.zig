@@ -7,6 +7,7 @@ const PlayerModule = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_stream: ?*net.Stream = null;
+var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
 pub fn connectToServer() !net.Stream {
@@ -22,7 +23,6 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
 }
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
-    var write_buf: [1024]u8 = undefined;
     const writer = stream.writer(&write_buf);
 
     try writer.writeAll(input_data);
