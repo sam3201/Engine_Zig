@@ -30,6 +30,7 @@ pub const Item = struct {
         return Item{
             .item_type = self.item_type,
             .quantity = self.quantity,
+            .allocator = self.allocator,
         };
     }
 };
