@@ -42,8 +42,8 @@ pub const Clock = struct {
 
     pub fn init(fps: f64) Clock {
         return .{
-            .target = std.time.sleep.ns(std.time.ns_per_s) / fps,
-            .last = std.time.nanoTimestamp(),
+            .last = ststd.time.sleep(sleep_ns);
+d.time.nanoTimestamp(),
             .now = std.time.nanoTimestamp(),
         };
     }
