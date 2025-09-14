@@ -9,9 +9,19 @@ pub const Item = struct {
         },
 
         Armor = enum {
+            { Light, Medium, Heavy },
+        },
+        Consumable = enum {
+            Potion,
+            Food,
+        },
+        Ammo = enum {
+            { Pistol, Shotgun },
             
         },
-        Consumable,
+        Other = enum {
+            
+        },
     };
 
     item_type: ItemType,
