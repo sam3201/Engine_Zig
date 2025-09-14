@@ -42,7 +42,7 @@ pub const Clock = struct {
 
     pub fn init(fps: f64) Clock {
         return .{
-            .target = @floatFromInt(std.time.ns_per_s) / @floatFromInt(fps),
+            .target: f64 = @floatFromInt(std.time.ns_per_s) / @floatFromInt(fps),
             .last = std.time.nanoTimestamp(),
             .now = std.time.nanoTimestamp(),
         };
