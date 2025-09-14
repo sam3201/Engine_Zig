@@ -32,7 +32,7 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    var reader = stream.reader(g_read_buf[0..]);
+    const reader = stream.reader(g_read_buf[0..]);
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
