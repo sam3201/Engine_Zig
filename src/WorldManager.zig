@@ -40,7 +40,7 @@ pub const WorldManager = struct {
         };
 
         const start_biome = randomBiome();
-        const chunk = try Chunk.Chunk.init(coord, biome, difficulty, allocator);
+        const chunk = try Chunk.Chunk.init(coord, start_biome, difficulty, allocator);
         try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
 
         try world.updateChunks();
