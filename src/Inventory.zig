@@ -8,7 +8,7 @@ pub const ItemType = enum {
         Axe = 'a',
         Pickaxe = 'p',
     };
-    const Armor = enum(u8) {
+    const Armor = enum {
         Leather = 'l',
         Chain = 'c',
         Iron = 'i',
@@ -26,7 +26,7 @@ pub const Item = struct {
 
     pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
-            .type = item_type.type,
+            .type = item_type,
             .quantity = quantity,
             .allocator = allocator,
         };
