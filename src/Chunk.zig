@@ -130,12 +130,12 @@ pub const Chunk = struct {
     generated: bool = false,
     items: std.ArrayList(WorldItem),
 
-    pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty: i32, allocator: std.mem.Allocator) !Chunk {
         var self = Chunk{
             .coord = coord,
             .biome = biome,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
-            .difficulty_level = difficulty_level,
+            .difficulty= difficulty,
             .generated = true,
             .items = undefined,
         };
