@@ -17,6 +17,8 @@ pub const ItemType = enum {
         Potion = 'p',
         Food = 'f',
     };
+
+    const None = 0;
 };
  
 pub const Item = struct {
