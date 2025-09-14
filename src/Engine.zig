@@ -145,7 +145,6 @@ pub const Canvas = struct {
         var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
         const stdout = &stdout_writer.interface;
 
-        // move cursor to home
         _ = stdout.print("{s}", .{"\x1b[H"}) catch {};
 
         var y: usize = 0;
