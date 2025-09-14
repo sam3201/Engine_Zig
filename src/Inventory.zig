@@ -13,6 +13,7 @@ pub const Item = struct {
             .id = id,
             .name = name,
             .quantity = quantity,
+            .allocator = allocator,
         };
     }
 };
