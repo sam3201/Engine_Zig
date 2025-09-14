@@ -121,12 +121,6 @@ pub const WorldItem = struct {
             .y = y,
         };
     }
-
-    pub fn randItem(allocator: std.mem.Allocator) WorldItem {
-        var prng = std.Random.DefaultPrng.init(0);
-        const item = Inventory.Item.randItem(prng.random(), allocator);
-        return WorldItem.init(item.id, item.name, item.quantity, 0, 0, allocator);
-    }
 };
 
 pub const Chunk = struct {
