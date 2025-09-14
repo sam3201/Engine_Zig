@@ -2502,3 +2502,103 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
+
+samueldasari@MacBookAir src % sh build.sh 
+run
+└─ run exe Engine
+   └─ install
+      └─ install Engine
+         └─ compile exe Engine Debug native 3 errors
+Chunk.zig:147:23: error: member function expected 2 argument(s), found 1
+        try self.items.append(WorldItem.init(coord, 1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
+            ~~~~~~~~~~^~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/array_list.zig:893:13: note: function declared here
+        pub fn append(self: *Self, gpa: Allocator, item: T) Allocator.Error!void {
+        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:
+    init: WorldManager.zig:43:43
+    main: main.zig:75:51
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
+Engine.zig:45:23: error: incompatible types: 'fn (u64) void' and 'f64'
+            .target = @divTrunc(std.Thread.sleep, fps),
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Engine.zig:45:43: note: type 'fn (u64) void' here
+            .target = @divTrunc(std.Thread.sleep, fps),
+                                ~~~~~~~~~~^~~~~~
+Engine.zig:45:51: note: type 'f64' here
+            .target = @divTrunc(std.Thread.sleep, fps),
+                                                  ^~~
+Engine.zig:144:35: error: root source file struct 'Io' has no member named 'getStdOut'
+        const stdout_file = std.io.getStdOut();
+                            ~~~~~~^~~~~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
+const builtin = @import("builtin");
+^~~~~
+error: the following command failed with 3 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep engine_mod -Mroot=/Users/samueldasari/Personal/Engine/src/main.zig -Mengine_mod=/Users/samueldasari/Personal/Engine/src/main.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Engine --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+run
+└─ run exe Engine
+   └─ install
+      └─ install Client
+         └─ compile exe Client Debug native 3 errors
+Client.zig:34:26: error: member function expected 1 argument(s), found 0
+    const reader = stream.reader();
+                   ~~~~~~^~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/net.zig:2311:9: note: function declared here
+    pub fn reader(stream: Stream, buffer: []u8) Reader {
+    ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:
+    update: Client.zig:106:32
+    main: Client.zig:124:31
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
+Engine.zig:45:23: error: incompatible types: 'fn (u64) void' and 'f64'
+            .target = @divTrunc(std.Thread.sleep, fps),
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                            Engine.zig:45:43: note: type 'fn (u64) void' here                                                                                             .target = @divTrunc(std.Thread.sleep, fps),
+                                ~~~~~~~~~~^~~~~~
+Engine.zig:45:51: note: type 'f64' here
+            .target = @divTrunc(std.Thread.sleep, fps),
+                                                  ^~~
+Engine.zig:144:35: error: root source file struct 'Io' has no member named 'getStdOut'
+        const stdout_file = std.io.getStdOut();
+                            ~~~~~~^~~~~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
+const builtin = @import("builtin");
+^~~~~
+error: the following command failed with 3 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep client_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Client.zig -Mclient_mod=/Users/samueldasari/Personal/Engine/src/Client.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Client --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+run
+└─ run exe Engine
+   └─ install
+      └─ install Server
+         └─ compile exe Server Debug native 1 errors
+Chunk.zig:147:23: error: member function expected 2 argument(s), found 1
+        try self.items.append(WorldItem.init(coord, 1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
+            ~~~~~~~~~~^~~~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/array_list.zig:893:13: note: function declared here
+        pub fn append(self: *Self, gpa: Allocator, item: T) Allocator.Error!void {
+        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:                                                                                                                        init: WorldManager.zig:43:43
+    init: Server.zig:34:63
+    5 reference(s) hidden; use '-freference-trace=7' to see all references
+error: the following command failed with 1 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep server_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Server.zig -Mserver_mod=/Users/samueldasari/Personal/Engine/src/Server.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Server --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+
+Build Summary: 0/9 steps succeeded; 3 failed
+run transitive failure
+└─ run exe Engine transitive failure                                                                                                 ├─ compile exe Engine Debug native 3 errors                                                                                       └─ install transitive failure
+      ├─ install Engine transitive failure
+      │  └─ compile exe Engine Debug native (reused)
+      ├─ install Server transitive failure
+      │  └─ compile exe Server Debug native 1 errors
+      └─ install Client transitive failure
+         └─ compile exe Client Debug native 3 errors
+
+                                                                              error: the following build command failed with exit code 1:
+/Users/samueldasari/Personal/Engine/.zig-cache/o/ee4d8af7703c8c1f3a35ee1fce3965f9/build /opt/homebrew/Cellar/zig/0.15.1/bin/zig /opt/homebrew/Cellar/zig/0.15.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0x1a7fcba5 -Za5309d2632490e8d run
+samueldasari@MacBookAir src % cat * > new.txt
+^C
+samueldasari@MacBookAir src % rm new.txt 
+samueldasari@MacBookAir src % cat * > new.txt
+samueldasari@MacBookAir src % nvim new.txt 
+samueldasari@MacBookAir src % 
+
