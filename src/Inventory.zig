@@ -20,21 +20,19 @@ pub const ItemType = enum {
 
     const None = enum(u8) { None = ' ' };
 };
- 
+
 pub const Item = struct {
-    type: ItemType, 
+    type: ItemType,
     char: u8,
     quantity: u32,
     allocator: std.mem.Allocator,
 
     pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item{
-            switch (item_type) {
-                .Weapon => |weapon| return Item{ .type = item_type, .char = weapon, .quantity = quantity, .allocator = allocator },
-                .Armor => |armor| return Item{ .type = item_type, .char = armor, .quantity = quantity, .allocator = allocator },
-                .Consumable => |consumable| return Item{ .type = item_type, .char = consumable, .quantity = quantity, .allocator = allocator },
-            }
-        };
+        return Item{switch (item_type) {
+            .Weapon => |weapon| return Item{ .type = item_type, .char = weapon, .quantity = quantity, .allocator = allocator },
+            .Armor => |armor| return Item{ .type = item_type, .char = armor, .quantity = quantity, .allocator = allocator },
+            .Consumable => |consumable| return Item{ .type = item_type, .char = consumable, .quantity = quantity, .allocator = allocator },
+        }};
     }
 
     pub fn deinit(self: *Item) void {
