@@ -36,8 +36,8 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-defer alconst line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
-locator.free(line);
+        const line = try reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
+defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
 
