@@ -58,6 +58,7 @@ pub const Clock = struct {
     }
 
     pub fn sleepUntilNextFrame(self: *Clock) void {
+    const now_ns_f64: f64 = @floatFromInt(self.now);
     const sleep_ns: f64 = @floatFromInt(self.target - now_ns_f64); 
     sleep_ns = @intFromFloat(sleep_ns);
     if (sleep_ns > 0) {
