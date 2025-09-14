@@ -23,9 +23,7 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
 }
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
-    const writer = stream.writer(&g_write_buf);
-
-    try writer.writeAll(input_data);
+    try stream.writeAll(input_data); // ✅ direct write
 }
 
 pub fn renderGameState(
