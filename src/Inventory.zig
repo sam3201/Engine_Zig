@@ -4,9 +4,9 @@ const std = @import("std");
 
 pub const Item = struct {
     pub const ItemClass = enum {
-        Weapon = enum 
+        Weapon = enum {
             { Pistol, Shotgun },
-        },
+        } 
         Armor,
         Consumable,
     };
