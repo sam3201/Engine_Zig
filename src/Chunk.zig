@@ -147,7 +147,7 @@ pub const Chunk = struct {
         self.generateTerrain(prng.random());
 
         try self.items.append(WorldItem{
-            .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
+            .item = Inventory.Item.init(Inventory.ItemType.Potion, 1, allocator), 
             .x = self.coord.x * CHUNK_WIDTH + 2,
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = '!',
