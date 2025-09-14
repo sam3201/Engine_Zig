@@ -130,7 +130,7 @@ pub const Chunk = struct {
     generated: bool = false,
     items: std.ArrayList(WorldItem),
 
-    pub fn init(coord: ChunkCoord, id: u32, item_type: Inventory.ItemType, quantity: u32, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    pub fn init(coord: ChunkCoord, item_type: Inventory.ItemType, quantity: u32, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
         var self = Chunk{
             .coord = coord,
             .biome = biome,
@@ -140,7 +140,7 @@ pub const Chunk = struct {
             .items = undefined,
         };
 
-        var items = std.ArrayList(WorldItem.init(coord, id, item_type, quantity, allocator));
+        var items = std.ArrayList(WorldItem.init(coord, item_type, quantity, allocator));
         items.allocator = allocator;
         self.items = items;
 
