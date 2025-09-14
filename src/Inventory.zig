@@ -5,6 +5,14 @@ pub const Item = struct {
     id: u32,
     name: []const u8,
     quantity: u32,
+
+    pub fn init(id: u32, name: []const u8, quantity: u32) Item {
+        return Item{
+            .id = id,
+            .name = name,
+            .quantity = quantity,
+        };
+    }
 };
 
 pub const Inventory = struct {
