@@ -2,7 +2,12 @@
 
 const std = @import("std");
 
-pub const ItemType = enum {
+pub const ItemType = union(enum) {
+    Weapon: Weapon,
+    Armor: Armor,
+    Consumable: Consumable,
+    None: None,
+
     pub const Weapon = enum(u8) {
         Sword = 's',
         Axe = 'a',
@@ -17,10 +22,10 @@ pub const ItemType = enum {
         Potion = 'p',
         Food = 'f',
     };
-
-    pub const None = enum(u8) { Empty = ' ' };
+    pub const None = enum(u8) {
+        Empty = ' ',
+    };
 };
-
 pub const Item = struct {
     type: ItemType,
     char: u8,
