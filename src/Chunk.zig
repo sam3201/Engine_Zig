@@ -131,23 +131,38 @@ pub const Chunk = struct {
     generated: bool = false,
     items: std.ArrayList(WorldItem),
 
-    pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
-        var self = Chunk{
-            .coord = coord,
-            .biome = biome,
-            .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
-            .difficulty_level = difficulty_level,
-            .generated = true,
-            .items = std.ArrayList(WorldItem){},
-        };
+pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    // create chunk with placeholder items (will initialize items next)
+    var self = Chunk{
+        .coord = coord,
+        .biome = biome,
+        .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
+        .difficulty_level = difficulty_level,
+        .generated = true,
+        // temporarily fill items with an uninitialized value — we'll set it below
+        .items = undefined,
+    };
 
-        var prng = std.Random.DefaultPrng.init(coord.hash());
-        self.generateTerrain(prng.random());
+    // Initialize the items ArrayList at runtime
+    var items = std.ArrayList(WorldItem).init(allocator);
+    self.items = items;
 
-        try self.items.append(WorldItem.init(coord, 1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
+    // generate terrain
+    var prng = std.Random.DefaultPrng.init(coord.hash());
+    self.generateTerrain(prng.random());
 
-        return self;
-    }
+    // spawn a test item (use WorldItem.init or construct inline)
+    try self.items.append(WorldItem{
+        .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
+        .x = self.coord.x * CHUNK_WIDTH + 2,
+        .y = self.coord.y * CHUNK_HEIGHT + 2,
+        .ch = '!',
+        .color = eng.Color{ .r = 200, .g = 0, .b = 200 },
+    });
+
+    try self.spawnTestItems();
+    return self;
+}
 
     pub fn deinit(self: *Chunk) void {
         self.items.deinit();
