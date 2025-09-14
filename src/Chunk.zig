@@ -123,6 +123,13 @@ pub const ItemType = struct {
     }
 };
 
+pub const WorldItem = struct {
+    item: Inventory.Item,
+    x: i32,
+    y: i32,
+    ch: u8 = '!', // render as '!' for now
+    color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
+
 pub const Chunk = struct {
     coord: ChunkCoord,
     tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType,
