@@ -148,7 +148,6 @@ pub const Chunk = struct {
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
-        // spawn a test item (use WorldItem.init or construct inline)
         try self.items.append(WorldItem{
             .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
             .x = self.coord.x * CHUNK_WIDTH + 2,
