@@ -23,7 +23,6 @@ pub const Item = struct {
     }
 
     pub fn deinit(self: *Item) void {
-        // nothing heap-allocated inside Item anymore
         _ = self;
     }
 
