@@ -116,7 +116,7 @@ pub const WorldItem = struct {
 
     pub fn init(id: u32, name: []const u8, quantity: u32, x: i32, y: i32, allocator: std.mem.Allocator) WorldItem {
         return WorldItem{
-            .item = Inventory.Item.init(allocator),
+            .item = Inventory.Item.init(id, name, quantity, allocator),
             .x = x,
             .y = y,
         };
