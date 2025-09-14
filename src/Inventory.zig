@@ -30,6 +30,12 @@ pub const Item = struct {
         };
     }
 
+    pub fn randItem(allocator: std.mem.Allocator) !Item {
+        var prng = std.Random.DefaultPrng.init(0);
+        const id = prng.random().int(u32);
+        const name = try std.fmt.allocPrint(allocator, "Item_{d}", .{id});
+        return Item.init(id, name, 1, allocator);
+    }
 };
 
 pub const Inventory = struct {
