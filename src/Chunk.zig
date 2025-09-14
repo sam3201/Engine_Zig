@@ -347,8 +347,8 @@ pub const Chunk = struct {
         return Chunk{
             .coord = coord,
             .tiles = tiles,
-            .biome = .Plains, // TODO: read biome from file too
-            .difficulty_level = 1,
+            .biome = .Plains, 
+            .difficulty= 1,
             .items = std.ArrayList(WorldItem).init(allocator),
             .generated = true,
         };
