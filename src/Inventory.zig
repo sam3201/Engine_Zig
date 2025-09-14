@@ -18,6 +18,7 @@ pub const Item = struct {
         return Item{
             .item_type = item_type,
             .quantity = quantity,
+            .allocator = allocator,
         };
     }
 
