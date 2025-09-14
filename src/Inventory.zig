@@ -20,12 +20,11 @@ pub const ItemType = enum {
 };
 
 pub const Item = struct {
-    id: u32,
     type: ItemType, 
     quantity: u32,
     allocator: std.mem.Allocator,
 
-    pub fn init(id: u32, name: []const u8, quantity: u32, allocator: std.mem.Allocator) Item {
+    pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
             .id = id,
             .name = name,
