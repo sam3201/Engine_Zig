@@ -3,7 +3,7 @@
 const std = @import("std");
 
 pub const Item = struct {
-    pub const ItemType = union(enum) {
+    pub const ItemType = union(struct) {
         None = null,
         Weapon,
         Armor,
