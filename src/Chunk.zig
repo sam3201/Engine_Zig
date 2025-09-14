@@ -144,7 +144,7 @@ pub const Chunk = struct {
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
-        try self.items.append(WorldItem.init(1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
+        try self.items.append(WorldItem.init(coord, 1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
 
         return self;
     }
