@@ -140,7 +140,6 @@ pub const Canvas = struct {
     }
 
     pub fn flushToTerminal(self: *Canvas) void {
-        // New std.Io.Writer API (Zig 0.15+)
         var stdout_buffer: [4096]u8 = undefined;
         var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
         const stdout = &stdout_writer.interface;
