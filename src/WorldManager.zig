@@ -41,15 +41,15 @@ pub const WorldManager = struct {
 
         const start_biome = randomBiome();
         const chunk = try Chunk.Chunk.init(
-    .{ .x = 0, .y = 0 },
-    0, // id
-    Inventory.ItemType.None, // or whatever default type you want
-    0, // quantity
-    start_biome,
-    0, // difficulty level
-    allocator,
-);
-try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
+            .{ .x = 0, .y = 0 },
+            0, // id
+            Inventory.ItemType.None, // or whatever default type you want
+            0, // quantity
+            start_biome,
+            0, // difficulty level
+            allocator,
+        );
+        try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
 
         try world.updateChunks();
         world.updateCamera();
