@@ -63,7 +63,7 @@ pub const Clock = struct {
         const now_f64: f64 = @floatFromInt(self.now);
         const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
         const sleep_ns: u64 = @intFromFloat(diff);
-        std.Thread.sleep(sleep_ns); // ✅ correct for 0.15
+        std.Thread.sleep(sleep_ns); 
     }
 
     pub fn deinit(self: *Clock) void {
