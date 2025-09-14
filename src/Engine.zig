@@ -156,20 +156,14 @@ pub const Canvas = struct {
                 const col = self.colors[idx];
                 const ch = self.buf[idx];
 
-                // build escape sequence for color; avoid allocating in loop if possible.
-                // we'll allocate a small stack buffer for the formatted string.
-                // use print directly to avoid extra allocations:
                 _ = stdout.print("\x1b[38;2;{d};{d};{d}m", .{ col.r, col.g, col.b }) catch {};
 
-                // write the single character
-                // print with {c} for a single byte (works fine)
                 _ = stdout.print("{c}", .{ch}) catch {};
             }
 
             _ = stdout.print("\n", .{}) catch {};
         }
 
-        // Reset color and flush
         _ = stdout.print("\x1b[0m", .{}) catch {};
         _ = stdout.flush() catch {};
     }
