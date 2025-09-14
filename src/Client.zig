@@ -37,14 +37,14 @@ pub fn renderGameState(
 
     while (true) {
         var buffer = std.ArrayList(u8).init(allocator);
-defer buffer.deinit();
+        defer buffer.deinit();
 
-// Stream until delimiter into buffer
-try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
+        // Stream until delimiter into buffer
+        try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
 
-// Convert to slice
-const line = buffer.toOwnedSlice();
-defer allocator.free(line);
+        // Convert to slice
+        const line = buffer.toOwnedSlice();
+        defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
 
