@@ -29,7 +29,6 @@ pub const Item = struct {
     pub fn copy(self: Item) Item {
         return Item{
             .item_type = self.item_type,
-            .variant_char = self.variant_char,
             .quantity = self.quantity,
         };
     }
