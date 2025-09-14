@@ -29,7 +29,7 @@ pub const WorldManager = struct {
         }
     };
 
-    pub fn init(coord: Chunk.ChunkCoord, biome: Chunk.Biome, difficulty: Chunk.Difficulty, allocator: std.mem.Allocator, canvas: *eng.Canvas, player: Player.Player) !WorldManager {
+    pub fn init(coord: Chunk.ChunkCoord, difficulty: Chunk.Difficulty, allocator: std.mem.Allocator, canvas: *eng.Canvas, player: Player.Player) !WorldManager {
         var world = WorldManager{
             .allocator = allocator,
             .canvas = canvas,
