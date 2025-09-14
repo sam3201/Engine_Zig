@@ -18,7 +18,8 @@ pub const ItemType = enum {
         Food = 'f',
     };
 
-    const None = enum(u8) { None = ' ' };
+    private const None = enum(u8) { None = ' ' };
+
 };
 
 pub const Item = struct {
