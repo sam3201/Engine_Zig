@@ -19,8 +19,6 @@ pub const ItemType = enum {
     };
 };
  
-
-pub const item_chars = [_]u8{'w', 'a', 'p', 'c', 'f'};
 pub const Item = struct {
     type: ItemType, 
     quantity: u32,
