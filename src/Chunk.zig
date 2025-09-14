@@ -138,7 +138,7 @@ pub const Chunk = struct {
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
             .difficulty_level = difficulty_level,
             .generated = true,
-            .items = std.ArrayList(WorldItem){ .allocator = allocator, .items = &[_]WorldItem{} },
+            .items = std.ArrayList(WorldItem){.init(allocator)}, 
         };
 
         var prng = std.Random.DefaultPrng.init(coord.hash());
