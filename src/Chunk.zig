@@ -117,8 +117,8 @@ pub const WorldItem = struct {
     pub fn init(coord: ChunkCoord, id: u32, item_type: Inventory.ItemType, quantity: u32, allocator: std.mem.Allocator) WorldItem {
         return WorldItem{
             .item = Inventory.Item.init(id, type, quantity, allocator),
-            .x = x,
-            .y = y,
+            .x = coord.x,
+            .y = coord.y,
         };
     }
 };
