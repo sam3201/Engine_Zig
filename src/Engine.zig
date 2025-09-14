@@ -58,13 +58,11 @@ pub const Clock = struct {
     }
 
     pub fn sleepUntilNextFrame(self: *Clock) void {
-        const frame_last_f64: f64 = @floatFromInt(self.last);
-        const frame_end: f64 = frame_last_f64 + self.target;
-        const now_f64: f64 = @floatFromInt(self.now);
-        const diff: f64 = if (frame_end > now_f64) frame_end - now_f64 else 0;
-        const sleep_ns: u64 = @intFromFloat(diff);
-        std.Thread.sleep(sleep_ns);
-    }
+    }const sleep_ns: u64 = @intCast(u64, @intFromFloat(self.target - now_ns_f64));
+if (sleep_ns > 0) {
+    std.Thread.sleep(sleep_ns);
+}
+
 
     pub fn deinit(self: *Clock) void {
         _ = self;
