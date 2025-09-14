@@ -38,7 +38,7 @@ pub const Renderable = struct {
 pub const Clock = struct {
     target: f64,
     last: f64,
-    now: i128, 
+    now: i128,
 
     pub fn init(fps: f64) Clock {
         return .{
@@ -58,12 +58,11 @@ pub const Clock = struct {
     }
 
     pub fn sleepUntilNextFrame(self: *Clock) void {
-    const sleep_ns: u64 = @intFromFloat(if (self.last + self.target > self.now) self.last + self.target - self.now else 0); 
-    if (sleep_ns > 0) {
-    std.Thread.sleep(sleep_ns);
-}
-}
-
+        const sleep_ns: u64 = @intFromFloat(if (self.last + self.target > self.now) self.last + self.target - self.now else 0);
+        if (sleep_ns > 0) {
+            std.Thread.sleep(sleep_ns);
+        }
+    }
 
     pub fn deinit(self: *Clock) void {
         _ = self;
