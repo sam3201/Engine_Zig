@@ -131,7 +131,8 @@ pub const ItemType = enum {
     Iron,
     Potion,
     Food,
-}
+};
+
 pub const WorldItem = struct {
     item: Inventory.Item,
     x: i32,
