@@ -2,6 +2,23 @@
 
 const std = @import("std");
 
+pub const ItemType = enum {
+    const Weapon = enum {
+        Sword,
+        Axe,
+        Pickaxe,
+    };
+    const Armor = enum {
+        Leather,
+        Chain,
+        Iron,
+    };
+    const Consumable = enum {
+        Potion,
+        Food,
+    };
+};
+
 pub const Item = struct {
     id: u32,
     name: []const u8,
