@@ -3,6 +3,7 @@ const std = @import("std");
 const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
+const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 
 pub fn main() !void {
