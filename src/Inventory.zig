@@ -3,12 +3,13 @@
 const std = @import("std");
 
 pub const Item = struct {
-    pub const ItemType = union(enum) {
-        None = 0,
-        Weapon,
-        Armor,
-        Consumable,
-    };
+pub const ItemType = enum {
+    None,
+    Weapon,
+    Armor,
+    Consumable,
+};
+
 
     item_type: ItemType,
     allocator: std.mem.Allocator,
