@@ -8,7 +8,9 @@ pub const Item = struct {
             { Pistol, Shotgun },
         },
 
-        Armor,
+        Armor = enum {
+            
+        },
         Consumable,
     };
 
