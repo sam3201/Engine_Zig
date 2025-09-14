@@ -108,27 +108,45 @@ pub const ChunkCoord = struct {
 };
 
 pub const ItemType = enum {
-    item: Inventory.Item,
-    x: i32,
-    y: i32,
-    ch: u8 = '!', // render as '!' for now
-    color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
+    const Weapon = enum {
+        Sword,
+        Axe,
+        Pickaxe,
+    };
+    const Armor = enum {
+        Leather,
+        Chain,
+        Iron,
+    };
+    const Consumable = enum {
+        Potion,
+        Food,
+    };
 
-    pub fn init(id: u32, name: []const u8, quantity: u32, x: i32, y: i32, allocator: std.mem.Allocator) ItemType {
-        return ItemType{
-            .item = Inventory.Item.init(id, name, quantity, allocator),
-            .x = x,
-            .y = y,
-        };
-    }
-};
-
+    Sword,
+    Axe,
+    Pickaxe,
+    Leather,
+    Chain,
+    Iron,
+    Potion,
+    Food,
+}
 pub const WorldItem = struct {
     item: Inventory.Item,
     x: i32,
     y: i32,
     ch: u8 = '!', // render as '!' for now
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
+
+    pub fn init(id: u32, name: []const u8, quantity: u32, x: i32, y: i32, allocator: std.mem.Allocator) WorldItem {
+        return WorldItem{
+            .item = Inventory.Item.init(id, name, quantity, allocator),
+            .x = x,
+            .y = y,
+        };
+    }
+};
 
 pub const Chunk = struct {
     coord: ChunkCoord,
