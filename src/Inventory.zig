@@ -26,9 +26,11 @@ pub const Item = struct {
 
     pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
-            .type = item_type.type,
-            .quantity = quantity,
-            .allocator = allocator,
+            switch (item_type) {
+                .Weapon => return Item{ .type = .Weapon, .quantity = quantity, .allocator = allocator },
+                .Armor => return Item{ .type = .Armor, .quantity = quantity, .allocator = allocator },
+                .Consumable => return Item{ .type = .Consumable, .quantity = quantity, .allocator = allocator },
+            }
         };
     }
 
