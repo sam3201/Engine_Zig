@@ -1,4 +1,5 @@
 // src/Inventory.zig
+
 const std = @import("std");
 
 pub const Item = struct {
