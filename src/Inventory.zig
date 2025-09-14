@@ -21,7 +21,7 @@ pub const ItemType = enum {
 
 pub const Item = struct {
     id: u32,
-    name: []const u8,
+    type: ItemType, 
     quantity: u32,
     allocator: std.mem.Allocator,
 
