@@ -39,10 +39,8 @@ pub fn renderGameState(
         var buffer = std.ArrayList(u8).init(allocator);
         defer buffer.deinit();
 
-        // Stream until delimiter into buffer
         try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
 
-        // Convert to slice
         const line = buffer.toOwnedSlice();
         defer allocator.free(line);
 
