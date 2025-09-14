@@ -118,11 +118,11 @@ pub const WorldItem = struct {
     ch: u8 = '!', // render as '!' for now
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
-    pub fn init(x: i32, y: i32, allocator: std.mem.Allocator) WorldItem {
+    pub fn init(coord: ChunkCoord, id: u32, item_type: Inventory.ItemType, quantity: u32, allocator: std.mem.Allocator) WorldItem {
         return WorldItem{
-            .item = Inventory.Item.init(allocator),
-            .x = x,
-            .y = y,
+            .item = Inventory.Item.init(id, item_type, quantity, allocator),
+            .x = coord.x,
+            .y = coord.y,
         };
     }
 };
@@ -135,20 +135,20 @@ pub const Chunk = struct {
     generated: bool = false,
     items: std.ArrayList(WorldItem),
 
-    pub fn init(coord: ?ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
+    pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty_level: i32, allocator: std.mem.Allocator) !Chunk {
         var self = Chunk{
             .coord = coord,
             .biome = biome,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
             .difficulty_level = difficulty_level,
             .generated = true,
-            .items = std.ArrayList(WorldItem).init(allocator),
+            .items = std.ArrayList(WorldItem){},
         };
 
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
-        try self.items.append(try WorldItem.init(coord.x, coord.y, allocator));
+        try self.items.append(WorldItem.init(coord, 1, "Potion", 1, self.coord.x * CHUNK_WIDTH + 2, self.coord.y * CHUNK_HEIGHT + 2, allocator));
 
         return self;
     }
@@ -374,9 +374,7 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
 }
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
-    const writer = stream.writer(&g_write_buf);
-
-    try writer.writeAll(input_data);
+    try stream.writeAll(input_data);
 }
 
 pub fn renderGameState(
@@ -621,7 +619,8 @@ pub const Canvas = struct {
     }
 
     pub fn flushToTerminal(self: *Canvas) void {
-        const stdout = std.io.getStdOut().writer();
+        const stdout_file = std.io.getStdOut();
+        const stdout = stdout_file.writer();
 
         _ = stdout.write("\x1b[H") catch {};
 
@@ -870,12 +869,53 @@ pub const Entity = struct {
     }
 };
 // src/Inventory.zig
+
 const std = @import("std");
+
+pub const ItemType = enum {
+    const Weapon = enum {
+        Sword,
+        Axe,
+        Pickaxe,
+    };
+    const Armor = enum {
+        Leather,
+        Chain,
+        Iron,
+    };
+    const Consumable = enum {
+        Potion,
+        Food,
+    };
+};
 
 pub const Item = struct {
     id: u32,
-    name: []const u8,
+    type: ItemType, 
     quantity: u32,
+    allocator: std.mem.Allocator,
+
+    pub fn init(id: u32, name: []const u8, quantity: u32, allocator: std.mem.Allocator) Item {
+        return Item{
+            .id = id,
+            .name = name,
+            .quantity = quantity,
+            .allocator = allocator,
+        };
+    }
+
+    pub fn deinit(self: *Item) void {
+        self.allocator.free(self.name);
+    }
+
+    pub fn copy(self: Item) Item {
+        return Item{
+            .id = self.id,
+            .name = self.allocator.dupe(u8, self.name) catch unreachable,
+            .quantity = self.quantity,
+            .allocator = self.allocator,
+        };
+    }
 };
 
 pub const Inventory = struct {
@@ -894,7 +934,6 @@ pub const Inventory = struct {
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
-        // merge if same name
         for (self.items.items) |*it| {
             if (std.mem.eql(u8, it.name, item.name)) {
                 it.quantity += item.quantity;
@@ -2463,111 +2502,3 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
-
-samueldasari@MacBookAir src % sh build.sh 
-run
-└─ run exe Engine
-   └─ install
-      └─ install Server
-         └─ compile exe Server Debug native 1 errors
-Chunk.zig:141:46: error: struct 'array_list.Aligned(Chunk.WorldItem,null)' has no member named 'init'
-            .items = std.ArrayList(WorldItem).init(allocator),
-                     ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/array_list.zig:606:12: note: struct declared here
-    return struct {
-           ^~~~~~
-referenced by:
-    init: WorldManager.zig:43:43
-    init: Server.zig:34:63
-    5 reference(s) hidden; use '-freference-trace=7' to see all references
-error: the following command failed with 1 compilation errors:
-/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep server_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Server.zig -Mserver_mod=/Users/samueldasari/Personal/Engine/src/Server.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Server --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
-run
-└─ run exe Engine
-   └─ install
-      └─ install Engine
-         └─ compile exe Engine Debug native 3 errors
-Chunk.zig:141:46: error: struct 'array_list.Aligned(Chunk.WorldItem,null)' has no member named 'init'
-            .items = std.ArrayList(WorldItem).init(allocator),
-                     ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/array_list.zig:606:12: note: struct declared here
-    return struct {
-           ^~~~~~
-referenced by:
-    init: WorldManager.zig:43:43
-    main: main.zig:75:51
-    4 reference(s) hidden; use '-freference-trace=6' to see all references
-Engine.zig:45:23: error: incompatible types: 'fn (u64) void' and 'f64'
-            .target = @divTrunc(std.Thread.sleep, fps),
-                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Engine.zig:45:43: note: type 'fn (u64) void' here
-            .target = @divTrunc(std.Thread.sleep, fps),
-                                ~~~~~~~~~~^~~~~~
-Engine.zig:45:51: note: type 'f64' here
-            .target = @divTrunc(std.Thread.sleep, fps),
-                                                  ^~~
-                                                                                          Engine.zig:144:30: error: root source file struct 'Io' has no member named 'getStdOut'
-        const stdout = std.io.getStdOut().writer();
-                       ~~~~~~^~~~~~~~~~
-/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
-const builtin = @import("builtin");                                                                                                            ^~~~~                                                                                                                                          error: the following command failed with 3 compilation errors:
-/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep engine_mod -Mroot=/Users/samueldasari/Personal/Engine/src/main.zig -Mengine_mod=/Users/samueldasari/Personal/Engine/src/main.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Engine --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-                                                run└─ run exe Engine
-   └─ install
-      └─ install Client
-         └─ compile exe Client Debug native 3 errors
-Client.zig:28:15: error: no field or member function named 'writeAll' in 'net.Stream.Writer__struct_19744'
-    try writer.writeAll(input_data);
-        ~~~~~~^~~~~~~~~
-/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/net.zig:2217:17: note: struct declared here
-        else => struct {
-                ^~~~~~
-referenced by:
-    update: Client.zig:102:26
-    main: Client.zig:126:31
-    4 reference(s) hidden; use '-freference-trace=6' to see all references
-Engine.zig:45:23: error: incompatible types: 'fn (u64) void' and 'f64'                                                                                     .target = @divTrunc(std.Thread.sleep, fps),                                                                                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Engine.zig:45:43: note: type 'fn (u64) void' here
-            .target = @divTrunc(std.Thread.sleep, fps),
-                                ~~~~~~~~~~^~~~~~
-Engine.zig:45:51: note: type 'f64' here
-            .target = @divTrunc(std.Thread.sleep, fps),
-                                                  ^~~
-Engine.zig:144:30: error: root source file struct 'Io' has no member named 'getStdOut'
-        const stdout = std.io.getStdOut().writer();
-                       ~~~~~~^~~~~~~~~~
-/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/Io.zig:1:1: note: struct declared here
-const builtin = @import("builtin");
-^~~~~
-error: the following command failed with 3 compilation errors:
-/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep client_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Client.zig -Mclient_mod=/Users/samueldasari/Personal/Engine/src/Client.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Client --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
-
-Build Summary: 0/9 steps succeeded; 3 failed
-run transitive failure
-└─ run exe Engine transitive failure
-   ├─ compile exe Engine Debug native 3 errors
-   └─ install transitive failure
-      ├─ install Engine transitive failure
-      │  └─ compile exe Engine Debug native (reused)
-      ├─ install Server transitive failure
-      │  └─ compile exe Server Debug native 1 errors
-      └─ install Client transitive failure
-         └─ compile exe Client Debug native 3 errors
-
-error: the following build command failed with exit code 1:
-/Users/samueldasari/Personal/Engine/.zig-cache/o/ee4d8af7703c8c1f3a35ee1fce3965f9/build /opt/homebrew/Cellar/zig/0.15.1/bin/zig /opt/homebrew/Cellar/zig/0.15.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0x5bf3cff1 -Z373e80573afa5760 run
-samueldasari@MacBookAir src % /private/var/folders/mn/cz8scjd57qs_xm0rbjtbt7sw0000gn/T/kE6vQ9LtZtyJ_Rrgi7sybw/screen.txt 
-samueldasari@MacBookAir src % nvim /private/var/folders/mn/cz8scjd57qs_xm0rbjtbt7sw0000gn/T/r9Nnrt4Fh-FbgsJ8Q8Rx3w/screen.txt 
-samueldasari@MacBookAir src % nvim new.txt
-samueldasari@MacBookAir src % cat * >> new.txt 
-^C
-samueldasari@MacBookAir src % cat * > new.txt 
-^C
-samueldasari@MacBookAir src % ls
-build.sh                Engine.zig              main.zig                Player.zig              World.zig
-Chunk.zig               Entity.zig              Menu.zig                root.zig                WorldManager.zig
-Client.zig              Inventory.zig           new.txt                 Server.zig
-samueldasari@MacBookAir src % nvim new.txt 
-samueldasari@MacBookAir src % rm new.txt 
-samueldasari@MacBookAir src % cat * >> new.txt
-samueldasari@MacBookAir src % 
-
