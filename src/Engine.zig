@@ -140,9 +140,13 @@ pub const Canvas = struct {
     }
 
     pub fn flushToTerminal(self: *Canvas) void {
-        const stdout = std.io.getStdOut().writer();
+        // New std.Io.Writer API (Zig 0.15+)
+        var stdout_buffer: [4096]u8 = undefined;
+        var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+        const stdout = &stdout_writer.interface;
 
-        _ = stdout.write("\x1b[H") catch {};
+        // move cursor to home
+        _ = stdout.print("{s}", .{ "\x1b[H" }) catch {};
 
         var y: usize = 0;
         while (y < self.height) : (y += 1) {
@@ -152,18 +156,22 @@ pub const Canvas = struct {
                 const col = self.colors[idx];
                 const ch = self.buf[idx];
 
-                const esc = std.fmt.allocPrint(self.allocator, "\x1b[38;2;{};{};{}m", .{ col.r, col.g, col.b }) catch continue;
-                defer self.allocator.free(esc);
+                // build escape sequence for color; avoid allocating in loop if possible.
+                // we'll allocate a small stack buffer for the formatted string.
+                // use print directly to avoid extra allocations:
+                _ = stdout.print("\x1b[38;2;{d};{d};{d}m", .{ col.r, col.g, col.b }) catch {};
 
-                _ = stdout.write(esc) catch {};
-                _ = stdout.writeByte(ch) catch {};
+                // write the single character
+                // print with {c} for a single byte (works fine)
+                _ = stdout.print("{c}", .{ ch }) catch {};
             }
 
-            _ = stdout.write("\n") catch {};
+            _ = stdout.print("\n", .{}) catch {};
         }
 
-        // Reset color
-        _ = stdout.write("\x1b[0m") catch {};
+        // Reset color and flush
+        _ = stdout.print("\x1b[0m", .{}) catch {};
+        _ = stdout.flush() catch {};
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
