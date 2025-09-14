@@ -42,11 +42,11 @@ pub const WorldManager = struct {
         const start_biome = randomBiome();
         const chunk = try Chunk.Chunk.init(
             .{ .x = 0, .y = 0 },
-            0, // id
-            Inventory.ItemType.None, // or whatever default type you want
-            0, // quantity
+            0, 
+            Inventory.ItemType.None, 
+            0, 
             start_biome,
-            0, // difficulty level
+            0, 
             allocator,
         );
         try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
