@@ -146,7 +146,7 @@ pub const Canvas = struct {
         const stdout = &stdout_writer.interface;
 
         // move cursor to home
-        _ = stdout.print("{s}", .{ "\x1b[H" }) catch {};
+        _ = stdout.print("{s}", .{"\x1b[H"}) catch {};
 
         var y: usize = 0;
         while (y < self.height) : (y += 1) {
@@ -163,7 +163,7 @@ pub const Canvas = struct {
 
                 // write the single character
                 // print with {c} for a single byte (works fine)
-                _ = stdout.print("{c}", .{ ch }) catch {};
+                _ = stdout.print("{c}", .{ch}) catch {};
             }
 
             _ = stdout.print("\n", .{}) catch {};
