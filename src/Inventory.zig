@@ -64,7 +64,6 @@ pub const Inventory = struct {
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
-        // merge if same name
         for (self.items.items) |*it| {
             if (std.mem.eql(u8, it.name, item.name)) {
                 it.quantity += item.quantity;
