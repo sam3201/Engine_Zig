@@ -38,7 +38,7 @@ pub const Renderable = struct {
 pub const Clock = struct {
     target: f64,
     last: i128,
-    now: i128,
+    now: f64,
 
     pub fn init(fps: f64) Clock {
         return .{
