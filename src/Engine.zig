@@ -62,6 +62,7 @@ pub const Clock = struct {
     if (sleep_ns > 0) {
     std.Thread.sleep(sleep_ns);
 }
+}
 
 
     pub fn deinit(self: *Clock) void {
