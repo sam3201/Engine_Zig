@@ -28,9 +28,9 @@ pub const Item = struct {
     pub fn init(item_type: ItemType, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
             switch (item_type) {
-                .Weapon => .{ .type = .Weapon, .char = @enumToInt(item_type.Weapon), .quantity = quantity, .allocator = allocator },
-                .Armor => .{ .type = .Armor, .char = @enumToInt(item_type.Armor), .quantity = quantity, .allocator = allocator },
-                .Consumable => .{ .type = .Consumable, .char = @enumToInt(item_type.Consumable), .quantity = quantity, .allocator = allocator },
+                .Weapon => |weapon| return Item{ .type = item_type, .char = weapon, .quantity = quantity, .allocator = allocator },
+                .Armor => |armor| return Item{ .type = item_type, .char = armor, .quantity = quantity, .allocator = allocator },
+                .Consumable => |consumable| return Item{ .type = item_type, .char = consumable, .quantity = quantity, .allocator = allocator },
             }
         };
     }
