@@ -32,7 +32,7 @@ pub fn renderGameState(
     canvas: *eng.Canvas,
 ) !void {
     var read_buf: [4096]u8 = undefined;
-var reader = stream.reader(read_buf[0..]);
+    var reader = stream.reader(read_buf[0..]);
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
