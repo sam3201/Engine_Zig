@@ -23,7 +23,8 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
 }
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
-stream.writeAll(input_data)}
+stream.writeAll(input_data);
+}
 
 pub fn renderGameState(
     stream: *net.Stream,
