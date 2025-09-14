@@ -140,8 +140,9 @@ pub const Chunk = struct {
             .items = undefined,
         };
 
-        var items = std.ArrayList(WorldItem.init(coord, item_type, quantity, allocator));
-        items.allocator = allocator;
+        itemsvar items = std.ArrayList(WorldItem).init(allocator);
+try items.append(WorldItem.init(coord, item_type, quantity, allocator));
+.allocator = allocator;
         self.items = items;
 
         var prng = std.Random.DefaultPrng.init(coord.hash());
