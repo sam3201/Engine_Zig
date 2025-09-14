@@ -144,7 +144,7 @@ pub const Chunk = struct {
         var prng = std.Random.DefaultPrng.init(coord.hash());
         self.generateTerrain(prng.random());
 
-?try self.items.append(try WorldItem.init(coord.x, coord.y, allocator));
+        try self.items.append(try WorldItem.init(coord.x, coord.y, allocator));
 
         return self;
     }
