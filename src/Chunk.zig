@@ -135,7 +135,7 @@ pub const Chunk = struct {
             .coord = coord,
             .biome = biome,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
-            .difficulty= difficulty,
+            .difficulty = difficulty,
             .generated = true,
             .items = undefined,
         };
