@@ -107,23 +107,6 @@ pub const ChunkCoord = struct {
     }
 };
 
-pub const ItemType = enum {
-    const Weapon = enum {
-        Sword,
-        Axe,
-        Pickaxe,
-    };
-    const Armor = enum {
-        Leather,
-        Chain,
-        Iron,
-    };
-    const Consumable = enum {
-        Potion,
-        Food,
-    };
-};
-
 pub const WorldItem = struct {
     item: Inventory.Item,
     x: i32,
