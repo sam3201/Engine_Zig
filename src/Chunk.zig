@@ -114,8 +114,8 @@ pub const ItemType = struct {
     ch: u8 = '!', // render as '!' for now
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
-    pub fn init(id: u32, name: []const u8, quantity: u32, x: i32, y: i32, allocator: std.mem.Allocator) WorldItem {
-        return WorldItem{
+    pub fn init(id: u32, name: []const u8, quantity: u32, x: i32, y: i32, allocator: std.mem.Allocator) ItemType {
+        return ItemType{
             .item = Inventory.Item.init(id, name, quantity, allocator),
             .x = x,
             .y = y,
