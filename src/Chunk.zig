@@ -107,7 +107,7 @@ pub const ChunkCoord = struct {
     }
 };
 
-pub const WorldItem = struct {
+pub const ItemType = struct {
     item: Inventory.Item,
     x: i32,
     y: i32,
