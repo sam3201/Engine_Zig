@@ -153,22 +153,18 @@ pub const Chunk = struct {
             .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
         });
 
-        try self.spawnTestItems();
+        try self.items.append(WorldItem{
+    .item = Inventory.Item.initConsumable(.Potion, 1),
+    .x = self.coord.x * CHUNK_WIDTH + 2,
+    .y = self.coord.y * CHUNK_HEIGHT + 2,
+    .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
+});
+
         return self;
     }
 
     pub fn deinit(self: *Chunk) void {
         self.items.deinit();
-    }
-
-    fn spawnTestItems(self: *Chunk) !void {
-        try self.items.append(WorldItem{
-            .item = Inventory.Item{ .id = 1, .name = "Potion", .quantity = 1 },
-            .x = self.coord.x * CHUNK_WIDTH + 2,
-            .y = self.coord.y * CHUNK_HEIGHT + 2,
-            .ch = '!',
-            .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
-        });
     }
 
     pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
