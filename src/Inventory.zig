@@ -1,6 +1,5 @@
 const std = @import("std");
 
-/// Represents all possible categories of items.
 pub const ItemType = enum {
     Weapon,
     Armor,
@@ -9,16 +8,14 @@ pub const ItemType = enum {
     Other,
 };
 
-/// Specific subtypes for weapons, armor, etc.
 pub const WeaponType = enum { Pistol, Shotgun };
 pub const ArmorType = enum { Light, Medium, Heavy };
 pub const ConsumableType = enum { Potion, Food };
 pub const AmmoType = enum { Pistol, Shotgun };
 
-/// Represents a single inventory item.
 pub const Item = struct {
     item_type: ItemType,
-    variant: u8, // stores enum value as integer
+    variant: u8, 
     quantity: u32,
 
     pub fn initWeapon(w: WeaponType, quantity: u32) Item {
@@ -38,7 +35,6 @@ pub const Item = struct {
     }
 };
 
-/// Dynamic inventory container
 pub const Inventory = struct {
     allocator: std.mem.Allocator,
     items: std.ArrayList(Item),
@@ -54,7 +50,6 @@ pub const Inventory = struct {
         self.items.deinit();
     }
 
-    /// Add an item to the inventory, merging with existing items if same type+variant.
     pub fn addItem(self: *Inventory, item: Item) !void {
         for (self.items.items) |*it| {
             if (it.item_type == item.item_type and it.variant == item.variant) {
@@ -65,7 +60,6 @@ pub const Inventory = struct {
         try self.items.append(item);
     }
 
-    /// Remove some quantity of an item, deleting it if quantity reaches 0.
     pub fn removeItem(self: *Inventory, item_type: ItemType, variant: u8, amount: u32) void {
         var i: usize = 0;
         while (i < self.items.items.len) : (i += 1) {
