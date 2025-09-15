@@ -36,8 +36,8 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-var buffer = try std.ArrayList(u8).initCapacity(allocator, 1024);
-defer buffer.deinit(allocator);
+        var buffer = try std.ArrayList(u8).initCapacity(allocator, 1024);
+        defer buffer.deinit(allocator);
 
         try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
 
