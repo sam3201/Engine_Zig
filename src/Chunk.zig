@@ -121,7 +121,6 @@ pub const WorldItem = struct {
         .y = coord.y,
     };
 }
-}
 };
 
 pub const Chunk = struct {
