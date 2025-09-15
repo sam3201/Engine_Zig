@@ -119,7 +119,7 @@ pub fn init(coord: ChunkCoord, item: Inventory.Item, quantity: u32, allocator: s
         .y = coord.y,
     };
 }
-}
+};
 
 pub const Chunk = struct {
     coord: ChunkCoord,
