@@ -89,4 +89,3 @@ pub const Inventory = struct {
         return self.items.items.len;
     }
 };
-
