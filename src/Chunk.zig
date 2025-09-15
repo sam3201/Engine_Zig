@@ -349,7 +349,7 @@ pub const Chunk = struct {
             .biome = .Plains, // TODO: read biome from file too
             .difficulty = 1,
             .items = std.ArrayListUnmanaged(WorldItem){},
-.generated = true,
+            .generated = true,
         };
     }
 };
