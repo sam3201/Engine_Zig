@@ -153,7 +153,6 @@ pub const Chunk = struct {
             .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
         });
 
-        try self.spawnTestItems(allocator);
         return self;
     }
 
