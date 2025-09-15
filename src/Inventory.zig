@@ -15,7 +15,7 @@ pub const AmmoType = enum { Pistol, Shotgun };
 
 pub const Item = struct {
     item_type: ItemType,
-    variant: u8, 
+    variant: u8,
     quantity: u32,
 
     pub fn initWeapon(w: WeaponType, quantity: u32) Item {
