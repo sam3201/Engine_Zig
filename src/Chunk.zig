@@ -114,12 +114,12 @@ pub const WorldItem = struct {
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
     pub fn init(coord: ChunkCoord, item: Inventory.Item) WorldItem {
-    return WorldItem{
-        .item = item,
-        .x = coord.x,
-        .y = coord.y,
-    };
-}
+        return WorldItem{
+            .item = item,
+            .x = coord.x,
+            .y = coord.y,
+        };
+    }
 };
 
 pub const Chunk = struct {
