@@ -114,12 +114,14 @@ pub const WorldItem = struct {
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
     pub fn init(coord: ChunkCoord, item: Inventory.Item, quantity: u32, allocator: std.mem.Allocator) WorldItem {
-        return WorldItem{
-            .item = Inventory.Item.init(item.item_type, quantity, allocator),
-            .x = coord.x,
-            .y = coord.y,
-        };
-    }
+    pub fn init(coord: ChunkCoord, item: Inventory.Item) WorldItem {
+    return WorldItem{
+        .item = item,
+        .x = coord.x,
+        .y = coord.y,
+    };
+}
+}
 };
 
 pub const Chunk = struct {
