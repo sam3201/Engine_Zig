@@ -113,7 +113,6 @@ pub const WorldItem = struct {
     y: i32,
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
-    pub fn init(coord: ChunkCoord, item: Inventory.Item, quantity: u32, allocator: std.mem.Allocator) WorldItem {
     pub fn init(coord: ChunkCoord, item: Inventory.Item) WorldItem {
     return WorldItem{
         .item = item,
