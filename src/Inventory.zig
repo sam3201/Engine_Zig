@@ -1,52 +1,44 @@
-// src/Inventory.zig
-
 const std = @import("std");
 
+/// Represents all possible categories of items.
+pub const ItemType = enum {
+    Weapon,
+    Armor,
+    Consumable,
+    Ammo,
+    Other,
+};
+
+/// Specific subtypes for weapons, armor, etc.
+pub const WeaponType = enum { Pistol, Shotgun };
+pub const ArmorType = enum { Light, Medium, Heavy };
+pub const ConsumableType = enum { Potion, Food };
+pub const AmmoType = enum { Pistol, Shotgun };
+
+/// Represents a single inventory item.
 pub const Item = struct {
-    pub const ItemClass = enum {
-        Weapon = enum {
-            { Pistol, Shotgun },
-        },
-
-        Armor = enum {
-            { Light, Medium, Heavy },
-        },
-        Consumable = enum {
-            Potion,
-            Food,
-        },
-        Ammo = enum {
-            { Pistol, Shotgun },
-            
-        },
-        Other = enum {
-            
-        },
-    };
-
     item_type: ItemType,
-    allocator: std.mem.Allocator,
+    variant: u8, // stores enum value as integer
+    quantity: u32,
 
-    pub fn init(item_type: ItemType, allocator: std.mem.Allocator) Item {
-        return Item{
-            .item_type = item_type,
-            .allocator = allocator,
-        };
+    pub fn initWeapon(w: WeaponType, quantity: u32) Item {
+        return Item{ .item_type = .Weapon, .variant = @intFromEnum(w), .quantity = quantity };
     }
 
-    pub fn deinit(self: *Item) void {
-        _ = self;
+    pub fn initArmor(a: ArmorType, quantity: u32) Item {
+        return Item{ .item_type = .Armor, .variant = @intFromEnum(a), .quantity = quantity };
     }
 
-    pub fn copy(self: Item) Item {
-        return Item{
-            .item_type = self.item_type,
-            .quantity = self.quantity,
-            .allocator = self.allocator,
-        };
+    pub fn initConsumable(c: ConsumableType, quantity: u32) Item {
+        return Item{ .item_type = .Consumable, .variant = @intFromEnum(c), .quantity = quantity };
+    }
+
+    pub fn initAmmo(a: AmmoType, quantity: u32) Item {
+        return Item{ .item_type = .Ammo, .variant = @intFromEnum(a), .quantity = quantity };
     }
 };
 
+/// Dynamic inventory container
 pub const Inventory = struct {
     allocator: std.mem.Allocator,
     items: std.ArrayList(Item),
@@ -59,15 +51,13 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
-        // no per-item heap allocations to free (if you later store names or dup strings,
-        // free them here)
         self.items.deinit();
     }
 
+    /// Add an item to the inventory, merging with existing items if same type+variant.
     pub fn addItem(self: *Inventory, item: Item) !void {
-        // combine by type+variant_char
         for (self.items.items) |*it| {
-            if (it.item_type == item.item_type and it.variant_char == item.variant_char) {
+            if (it.item_type == item.item_type and it.variant == item.variant) {
                 it.quantity += item.quantity;
                 return;
             }
@@ -75,10 +65,11 @@ pub const Inventory = struct {
         try self.items.append(item);
     }
 
-    pub fn removeItem(self: *Inventory, item_type: ItemType, variant_char: u8, amount: u32) void {
+    /// Remove some quantity of an item, deleting it if quantity reaches 0.
+    pub fn removeItem(self: *Inventory, item_type: ItemType, variant: u8, amount: u32) void {
         var i: usize = 0;
         while (i < self.items.items.len) : (i += 1) {
-            if (self.items.items[i].item_type == item_type and self.items.items[i].variant_char == variant_char) {
+            if (self.items.items[i].item_type == item_type and self.items.items[i].variant == variant) {
                 if (self.items.items[i].quantity > amount) {
                     self.items.items[i].quantity -= amount;
                 } else {
@@ -98,3 +89,4 @@ pub const Inventory = struct {
         return self.items.items.len;
     }
 };
+
