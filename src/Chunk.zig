@@ -143,8 +143,8 @@ pub const Chunk = struct {
         var items = std.ArrayListUnmanaged(WorldItem){};
         try items.ensureTotalCapacity(allocator, 8);
 
-    var prng = std.Random.DefaultPrng.init(coord.hash());
-    self.generateTerrain(prng.random());
+        var prng = std.Random.DefaultPrng.init(coord.hash());
+        self.generateTerrain(prng.random());
 
         try self.items.append(WorldItem{
             .item = Inventory.Item.initConsumable(.Potion, 1),
