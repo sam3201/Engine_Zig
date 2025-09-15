@@ -158,9 +158,6 @@ pub const Chunk = struct {
     }
 
     pub fn deinit(self: *Chunk) void {
-        // Use the allocator that created it. If the Chunk stores allocator somewhere, use that.
-        // If not, call deinit at the same scope where allocator is available.
-        // Example: if chunk has `allocator: std.mem.Allocator` field then:
         self.items.deinit(self.allocator);
     }
 
