@@ -19,7 +19,7 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) 
     var total: usize = 0;
 
     while (true) {
-        const n = try reader.readAtLeast(&tmp, 1);
+        const n = try reader.readAtLeastBytes(&tmp, 1);
         if (n == 0) break; // EOF
         for (tmp[0..n]) |b| {
             try buf_list.append(allocator, b);
