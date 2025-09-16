@@ -220,7 +220,7 @@ pub const WorldManager = struct {
         if (self.chunks.getPtr(chunk_coord)) |chunk| {
             const item = self.player.inventory.getItem(0).?;
             const drop = Chunk.WorldItem{
-                .item = Inventory.Item.init(item.item_type, item.variant_char, 1, self.allocator),
+                .item = item,
                 .x = pos.x,
                 .y = pos.y,
             };
