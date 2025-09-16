@@ -228,8 +228,8 @@ pub const WorldManager = struct {
 
             if (chunk.findItemAt(pos.x, pos.y) == null) {
                 chunk.addWorldItem(drop) catch return;
-                self.player.removeItem(item.name, 1);
-                std.debug.print("Dropped {s}\n", .{item.name});
+                self.player.removeItem(item.displayName(), 1);
+                std.debug.print("Dropped {s}\n", .{item.displayName()});
             }
         }
     }
