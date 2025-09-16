@@ -318,7 +318,7 @@ pub fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usi
     var buf_list = try std.ArrayList(u8).initCapacity(allocator, 64);
     defer buf_list.deinit(allocator);
 
-    var tmp: [256]u8 = undefined; 
+    var tmp: [256]u8 = undefined;
     var total: usize = 0;
 
     while (true) {
