@@ -54,10 +54,9 @@ pub const Item = struct {
         };
     }
 
-    /// simple display name (returns static string slices)
     pub fn displayName(self: *Item) []const u8 {
         return switch (self.item_type) {
-            .Consumable => switch (@enumFromInt(ConsumableVariant, self.variant_char)) {
+            .Consumable => switch (@enumFromInt(self.variant_char)) {
                 .Potion => "Potion",
                 .Food => "Food",
             },
@@ -81,7 +80,6 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
-        // deinit each item if needed
         for (self.items.items) |*it| {
             it.deinit();
         }
@@ -89,7 +87,6 @@ pub const Inventory = struct {
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
-        // combine items by type + variant_char
         for (self.items.items) |*it| {
             if (it.item_type == item.item_type and it.variant_char == item.variant_char) {
                 it.quantity += item.quantity;
