@@ -19,11 +19,9 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) 
     var total: usize = 0;
 
     while (true) {
-        const n = try reader.read(&tmp);
+        const n = try reader.readAtLeast(&tmp, 1); // at least 1 byte, blocks until available
         if (n == 0) break; // EOF
-        var i: usize = 0;
-        while (i < n) : (i += 1) {
-            const b = tmp[i];
+        for (tmp[0..n]) |b| {
             try buf_list.append(allocator, b);
             total += 1;
             if (b == '\n' or total >= max_len) {
@@ -33,7 +31,6 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) 
     }
     return try buf_list.toOwnedSlice(allocator);
 }
-
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
