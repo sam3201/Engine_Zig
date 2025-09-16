@@ -44,7 +44,6 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    // Create a buffered reader
     var recv_buf: [1024]u8 = undefined;
     var reader_state = stream.reader(&recv_buf);
     const reader = &reader_state.interface;
