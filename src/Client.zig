@@ -11,6 +11,29 @@ var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
+fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) ![]u8 {
+    var buf_list = try std.ArrayList(u8).initCapacity(allocator, 64);
+    defer buf_list.deinit(allocator);
+
+    var tmp: [256]u8 = undefined;
+    var total: usize = 0;
+
+    while (true) {
+        const n = try reader.read(&tmp);
+        if (n == 0) break; // EOF
+        var i: usize = 0;
+        while (i < n) : (i += 1) {
+            const b = tmp[i];
+            try buf_list.append(allocator, b);
+            total += 1;
+            if (b == '\n' or total >= max_len) {
+                return try buf_list.toOwnedSlice(allocator);
+            }
+        }
+    }
+    return try buf_list.toOwnedSlice(allocator);
+}
+
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
