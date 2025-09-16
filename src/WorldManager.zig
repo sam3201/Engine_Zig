@@ -204,7 +204,6 @@ pub const WorldManager = struct {
             if (chunk.findItemAt(pos.x, pos.y)) |idx| {
                 const wi = chunk.items.items[idx];
                 const item = wi.item; 
-
                 _ = self.player.addItem(item) catch return;
                 chunk.removeItemIndex(idx);
 
