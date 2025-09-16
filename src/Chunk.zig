@@ -116,7 +116,7 @@ pub const WorldItem = struct {
 
     pub fn init(coord: ChunkCoord, item: Inventory.Item) WorldItem {
         return WorldItem{
-            .item = Inventory.Item.initConsumable(item, 1),
+            .item = Inventory.Item.init(item_type, variant_char, quantity, allocator),
             .x = coord.x,
             .y = coord.y,
             .ch = ' ',
