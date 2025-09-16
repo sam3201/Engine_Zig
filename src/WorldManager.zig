@@ -273,7 +273,6 @@ pub const WorldManager = struct {
             }
         }
 
-        // Draw player
         const pos = self.player.getPosition();
         const screen_x = pos.x - self.camera_x;
         const screen_y = pos.y - self.camera_y;
