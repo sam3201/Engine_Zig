@@ -160,7 +160,7 @@ pub const Chunk = struct {
     }
 
     pub fn deinit(self: *Chunk) void {
-        self.items.deinit(allocator);
+        self.items.deinit(self.allocator);
     }
 
     pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
