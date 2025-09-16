@@ -46,7 +46,7 @@ pub const Item = struct {
     /// return printable character for this item (char used on map)
     pub fn displayChar(self: *Item) u8 {
         return switch (self.item_type) {
-            .Consumable => switch (@enumFromInt(ConsumableVariant, self.variant_char)) {
+            .Consumable => switch (@enumFromInt(self.variant_char)) {
                 .Potion => 'o',
                 .Food => 'f',
             },
