@@ -111,7 +111,6 @@ pub const WorldItem = struct {
     item: Inventory.Item,
     x: i32,
     y: i32,
-    ch: u8,
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
     pub fn init(allocator: std.mem.Allocator, item_type: Inventory.ItemType, variant_char: u8, quantity: i32, coord: ChunkCoord) WorldItem {
@@ -119,7 +118,6 @@ pub const WorldItem = struct {
             .item = Inventory.Item.init(item_type, variant_char, quantity, allocator),
             .x = coord.x,
             .y = coord.y,
-            .ch = ' ',
         };
     }
 };
