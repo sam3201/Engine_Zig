@@ -207,7 +207,7 @@ pub const WorldManager = struct {
                 _ = self.player.addItem(item) catch return;
                 chunk.removeItemIndex(idx);
 
-                std.debug.print("Picked up {s} x{d}\n", .{ wi.item.name, wi.item.quantity });
+                std.debug.print("Picked up {s} x{d}\n", .{ wi.item.displayName(), wi.item.quantity });
             }
         }
     }
