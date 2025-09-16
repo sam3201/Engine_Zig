@@ -110,8 +110,9 @@ pub const WorldManager = struct {
         const unload_radius = self.loaded_radius + 2;
 
         var iterator = self.chunks.iterator();
-        var coords_to_remove = std.ArrayList(Chunk.ChunkCoord).init(self.allocator);
-        defer coords_to_remove.deinit();
+        var coords_to_remove = try std.ArrayList(Chunk.ChunkCoord).initCapacity(self.allocator, 8);
+defer coords_to_remove.deinit(self.allocator);
+defer coords_to_remove.deinit();
 
         while (iterator.next()) |entry| {
             const coord = entry.key_ptr.*;
