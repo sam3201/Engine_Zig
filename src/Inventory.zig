@@ -102,7 +102,7 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
-        self.items.deinit(self.allocator);
+        self.items.deinit();
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
