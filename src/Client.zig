@@ -31,6 +31,7 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) 
     }
     return try buf_list.toOwnedSlice(allocator);
 }
+
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
