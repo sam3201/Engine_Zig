@@ -10,7 +10,7 @@ pub const ItemType = enum {
 };
 
 pub const WeaponVariant = enum(u8) { Pistol = 'P', Shotgun = 'S' };
-pub const ArmorVariant  = enum(u8) { Light = 'L', Medium = 'M', Heavy = 'H' };
+pub const ArmorVariant = enum(u8) { Light = 'L', Medium = 'M', Heavy = 'H' };
 pub const ConsumableVariant = enum(u8) { Potion = 'o', Food = 'f' };
 pub const AmmoVariant = enum(u8) { AmmoPistol = 'p', AmmoShotgun = 's' };
 pub const OtherVariant = enum(u8) { Unknown = '?' };
@@ -137,4 +137,3 @@ pub const Inventory = struct {
         return self.items.items.len;
     }
 };
-
