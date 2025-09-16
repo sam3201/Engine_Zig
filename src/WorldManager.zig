@@ -250,7 +250,6 @@ pub const WorldManager = struct {
     }
 
     pub fn draw(self: *WorldManager) void {
-        // Draw tiles
         for (0..@intCast(self.canvas_height)) |screen_y| {
             for (0..@intCast(self.canvas_width)) |screen_x| {
                 const world_x = self.camera_x + @as(i32, @intCast(screen_x));
@@ -262,7 +261,6 @@ pub const WorldManager = struct {
             }
         }
 
-        // Draw items (iterate visible chunks)
         var it = self.chunks.valueIterator();
         while (it.next()) |chunk| {
             for (chunk.items.items) |wi| {
