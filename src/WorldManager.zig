@@ -109,7 +109,7 @@ pub const WorldManager = struct {
         const unload_radius = self.loaded_radius + 2;
 
         var iterator = self.chunks.iterator();
-        var coords_to_remove = try std.ArrayList(self.allocator, Chunk.ChunkCoord).initCapacity(self.allocator, 8);
+        var coords_to_remove = try std.ArrayList(Chunk.ChunkCoord).initCapacity(self.allocator, 8);
         defer coords_to_remove.deinit(self.allocator);
 
         while (iterator.next()) |entry| {
@@ -117,7 +117,7 @@ pub const WorldManager = struct {
             const distance = @abs(coord.x - player_chunk.x) + @abs(coord.y - player_chunk.y);
 
             if (distance > unload_radius) {
-                coords_to_remove.append(coord) catch continue;
+                coords_to_remove.append(self.allocator, coord) catch continue;
             }
         }
 
