@@ -285,7 +285,6 @@ pub const WorldManager = struct {
     }
 
     fn drawHUD(self: *WorldManager) void {
-        // Draw player info
         const pos = self.player.getPosition();
         const chunk_coord = self.getPlayerChunkCoord();
 
