@@ -119,7 +119,7 @@ pub const WorldItem = struct {
             .item = Inventory.Item.initConsumable(item), // see note below
             .x = coord.x,
             .y = coord.y,
-            .ch = '!', // default glyph if you like
+            .ch = ' ', 
         };
     }
 };
