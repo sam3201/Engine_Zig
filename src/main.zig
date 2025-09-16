@@ -182,7 +182,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 std.debug.print("Enter new name: ", .{});
                 var buf_arr: [1024]u8 = undefined;
                 var stdin_reader = std.fs.File.stdin().reader(&buf_arr);
-                const line = try stdin_reader.readUntilDelimiterOrEof(&buf_arr, '\n');
+                const line = try stdin_reader.readUntilDelimiterOrEofAlloc(allocator, '\n', 1024); 
                 if (line) |name| {
                     player.*.name = try allocator.dupe(u8, name);
                     // persist player to file (player.json in current dir)
