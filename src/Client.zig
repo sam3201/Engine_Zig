@@ -41,7 +41,8 @@ const reader = stream.reader(&recv_buf);
         var buffer = try std.ArrayList(u8).initCapacity(allocator, 1024);
         defer buffer.deinit(allocator);
 
-        try reader.streamUntilDelimiter(buffer.writer(), '\n', 1024);
+        const line = try readLineAlloc(allocator, reader, 1024);
+defer allocator.free(line);
 
         const line = buffer.toOwnedSlice();
         defer allocator.free(line);
