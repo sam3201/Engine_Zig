@@ -50,7 +50,6 @@ pub const WorldManager = struct {
     }
 
     pub fn deinit(self: *WorldManager) void {
-        // deinit each chunk (items, etc.)
         var it = self.chunks.valueIterator();
         while (it.next()) |c| {
             c.deinit();
@@ -221,7 +220,7 @@ pub const WorldManager = struct {
         if (self.chunks.getPtr(chunk_coord)) |chunk| {
             const item = self.player.inventory.getItem(0).?;
             const drop = Chunk.WorldItem{
-                .item = .{ .id = item.id, .name = item.displayName(), .quantity = 1 },
+                .item = Inventory.Item.init(item.item_type, item.variant_char, 1, self.allocator),
                 .x = pos.x,
                 .y = pos.y,
             };
