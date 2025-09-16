@@ -11,25 +11,19 @@ var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
-fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) ![]u8 {
-    var buf_list = try std.ArrayList(u8).initCapacity(allocator, 64);
-    defer buf_list.deinit(allocator);
+/// Read a single line from a stream using the new std.Io.Reader API.
+fn readLineAlloc(allocator: std.mem.Allocator, reader: *std.Io.Reader, max_len: usize) ![]u8 {
+    var line_writer = std.io.Writer.Allocating.init(allocator);
+    defer line_writer.deinit();
 
-    var tmp: [256]u8 = undefined;
-    var total: usize = 0;
+    // Stream data until newline (or EOF)
+    _ = try reader.streamDelimiter(&line_writer.writer, '\n');
 
-    while (true) {
-        const n = try reader.readAtLeastBytes(&tmp, 1);
-        if (n == 0) break; // EOF
-        for (tmp[0..n]) |b| {
-            try buf_list.append(allocator, b);
-            total += 1;
-            if (b == '\n' or total >= max_len) {
-                return try buf_list.toOwnedSlice(allocator);
-            }
-        }
-    }
-    return try buf_list.toOwnedSlice(allocator);
+    const line = line_writer.written();
+    if (line.len > max_len) return error.StreamTooLong;
+
+    // Copy into owned slice
+    return try allocator.dupe(u8, line);
 }
 
 pub fn connectToServer() !net.Stream {
@@ -53,18 +47,15 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
+    // Create a buffered reader
     var recv_buf: [1024]u8 = undefined;
-    const reader = stream.reader(&recv_buf);
+    var reader_state = stream.reader(&recv_buf);
+    const reader = &reader_state.interface;
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        var buffer = try std.ArrayList(u8).initCapacity(allocator, 1024);
-        defer buffer.deinit(allocator);
-
         const line = try readLineAlloc(allocator, reader, 1024);
-        defer allocator.free(line);
-
         defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
@@ -154,3 +145,4 @@ pub fn main() !void {
 
     try engine.run();
 }
+
