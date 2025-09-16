@@ -101,7 +101,7 @@ pub const Inventory = struct {
         };
     }
 
-        pub fn deinit(self: *Inventory) void {
+    pub fn deinit(self: *Inventory) void {
         // ArrayList.deinit requires the allocator argument in 0.15
         self.items.deinit(self.allocator);
     }
