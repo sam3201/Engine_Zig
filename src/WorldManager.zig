@@ -106,7 +106,7 @@ pub const WorldManager = struct {
         self.unloadDistantChunks(player_chunk);
     }
 
-    fn unloadDistantChunks(self: *WorldManager, player_chunk: Chunk.ChunkCoord) void {
+    fn unloadDistantChunks(self: *WorldManager, player_chunk: Chunk.ChunkCoord) !void {
         const unload_radius = self.loaded_radius + 2;
 
         var iterator = self.chunks.iterator();
