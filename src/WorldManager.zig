@@ -103,6 +103,7 @@ pub const WorldManager = struct {
                 }
             }
         }
+
         try self.unloadDistantChunks(player_chunk);
     }
 
