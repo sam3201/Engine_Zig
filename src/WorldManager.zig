@@ -343,7 +343,7 @@ pub const WorldManager = struct {
 
         const current_chunk_coord = self.getPlayerChunkCoord();
         if (self.chunks.get(current_chunk_coord)) |chunk| {
-            const biome_text = std.fmt.allocPrint(self.allocator, " Biome: {} | Difficulty: {} ", .{ chunk.biome, chunk.difficulty_level }) catch return;
+            const biome_text = std.fmt.allocPrint(self.allocator, " Biome: {} | Difficulty: {} ", .{ chunk.biome, chunk.difficulty}) catch return;
             defer self.allocator.free(biome_text);
 
             const biome_color = switch (chunk.biome) {
