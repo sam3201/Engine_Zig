@@ -31,7 +31,7 @@ pub const Item = struct {
     }
 
     pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Consumable, @intCast(u8, variant), quantity, allocator);
+        return Item.init(.Consumable, @intCast(variant), quantity, allocator);
     }
 
     pub fn initWeapon(variant: WeaponVariant, quantity: u32, allocator: std.mem.Allocator) Item {
