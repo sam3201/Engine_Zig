@@ -35,19 +35,19 @@ pub const Item = struct {
     }
 
     pub fn initWeapon(variant: WeaponVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Weapon, @intCast(u8, variant), quantity, allocator);
+        return Item.init(.Weapon, @intCast(variant), quantity, allocator);
     }
 
     pub fn initArmor(variant: ArmorVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Armor, @intCast(u8, variant), quantity, allocator);
+        return Item.init(.Armor, @intCast(variant), quantity, allocator);
     }
 
     pub fn initAmmo(variant: AmmoVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Ammo, @intCast(u8, variant), quantity, allocator);
+        return Item.init(.Ammo, @intCast(variant), quantity, allocator);
     }
 
     pub fn initOther(variant: OtherVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Other, @intCast(u8, variant), quantity, allocator);
+        return Item.init(.Other, @intCast(variant), quantity, allocator);
     }
 
     pub fn displayName(self: Item) []const u8 {
