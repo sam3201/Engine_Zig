@@ -74,7 +74,6 @@ pub const Item = struct {
     }
 
     pub fn deinit(self: *Item) void {
-        // nothing heap-allocated inside Item currently; kept for API symmetry
         _ = self;
     }
 
