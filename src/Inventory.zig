@@ -65,7 +65,6 @@ pub const Item = struct {
         };
     }
 
-    /// Returns a human-readable display name
     pub fn displayName(self: Item) []const u8 {
         return switch (self.item_type) {
             .Weapon => switch (self.variant.Weapon) {
