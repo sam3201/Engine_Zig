@@ -135,6 +135,7 @@ pub const Chunk = struct {
 
     pub fn init(coord: ChunkCoord, biome: BiomeType, difficulty: i32, allocator: std.mem.Allocator) !Chunk {
         var self = Chunk{
+            .allocator = allocator,
             .coord = coord,
             .biome = biome,
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
