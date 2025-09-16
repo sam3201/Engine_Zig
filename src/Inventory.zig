@@ -1,4 +1,4 @@
-// Inventory.zig
+// src/Inventory.zig
 const std = @import("std");
 
 pub const ItemType = enum {
@@ -9,14 +9,14 @@ pub const ItemType = enum {
     Other,
 };
 
-pub const WeaponVariant = enum(u8) { Pistol = 'P', Shotgun = 'S' };
-pub const ArmorVariant = enum(u8) { Light = 'L', Medium = 'M', Heavy = 'H' };
-pub const ConsumableVariant = enum(u8) { Potion = 'o', Food = 'f' };
-pub const AmmoVariant = enum(u8) { AmmoPistol = 'p', AmmoShotgun = 's' };
-pub const OtherVariant = enum(u8) { Unknown = '?' };
+pub const ConsumableVariant = enum(u8) {
+    Potion = 'o',
+    Food = 'f',
+};
 
 pub const Item = struct {
     item_type: ItemType,
+    /// store variant as the underlying integer (u8) so Item is trivially copyable
     variant_char: u8,
     quantity: u32,
     allocator: std.mem.Allocator,
@@ -30,60 +30,41 @@ pub const Item = struct {
         };
     }
 
+    /// convenience constructor for consumables
     pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Consumable, @intCast(variant), quantity, allocator);
-    }
-
-    pub fn initWeapon(variant: WeaponVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Weapon, @intCast(variant), quantity, allocator);
-    }
-
-    pub fn initArmor(variant: ArmorVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Armor, @intCast(variant), quantity, allocator);
-    }
-
-    pub fn initAmmo(variant: AmmoVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Ammo, @intCast(variant), quantity, allocator);
-    }
-
-    pub fn initOther(variant: OtherVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        return Item.init(.Other, @intCast(variant), quantity, allocator);
-    }
-
-    pub fn displayName(self: Item) []const u8 {
-        switch (self.item_type) {
-            .Consumable => switch (@as(ConsumableVariant, self.variant_char)) {
-                .Potion => "Potion",
-                .Food => "Food",
-            },
-            .Weapon => switch (@as(WeaponVariant, self.variant_char)) {
-                .Pistol => "Pistol",
-                .Shotgun => "Shotgun",
-            },
-            .Armor => switch (@as(ArmorVariant, self.variant_char)) {
-                .Light => "Light Armor",
-                .Medium => "Medium Armor",
-                .Heavy => "Heavy Armor",
-            },
-            .Ammo => switch (@as(AmmoVariant, self.variant_char)) {
-                .AmmoPistol => "Pistol Ammo",
-                .AmmoShotgun => "Shotgun Ammo",
-            },
-            .Other => "Other",
-        }
+        // convert enum value to its underlying integer
+        const v_u8: u8 = @intFromEnum(variant);
+        return Item.init(.Consumable, v_u8, quantity, allocator);
     }
 
     pub fn deinit(self: *Item) void {
-        // nothing heap-allocated inside Item currently; kept for API symmetry
+        // currently we don't allocate per-item strings; if you add heap allocations for names,
+        // free them here using self.allocator
         _ = self;
     }
 
-    pub fn copy(self: Item) Item {
-        return Item{
-            .item_type = self.item_type,
-            .variant_char = self.variant_char,
-            .quantity = self.quantity,
-            .allocator = self.allocator,
+    /// return printable character for this item (char used on map)
+    pub fn displayChar(self: *Item) u8 {
+        return switch (self.item_type) {
+            .Consumable => switch (@enumFromInt(ConsumableVariant, self.variant_char)) {
+                .Potion => 'o',
+                .Food => 'f',
+            },
+            else => '?',
+        };
+    }
+
+    /// simple display name (returns static string slices)
+    pub fn displayName(self: *Item) []const u8 {
+        return switch (self.item_type) {
+            .Consumable => switch (@enumFromInt(ConsumableVariant, self.variant_char)) {
+                .Potion => "Potion",
+                .Food => "Food",
+            },
+            .Weapon => "Weapon",
+            .Armor => "Armor",
+            .Ammo => "Ammo",
+            .Other => "Other",
         };
     }
 };
@@ -100,11 +81,15 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
-        // ArrayList.deinit requires allocator in 0.15
+        // deinit each item if needed
+        for (self.items.items) |*it| {
+            it.deinit();
+        }
         self.items.deinit(self.allocator);
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
+        // combine items by type + variant_char
         for (self.items.items) |*it| {
             if (it.item_type == item.item_type and it.variant_char == item.variant_char) {
                 it.quantity += item.quantity;
@@ -137,3 +122,4 @@ pub const Inventory = struct {
         return self.items.items.len;
     }
 };
+
