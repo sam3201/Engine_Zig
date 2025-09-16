@@ -318,7 +318,7 @@ pub const WorldManager = struct {
 
         var offset: usize = inv_str.len;
         for (self.player.inventory.items.items) |it| {
-            const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.name, it.quantity }) catch continue;
+            const entry = std.fmt.allocPrint(self.allocator, "{s}({d}) ", .{ it.displayName(), it.quantity }) catch continue;
             defer self.allocator.free(entry);
 
             for (entry, 0..) |ch, j| {
