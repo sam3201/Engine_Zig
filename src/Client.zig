@@ -54,7 +54,7 @@ pub fn renderGameState(
     canvas: *eng.Canvas,
 ) !void {
     var recv_buf: [1024]u8 = undefined;
-const reader = stream.reader(&recv_buf);
+    const reader = stream.reader(&recv_buf);
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
@@ -63,7 +63,7 @@ const reader = stream.reader(&recv_buf);
         defer buffer.deinit(allocator);
 
         const line = try readLineAlloc(allocator, reader, 1024);
-defer allocator.free(line);
+        defer allocator.free(line);
 
         defer allocator.free(line);
 
