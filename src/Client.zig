@@ -11,18 +11,15 @@ var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
-/// Read a single line from a stream using the new std.Io.Reader API.
 fn readLineAlloc(allocator: std.mem.Allocator, reader: *std.Io.Reader, max_len: usize) ![]u8 {
     var line_writer = std.io.Writer.Allocating.init(allocator);
     defer line_writer.deinit();
 
-    // Stream data until newline (or EOF)
     _ = try reader.streamDelimiter(&line_writer.writer, '\n');
 
     const line = line_writer.written();
     if (line.len > max_len) return error.StreamTooLong;
 
-    // Copy into owned slice
     return try allocator.dupe(u8, line);
 }
 
