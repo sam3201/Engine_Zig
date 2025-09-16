@@ -24,7 +24,7 @@ pub const TileType = enum {
     pub fn getChar(self: TileType) u8 {
         return switch (self) {
             .Empty => '.',
-            .Wall => '#', // FIX 1: Added missing Wall case
+            .Wall => '#', 
             .Grass => ',',
             .Stone => '@',
             .Water => '~',
