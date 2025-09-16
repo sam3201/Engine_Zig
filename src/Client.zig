@@ -67,7 +67,6 @@ const reader = stream.reader(&recv_buf);
         const line = try readLineAlloc(allocator, reader, 1024);
 defer allocator.free(line);
 
-        const line = buffer.toOwnedSlice();
         defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;
