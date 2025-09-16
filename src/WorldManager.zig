@@ -203,7 +203,7 @@ pub const WorldManager = struct {
         if (self.chunks.getPtr(chunk_coord)) |chunk| {
             if (chunk.findItemAt(pos.x, pos.y)) |idx| {
                 const wi = chunk.items.items[idx];
-const item = wi.item; // move the Inventory.Item directly, or construct from variant
+                const item = wi.item; 
 
                 _ = self.player.addItem(item) catch return;
                 chunk.removeItemIndex(idx);
