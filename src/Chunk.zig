@@ -141,7 +141,7 @@ pub const Chunk = struct {
             .tiles = [_]TileType{TileType.Empty} ** (CHUNK_WIDTH * CHUNK_HEIGHT),
             .difficulty = difficulty,
             .generated = true,
-            .items = try std.ArrayList(WorldItem).initCapacity(allocator, 8),
+            .items = undefined, 
         };
 
         self.items = try std.ArrayList(WorldItem).initCapacity(allocator, 8);
