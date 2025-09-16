@@ -1,0 +1,67 @@
+samueldasari@Samuels-MacBook-Air src % sh build.sh 
+run
+└─ run exe Engine
+   └─ install
+      └─ install Server
+         └─ compile exe Server Debug native 1 errors
+Chunk.zig:154:35: error: expected 3 argument(s), found 2
+            .item = Inventory.Item.initConsumable(.Potion, 1),
+                    ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+Inventory.zig:33:9: note: function declared here
+    pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
+    ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:
+    init: WorldManager.zig:43:43
+    init: Server.zig:34:63
+    5 reference(s) hidden; use '-freference-trace=7' to see all references
+error: the following command failed with 1 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep server_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Server.zig -Mserver_mod=/Users/samueldasari/Personal/Engine/src/Server.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Server --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+run
+└─ run exe Engine
+   └─ install
+      └─ install Engine
+         └─ compile exe Engine Debug native 1 errors
+Chunk.zig:154:35: error: expected 3 argument(s), found 2
+            .item = Inventory.Item.initConsumable(.Potion, 1),
+                    ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+Inventory.zig:33:9: note: function declared here
+    pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
+    ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+referenced by:
+    init: WorldManager.zig:43:43
+    main: main.zig:76:51
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
+error: the following command failed with 1 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep engine_mod -Mroot=/Users/samueldasari/Personal/Engine/src/main.zig -Mengine_mod=/Users/samueldasari/Personal/Engine/src/main.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Engine --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+run
+└─ run exe Engine
+   └─ install
+      └─ install Client
+         └─ compile exe Client Debug native 1 errors
+Client.zig:22:29: error: no field or member function named 'read' in 'net.Stream.Reader__struct_19772'
+        const n = try reader.read(&tmp);
+                      ~~~~~~^~~~~
+/opt/homebrew/Cellar/zig/0.15.1/lib/zig/std/net.zig:2049:17: note: struct declared here
+        else => struct {
+                ^~~~~~
+referenced by:
+    renderGameState: Client.zig:67:39
+    update: Client.zig:137:32
+    5 reference(s) hidden; use '-freference-trace=7' to see all references
+error: the following command failed with 1 compilation errors:
+/opt/homebrew/Cellar/zig/0.15.1/bin/zig build-exe -ODebug --dep client_mod -Mroot=/Users/samueldasari/Personal/Engine/src/Client.zig -Mclient_mod=/Users/samueldasari/Personal/Engine/src/Client.zig --cache-dir /Users/samueldasari/Personal/Engine/.zig-cache --global-cache-dir /Users/samueldasari/.cache/zig --name Client --zig-lib-dir /opt/homebrew/Cellar/zig/0.15.1/lib/zig/ --listen=-
+                       Build Summary: 0/9 steps succeeded; 3 failed
+run transitive failure
+└─ run exe Engine transitive failure
+   ├─ compile exe Engine Debug native 1 errors
+   └─ install transitive failure
+      ├─ install Engine transitive failure
+      │  └─ compile exe Engine Debug native (reused)
+      ├─ install Server transitive failure
+      │  └─ compile exe Server Debug native 1 errors
+      └─ install Client transitive failure
+         └─ compile exe Client Debug native 1 errors
+
+error: the following build command failed with exit code 1:
+/Users/samueldasari/Personal/Engine/.zig-cache/o/ee4d8af7703c8c1f3a35ee1fce3965f9/build /opt/homebrew/Cellar/zig/0.15.1/bin/zig /opt/homebrew/Cellar/zig/0.15.1/lib/zig /Users/samueldasari/Personal/Engine /Users/samueldasari/Personal/Engine/.zig-cache /Users/samueldasari/.cache/zig --seed 0x8dedc7c7 -Zd46f2545bfc9fdd1 run                                                                                      samueldasari@Samuels-MacBook-Air src % cat * > new.txt
+                                                                                  samueldasari@Samuels-MacBook-Air src % 
