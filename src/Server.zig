@@ -314,6 +314,35 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
     }
 }
 
+pub fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) ![]u8 {
+    var buf_list = try std.ArrayList(u8).initCapacity(allocator, 64);
+    defer buf_list.deinit(allocator);
+
+    var tmp: [256]u8 = undefined; 
+    var total: usize = 0;
+
+    while (true) {
+        const n = try reader.read(&tmp);
+        if (n == 0) break; // EOF
+        var i: usize = 0;
+        while (i < n) : (i += 1) {
+            const b = tmp[i];
+            try buf_list.append(allocator, b);
+            total += 1;
+            if (b == '\n') {
+                const out = try buf_list.toOwnedSlice(allocator);
+                return out;
+            }
+            if (total >= max_len) {
+                const out2 = try buf_list.toOwnedSlice(allocator);
+                return out2;
+            }
+        }
+    }
+    const out3 = try buf_list.toOwnedSlice(allocator);
+    return out3;
+}
+
 pub fn main() !void {
     var server = try GameServer.init(std.heap.page_allocator);
     defer server.deinit();
