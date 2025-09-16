@@ -125,6 +125,7 @@ pub const WorldItem = struct {
 };
 
 pub const Chunk = struct {
+    allocator: std.mem.Allocator,
     coord: ChunkCoord,
     tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType,
     biome: BiomeType,
