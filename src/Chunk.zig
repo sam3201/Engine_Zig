@@ -111,17 +111,18 @@ pub const WorldItem = struct {
     item: Inventory.Item,
     x: i32,
     y: i32,
+    ch: u8, // <- add this
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
-    pub fn init(coord: ChunkCoord, item: Inventory.Item) WorldItem {
+    pub fn init(coord: ChunkCoord, item: Inventory.Item, quantity: u32, allocator: std.mem.Allocator) WorldItem {
         return WorldItem{
-            .item = item,
+            .item = Inventory.Item.initConsumable(item), // see note below
             .x = coord.x,
             .y = coord.y,
+            .ch = '!', // default glyph if you like
         };
     }
 };
-
 pub const Chunk = struct {
     coord: ChunkCoord,
     tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType,
