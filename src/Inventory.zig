@@ -16,7 +16,6 @@ pub const ConsumableVariant = enum(u8) {
 
 pub const Item = struct {
     item_type: ItemType,
-    /// store variant as the underlying integer (u8) so Item is trivially copyable
     variant_char: u8,
     quantity: u32,
     allocator: std.mem.Allocator,
@@ -30,20 +29,15 @@ pub const Item = struct {
         };
     }
 
-    /// convenience constructor for consumables
     pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        // convert enum value to its underlying integer
         const v_u8: u8 = @intFromEnum(variant);
         return Item.init(.Consumable, v_u8, quantity, allocator);
     }
 
     pub fn deinit(self: *Item) void {
-        // currently we don't allocate per-item strings; if you add heap allocations for names,
-        // free them here using self.allocator
         _ = self;
     }
 
-    /// return printable character for this item (char used on map)
     pub fn displayChar(self: *Item) u8 {
         return switch (self.item_type) {
             .Consumable => switch (@enumFromInt(self.variant_char)) {
