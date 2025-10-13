@@ -51,7 +51,7 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const reader_iface: *std.io.Reader = &reader.read(recv_buf);
+        const reader_iface: *std.io.Reader = &reader_state;
         const line = try readLineAlloc(allocator, reader_iface, 1024);
 
         defer allocator.free(line);
