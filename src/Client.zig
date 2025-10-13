@@ -44,7 +44,6 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    var recv_buf: [1024]u8 = undefined;
     var buffered_reader = std.io.bufferedReader(stream.reader());
     const reader = buffered_reader.reader();
 
