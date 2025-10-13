@@ -151,8 +151,8 @@ pub const GameServer = struct {
 
         if (player_id == null) {
             _ = writer.writeAll("Server full\n") catch {};
-try writer.flush();
-self.mutex.unlock();
+            try writer.flush();
+            self.mutex.unlock();
             return;
         }
 
