@@ -45,8 +45,8 @@ pub fn renderGameState(
     canvas: *eng.Canvas,
 ) !void {
     var recv_buf: [1024]u8 = undefined;
-var buffered_reader = std.io.bufferedReader(stream.reader());
-const reader = buffered_reader.reader();
+    var buffered_reader = std.io.bufferedReader(stream.reader());
+    const reader = buffered_reader.reader();
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
