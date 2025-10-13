@@ -116,7 +116,7 @@ pub const Inventory = struct {
     }
 
     pub fn getItemByName(self: *Inventory, name: []const u8) ?*Item {
-        for (self.items) |item| {
+        for (self.items.items) |item| {
             if (std.mem.eql(u8, item.name, name)) return &item;
         }
         return null;
