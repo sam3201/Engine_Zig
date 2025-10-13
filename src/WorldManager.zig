@@ -223,6 +223,7 @@ pub const WorldManager = struct {
                 .item = item,
                 .x = pos.x,
                 .y = pos.y,
+                .ch = item.displayName()[0],
             };
 
             if (chunk.findItemAt(pos.x, pos.y) == null) {

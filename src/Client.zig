@@ -46,12 +46,14 @@ pub fn renderGameState(
 ) !void {
     var recv_buf: [1024]u8 = undefined;
     var reader_state = stream.reader(&recv_buf);
-    const reader = &reader_state.interface;
+    const reader = &reader_state;
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const line = try readLineAlloc(allocator, reader, 1024);
+        const reader_iface: *std.io.Reader = &reader(recv_buf);
+        const line = try readLineAlloc(allocator, reader_iface, 1024);
+
         defer allocator.free(line);
 
         if (std.mem.eql(u8, line, "END")) break;

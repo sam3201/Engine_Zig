@@ -24,7 +24,7 @@ pub const TileType = enum {
     pub fn getChar(self: TileType) u8 {
         return switch (self) {
             .Empty => '.',
-            .Wall => '#', 
+            .Wall => '#',
             .Grass => ',',
             .Stone => '@',
             .Water => '~',
@@ -166,7 +166,7 @@ pub const Chunk = struct {
     }
 
     pub fn addWorldItem(self: *Chunk, wi: WorldItem) !void {
-        try self.items.append(wi);
+        try self.items.append(self.allocator, wi);
     }
 
     pub fn findItemAt(self: *Chunk, world_x: i32, world_y: i32) ?usize {

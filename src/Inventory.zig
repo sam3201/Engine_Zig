@@ -40,19 +40,25 @@ pub const Item = struct {
 
     pub fn displayChar(self: *Item) u8 {
         return switch (self.item_type) {
-            .Consumable => switch (@enumFromInt(self.variant_char)) {
-                .Potion => 'o',
-                .Food => 'f',
+            .Consumable => {
+                const variant = @as(ConsumableVariant, @enumFromInt(self.variant_char));
+                return switch (variant) {
+                    .Potion => 'o',
+                    .Food => 'f',
+                };
             },
-            else => '?',
+            .Weapon, .Armor, .Ammo, .Other => self.variant_char,
         };
     }
 
-    pub fn displayName(self: *Item) []const u8 {
+    pub fn displayName(self: *const Item) []const u8 {
         return switch (self.item_type) {
-            .Consumable => switch (@enumFromInt(self.variant_char)) {
-                .Potion => "Potion",
-                .Food => "Food",
+            .Consumable => {
+                const variant = @as(ConsumableVariant, @enumFromInt(self.variant_char));
+                return switch (variant) {
+                    .Potion => "Potion",
+                    .Food => "Food",
+                };
             },
             .Weapon => "Weapon",
             .Armor => "Armor",
@@ -106,6 +112,13 @@ pub const Inventory = struct {
 
     pub fn getItem(self: *Inventory, idx: usize) ?Item {
         if (idx < self.items.items.len) return self.items.items[idx];
+        return null;
+    }
+
+    pub fn getItemByName(self: *Inventory, name: []const u8) ?*Item {
+        for (self.items) |item| {
+            if (std.mem.eql(u8, item.name, name)) return &item;
+        }
         return null;
     }
 

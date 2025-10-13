@@ -134,8 +134,10 @@ pub const GameServer = struct {
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
-        const reader = connection.stream.reader();
-        const writer = connection.stream.writer();
+        var reader_buffer: [1024]u8 = undefined;
+        var writer_buffer: [1024]u8 = undefined;
+        const reader = connection.stream.reader(&reader_buffer);
+        const writer = connection.stream.writer(&writer_buffer);
 
         // Create new player
         self.mutex.lock();
@@ -148,7 +150,7 @@ pub const GameServer = struct {
         }
 
         if (player_id == null) {
-            _ = writer.write("Server full\n") catch {};
+            _ = writer.print("Server full\n") catch {};
             self.mutex.unlock();
             return;
         }
@@ -175,15 +177,14 @@ pub const GameServer = struct {
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
         while (true) {
-            var buffer: [256]u8 = undefined;
-            const bytes_read = reader.read(&buffer) catch |err| {
+            const bytes_read = reader.read(&reader_buffer) catch |err| {
                 std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
                 break;
             };
 
             if (bytes_read == 0) break;
 
-            const input = std.mem.trim(u8, buffer[0..bytes_read], " \n\r");
+            const input = std.mem.trim(u8, writer_buffer[0..bytes_read], "\n\r");
             if (input.len == 0) continue;
 
             self.mutex.lock();

@@ -150,7 +150,9 @@ pub const Player = struct {
     }
 
     pub fn removeItem(self: *Player, name: []const u8, amount: u32) void {
-        self.inventory.removeItem(name, amount);
+        const item = self.inventory.getItemByName(name) orelse return;
+        const itemType = item.*.type;
+        self.inventory.removeItem(itemType, name, amount);
     }
 
     pub fn draw(self: Player, canvas: *eng.Canvas) void {
