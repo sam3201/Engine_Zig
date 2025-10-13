@@ -151,7 +151,7 @@ pub const Player = struct {
 
     pub fn removeItem(self: *Player, name: []const u8, amount: u32) void {
         const item = self.inventory.getItemByName(name) orelse return;
-        const itemType = item.*.type;
+        const itemType = item.*.item_type;
         self.inventory.removeItem(itemType, name, amount);
     }
 
