@@ -184,7 +184,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 var stdin_reader = std.fs.File.stdin().reader(&buf_arr);
                 const bytes_read = try stdin_reader.readStreaming(buf_arr[0..]);
                 if (bytes_read == 0) return;
-                if (buf_arr[0..bytes_read]) |name| {
+               const name = buf_arr[0..bytes_read]; 
                     player.*.name = try allocator.dupe(u8, name);
                     // persist player to file (player.json in current dir)
                     try Player.save(player.*, "player.json");
