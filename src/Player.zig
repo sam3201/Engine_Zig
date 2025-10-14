@@ -66,7 +66,7 @@ pub const Player = struct {
         // This stub mirrors whatever your project expects — adapt as needed.
         // Return something that WorldManager.handlePlayerAction understands.
         // For now, return the byte so existing code can parse it.
-        return input;
+        _ = input;
     }
 
     pub fn addItem(self: *Player, item: Inventory.Item) !void {
