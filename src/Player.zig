@@ -2,7 +2,8 @@
 const std = @import("std");
 const Inventory = @import("Inventory.zig");
 const Engine = @import("Engine.zig");
-const Entity = @import("Entity.zig").Entity;
+const Entity = @import("Entity.zig");
+
 pub const Player = struct {
     entity: Entity,
     health: i32,
