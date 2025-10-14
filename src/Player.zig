@@ -66,6 +66,7 @@ pub const Player = struct {
         // This stub mirrors whatever your project expects — adapt as needed.
         // Return something that WorldManager.handlePlayerAction understands.
         // For now, return the byte so existing code can parse it.
+        _ = self;
         _ = input;
     }
 
