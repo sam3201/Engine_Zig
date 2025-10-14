@@ -44,7 +44,7 @@ pub const Item = struct {
     pub fn displayChar(self: *const Item) u8 {
         return switch (self.item_type) {
             .Consumable => {
-                const v = @enumFromInt(ConsumableVariant, self.variant_char);
+                const v: ConsumableVariant = @enumFromInt(self.variant_char);
                 switch (v) {
                     .Potion => 'o',
                     .Food => 'f',
@@ -57,7 +57,7 @@ pub const Item = struct {
     pub fn displayName(self: *const Item) []const u8 {
         return switch (self.item_type) {
             .Consumable => {
-                const v = @enumFromInt(ConsumableVariant, self.variant_char);
+                const v: ConsumableVariant = @enumFromInt(self.variant_char);
                 switch (v) {
                     .Potion => "Potion",
                     .Food => "Food",
