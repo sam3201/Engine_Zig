@@ -16,36 +16,39 @@ pub const ConsumableVariant = enum(u8) {
 
 pub const Item = struct {
     item_type: ItemType,
+    name: []const u8,
     variant_char: u8,
     quantity: u32,
     allocator: std.mem.Allocator,
 
-    pub fn init(item_type: ItemType, variant_char: u8, quantity: u32, allocator: std.mem.Allocator) Item {
+    pub fn init(item_type: ItemType, name: []const u8, variant_char: u8, quantity: u32, allocator: std.mem.Allocator) Item {
         return Item{
             .item_type = item_type,
+            .name = name,
             .variant_char = variant_char,
             .quantity = quantity,
             .allocator = allocator,
         };
     }
 
-    pub fn initConsumable(variant: ConsumableVariant, quantity: u32, allocator: std.mem.Allocator) Item {
-        const v_u8: u8 = @intFromEnum(variant);
-        return Item.init(.Consumable, v_u8, quantity, allocator);
+    pub fn initConsumable(variant: ConsumableVariant, quantity: u32, name: []const u8, allocator: std.mem.Allocator) Item {
+        return Item.init(.Consumable, name, @intFromEnum(variant), quantity, allocator);
     }
 
     pub fn deinit(self: *Item) void {
+        // If you later allocate per-item memory, free it here using self.allocator
         _ = self;
     }
 
-    pub fn displayChar(self: *Item) u8 {
+    // Accept const pointer so callers with `*const Item` work
+    pub fn displayChar(self: *const Item) u8 {
         return switch (self.item_type) {
             .Consumable => {
-                const variant = @as(ConsumableVariant, @enumFromInt(self.variant_char));
-                return switch (variant) {
+                const v = @enumFromInt(ConsumableVariant, self.variant_char);
+                switch (v) {
                     .Potion => 'o',
                     .Food => 'f',
-                };
+                }
             },
             .Weapon, .Armor, .Ammo, .Other => self.variant_char,
         };
@@ -54,11 +57,11 @@ pub const Item = struct {
     pub fn displayName(self: *const Item) []const u8 {
         return switch (self.item_type) {
             .Consumable => {
-                const variant = @as(ConsumableVariant, @enumFromInt(self.variant_char));
-                return switch (variant) {
+                const v = @enumFromInt(ConsumableVariant, self.variant_char);
+                switch (v) {
                     .Potion => "Potion",
                     .Food => "Food",
-                };
+                }
             },
             .Weapon => "Weapon",
             .Armor => "Armor",
@@ -80,20 +83,32 @@ pub const Inventory = struct {
     }
 
     pub fn deinit(self: *Inventory) void {
-        for (self.items.items) |*it| {
-            it.deinit();
+        // call deinit on each item if necessary
+        var i: usize = 0;
+        while (i < self.items.items.len) : (i += 1) {
+            self.items.items[i].deinit();
         }
         self.items.deinit(self.allocator);
     }
 
     pub fn addItem(self: *Inventory, item: Item) !void {
-        for (self.items.items) |*it| {
-            if (it.item_type == item.item_type and it.variant_char == item.variant_char) {
-                it.quantity += item.quantity;
+        // merge into existing stack if same type+variant
+        var i: usize = 0;
+        while (i < self.items.items.len) : (i += 1) {
+            if (self.items.items[i].item_type == item.item_type and self.items.items[i].variant_char == item.variant_char) {
+                self.items.items[i].quantity += item.quantity;
                 return;
             }
         }
         try self.items.append(self.allocator, item);
+    }
+
+    pub fn findByName(self: *Inventory, name: []const u8) ?*Item {
+        var i: usize = 0;
+        while (i < self.items.items.len) : (i += 1) {
+            if (std.mem.eql(u8, self.items.items[i].name, name)) return &self.items.items[i];
+        }
+        return null;
     }
 
     pub fn removeItem(self: *Inventory, item_type: ItemType, variant_char: u8, amount: u32) void {
@@ -115,14 +130,8 @@ pub const Inventory = struct {
         return null;
     }
 
-    pub fn getItemByName(self: *Inventory, name: []const u8) ?*Item {
-        for (self.items.items) |item| {
-            if (std.mem.eql(u8, item.name, name)) return &item;
-        }
-        return null;
-    }
-
     pub fn len(self: *Inventory) usize {
         return self.items.items.len;
     }
 };
+
