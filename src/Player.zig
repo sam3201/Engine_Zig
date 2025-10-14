@@ -107,6 +107,5 @@ pub const Player = struct {
         try w.print("inventory:\n");
         try self.inventory.saveToFile(w);
         try w.writeAll("\n");
-
     }
 };
