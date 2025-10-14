@@ -44,6 +44,7 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
+    var buffered_reader = std.io.bufferedReaderSize(4096, stream.reader());
     std.io.bufferedReaderSize(default_buffer_size, reader)
     const reader = buffered_reader.reader();
 
