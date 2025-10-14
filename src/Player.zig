@@ -101,4 +101,3 @@ pub const Player = struct {
         // flush if writer type provides flush; if not, writeAll is sufficient
     }
 };
-
