@@ -4,20 +4,21 @@ const Inventory = @import("Inventory.zig");
 const Engine = @import("Engine.zig");
 
 pub const Player = struct {
-    allocator: std.mem.Allocator,
-    pub const Entity = struct {
-        ch: u8,
-        color: Engine.Color,
-        x: i32,
-        y: i32,
-    };
+    entity: Entity,
+    health: i32,
+    max_health: i32,
+    level: i32,
+    inventory: Inventory.Inventory,
 
-    pub var entity: Entity;
-    pub var health: i32;
-    pub var max_health: i32;
-    pub var level: i32;
-    pub var inventory: Inventory.Inventory;
-
+    pub fn init(entity: Entity, health: i32, max_health: i32, level: i32, inv: Inventory.Inventory) Player {
+        return Player{
+            .entity = entity,
+            .health = health,
+            .max_health = max_health,
+            .level = level,
+            .inventory = inv,
+        };
+    }
     pub fn createWASDPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
         var inv = try Inventory.Inventory.init(allocator);
 
