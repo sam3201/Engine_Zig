@@ -101,4 +101,3 @@ pub const Player = struct {
         try w.writeAll("player\n");
     }
 };
-
