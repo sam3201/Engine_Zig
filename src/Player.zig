@@ -12,11 +12,11 @@ pub const Player = struct {
         y: i32,
     };
 
-    pub var entity: Entity,
-    pub var health: i32,
-    pub var max_health: i32,
-    pub var level: i32,
-    pub var inventory: Inventory.Inventory,
+    pub var entity: Entity;
+    pub var health: i32;
+    pub var max_health: i32;
+    pub var level: i32;
+    pub var inventory: Inventory.Inventory;
 
     pub fn createWASDPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
         var inv = try Inventory.Inventory.init(allocator);
