@@ -4,7 +4,7 @@ const Inventory = @import("Inventory.zig");
 const Engine = @import("Engine.zig");
 
 pub const Player = struct {
-    pub const entity: Entity,
+    entity: Entity,
     health: i32,
     max_health: i32,
     level: i32,
