@@ -60,7 +60,7 @@ pub const Player = struct {
     }
 
     /// process a single input byte and return an action code (you can keep your old InputAction enum elsewhere)
-    pub fn processInput(self: *Player, input: u8) !u8 {
+    pub fn processInput(self: *Player, input: u8) u8 {
         // This stub mirrors whatever your project expects — adapt as needed.
         // Return something that WorldManager.handlePlayerAction understands.
         // For now, return the byte so existing code can parse it.
