@@ -99,5 +99,6 @@ pub const Player = struct {
         var write_buf: [1024]u8 = undefined;
         var w = file.writer(write_buf[0..]);
         try w.writeAll("player\n");
+        _ = try w.writeAll(std.fmt.bufPrint(&write_buf, "{}\n", .{self.entity.x}) catch unreachable);
     }
 };
