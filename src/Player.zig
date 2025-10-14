@@ -25,7 +25,7 @@ pub const Player = struct {
 
         const p = Player{
             .allocator = allocator,
-            .entity = Player.entity{ .ch = '@', .color = Engine.Color{ .r = 255, .g = 255, .b = 255 }, .x = start_x, .y = start_y },
+            .entity = Player.Entity{ .ch = '@', .color = Engine.Color{ .r = 255, .g = 255, .b = 255 }, .x = start_x, .y = start_y },
             .health = 100,
             .max_health = 100,
             .level = 1,
