@@ -102,5 +102,6 @@ pub const Player = struct {
         // Write a simple line
         _ = w.writeAll("player\n") catch {};
         // flush if writer type provides flush; if not, writeAll is sufficient
+        _ = self;
     }
 };
