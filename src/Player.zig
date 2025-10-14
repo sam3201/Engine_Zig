@@ -67,7 +67,7 @@ pub const Player = struct {
         // Return something that WorldManager.handlePlayerAction understands.
         // For now, return the byte so existing code can parse it.
         _ = self;
-        _ = input;
+        return input;
     }
 
     pub fn addItem(self: *Player, item: Inventory.Item) !void {
