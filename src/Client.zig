@@ -48,6 +48,7 @@ pub fn renderGameState(
     const reader = std.io.bufferedReaderSize(4096, stream.reader()); // KEEP: The actual reader instance
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+
     while (true) {
         // const reader_iface: *std.io.Reader = &reader;
         const line = try readLineAlloc(allocator, reader, 1024);
