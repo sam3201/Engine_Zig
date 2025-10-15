@@ -180,9 +180,9 @@ pub const GameServer = struct {
 
         while (true) {
             const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
-                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                    break;
-                };
+                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+                break;
+            };
 
             if (line == null) break;
             const input = std.mem.trim(u8, line.?, "\n\r");
