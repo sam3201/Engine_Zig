@@ -241,6 +241,7 @@ pub const GameServer = struct {
             }
         }
         _ = try writer.write("END\n");
+        try writer.flush();
     }
 };
 
