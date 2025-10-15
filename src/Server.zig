@@ -201,6 +201,7 @@ pub const GameServer = struct {
 
             try self.sendGameState(writer);
         }
+
         self.mutex.lock();
         if (self.players[id]) |*player_info| {
             player_info.player.deinit();
