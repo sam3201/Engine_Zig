@@ -191,7 +191,6 @@ pub const GameServer = struct {
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(input[0]);
-                // FIX 3: Now properly handles the error return from handlePlayerAction
                 try self.world_manager.handlePlayerAction(action);
             }
             self.mutex.unlock();
