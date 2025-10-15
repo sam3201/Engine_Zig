@@ -151,7 +151,7 @@ pub const Chunk = struct {
         self.generateTerrain(prng.random());
 
         try self.items.append(allocator, WorldItem{
-            .item = Inventory.Item.initConsumable(.Potion, 1, allocator),
+            .item = Inventory.Item.initConsumable(.Potion, 1, "Potion", allocator),
             .x = self.coord.x * CHUNK_WIDTH + 2,
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = 'P',
