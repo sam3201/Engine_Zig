@@ -178,8 +178,8 @@ pub const GameServer = struct {
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
-        try writer.writeAll("Connected\n") catch {};
-        try writer.flush();
+        try self.sendGameState(writer);
+
 
         while (true) {
             const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
