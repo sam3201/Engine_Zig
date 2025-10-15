@@ -136,7 +136,7 @@ pub const GameServer = struct {
         var reader_buffer = std.io.Reader(connection.stream.reader());
         var reader = reader_buffer.reader();
 
-        var writer_buffer = std.io.bufferedWriter(connection.stream.writer());
+        var writer_buffer = std.io.Writer(connection.stream.writer());
         var writer = writer_buffer.writer();
 
         // Create new player
