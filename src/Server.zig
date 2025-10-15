@@ -185,9 +185,6 @@ pub const GameServer = struct {
                     break;
                 };
 
-            const input = std.mem.trim(u8, writer_buffer[0..bytes_read], "\n\r");
-            if (input.len == 0) continue;
-
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(input[0]);
