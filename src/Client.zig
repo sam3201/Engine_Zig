@@ -44,11 +44,10 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    std.io.bufferedReaderSize(4096, stream.reader());
-    const reader = std.io.bufferedReaderSize(4096, stream.reader());
+-    std.io.bufferedReaderSize(4096, stream.reader()); // REMOVE: Redundant initialization
+    const reader = std.io.bufferedReaderSize(4096, stream.reader()); // KEEP: The actual reader instance
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
-
     while (true) {
         // const reader_iface: *std.io.Reader = &reader;
         const line = try readLineAlloc(allocator, reader, 1024);
