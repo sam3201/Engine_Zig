@@ -189,10 +189,6 @@ pub const GameServer = struct {
             const input = std.mem.trim(u8, line.?, "\n\r");
             if (input.len == 0) continue;
 
-            _ = try writer.write(input);
-            _ = try writer.write("\n");
-            try writer.flush();
-
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(input[0]);
