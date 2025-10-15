@@ -14,6 +14,22 @@ pub const ConsumableVariant = enum(u8) {
     Food = 'f',
 };
 
+pub const ArmorVariant = enum(u8) {
+    Light = 'l',
+    Medium = 'm',
+    Heavy = 'h',
+};
+
+pub const AmmoVariant = enum(u8) {
+    Arrow = 'a',
+    Bullet = 'b',
+};
+
+pub const WeaponVariant = enum(u8) {
+    Pistol = 's',
+    Dagger = 'd',
+};
+
 pub const Item = struct {
     item_type: ItemType,
     name: []const u8,
