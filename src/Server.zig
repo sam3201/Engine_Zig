@@ -134,7 +134,7 @@ pub const GameServer = struct {
         defer connection.stream.close();
 
         var buffer: [1024]u8 = undefined;
-        var reader_buffer = std.io.bufferedReader(connection.stream.reader(), 1024);
+        var reader_buffer = std.io.bufferedReader(connection.stream.reader(), &buffer);
         var reader = reader_buffer.reader();
 
         var writer_buffer = std.io.Writer(connection.stream.writer());
