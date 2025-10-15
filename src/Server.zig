@@ -181,24 +181,28 @@ pub const GameServer = struct {
         try self.sendGameState(writer);
 
         while (true) {
-            const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
+            const line = reader.readUntilDelimiterOrEof('\n') catch |err|
+            {
                 std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
                 break;
             };
 
-            if (line == null) break;
-            const input = std.mem.trim(u8, line.?, "\n\r");
-            if (input.len == 0) continue;
+            if (line == null) break; // EOF or stream closed
+
+            const trimmed_input = std.mem.trim(u8, line.?, "\n\r");
+            if (trimmed_input.len == 0) continue;
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
-                const action = player_info.player.processInput(input[0]);
+                const action = player_info.player.processInput(trimmed_input[0]);
                 try self.world_manager.handlePlayerAction(action);
             }
             self.mutex.unlock();
 
-            try self.sendGameState(writer);
-        }
+-           try self.sendGameState(writer);
++           // Now that state is sent *after* processing an action,
++           // we send the updated game state back.
++           try self.sendGameState(writer);}
         // Clean up player on disconnect
         self.mutex.lock();
         if (self.players[id]) |*player_info| {
