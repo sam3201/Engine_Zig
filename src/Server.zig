@@ -185,6 +185,7 @@ pub const GameServer = struct {
                     break;
                 };
 
+            if (line == null) break;
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(input[0]);
