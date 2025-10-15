@@ -96,7 +96,7 @@ pub const Player = struct {
 
     pub fn processInput(self: *Player, input: u8) u8 {
         _ = self;
-        return input;
+        return InputAction.fromKey(input); 
     }
 
     pub fn addItem(self: *Player, item: Inventory.Item) !void {
