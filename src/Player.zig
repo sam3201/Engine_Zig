@@ -4,6 +4,31 @@ const Inventory = @import("Inventory.zig");
 const Engine = @import("Engine.zig");
 const Entity = @import("Entity.zig").Entity;
 
+pub const InputAction = enum {
+    None,
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+    Interact,
+    Attack,
+    UseItem,
+    OpenInventory,
+
+    pub fn fromKey(key: u8) InputAction {
+        return switch (key) {
+            'w', 'W' => .MoveUp,
+            's', 'S' => .MoveDown,
+            'a', 'A' => .MoveLeft,
+            'd', 'D' => .MoveRight,
+            'e', 'E' => .Interact,
+            ' ' => .Attack,
+            'i', 'I' => .OpenInventory,
+            else => .None,
+        };
+    }
+};
+
 pub const Player = struct {
     allocator: std.mem.Allocator,
     entity: Entity,
