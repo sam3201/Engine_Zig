@@ -89,7 +89,6 @@ pub const GameServer = struct {
         const server_thread = try Thread.spawn(.{}, runServerEngine, .{self});
         defer server_thread.join();
 
-        // Handle client connections
         while (true) {
             const connection = server.accept() catch |err| {
                 std.debug.print("Failed to accept connection: {}\n", .{err});
