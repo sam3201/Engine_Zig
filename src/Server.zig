@@ -199,11 +199,7 @@ pub const GameServer = struct {
             }
             self.mutex.unlock();
 
--           try self.sendGameState(writer);
-+           // Now that state is sent *after* processing an action,
-+           // we send the updated game state back.
-+           try self.sendGameState(writer);}
-        // Clean up player on disconnect
+try self.sendGameState(writer);}
         self.mutex.lock();
         if (self.players[id]) |*player_info| {
             player_info.player.deinit();
