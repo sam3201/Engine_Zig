@@ -184,7 +184,6 @@ pub const GameServer = struct {
                     std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
                     break;
                 };
-            if (bytes_read == 0) break;
 
             const input = std.mem.trim(u8, writer_buffer[0..bytes_read], "\n\r");
             if (input.len == 0) continue;
