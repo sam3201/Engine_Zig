@@ -79,33 +79,33 @@ pub const Player = struct {
         }
     }
 };
-    pub fn createWASDPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
-        const inv = try Inventory.Inventory.init(allocator);
+pub fn createWASDPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
+    const inv = try Inventory.Inventory.init(allocator);
 
-        const p = Player{
-            .allocator = allocator,
-            .entity = Entity{ .ch = '@', .color = Engine.Color{ .r = 255, .g = 255, .b = 255 }, .x = start_x, .y = start_y },
-            .health = 100,
-            .max_health = 100,
-            .level = 1,
-            .inventory = inv,
-        };
-        return p;
-    }
+    const p = Player{
+        .allocator = allocator,
+        .entity = Entity{ .ch = '@', .color = Engine.Color{ .r = 255, .g = 255, .b = 255 }, .x = start_x, .y = start_y },
+        .health = 100,
+        .max_health = 100,
+        .level = 1,
+        .inventory = inv,
+    };
+    return p;
+}
 
-    pub fn createArrowPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
-        var inv = try Inventory.Inventory.init(allocator);
+pub fn createArrowPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
+    var inv = try Inventory.Inventory.init(allocator);
 
-        const arrow_item = Inventory.Item.init(.Ammo, '>', 10, allocator);
-        try inv.addItem(arrow_item);
+    const arrow_item = Inventory.Item.init(.Ammo, '>', 10, allocator);
+    try inv.addItem(arrow_item);
 
-        const p = Player{
-            .allocator = allocator,
-            .entity = Entity{ .ch = 'A', .color = Engine.Color{ .r = 200, .g = 200, .b = 0 }, .x = start_x, .y = start_y },
-            .health = 80,
-            .max_health = 80,
-            .level = 1,
-            .inventory = inv,
-        };
-        return p;
-    }
+    const p = Player{
+        .allocator = allocator,
+        .entity = Entity{ .ch = 'A', .color = Engine.Color{ .r = 200, .g = 200, .b = 0 }, .x = start_x, .y = start_y },
+        .health = 80,
+        .max_health = 80,
+        .level = 1,
+        .inventory = inv,
+    };
+    return p;
+}
