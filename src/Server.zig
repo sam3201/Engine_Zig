@@ -182,10 +182,10 @@ pub const GameServer = struct {
 
         while (true) {
             const line = reader.readUntilDelimiterOrEof('\n') catch |err|
-            {
-                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                break;
-            };
+                {
+                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+                    break;
+                };
 
             if (line == null) break; // EOF or stream closed
 
@@ -199,7 +199,8 @@ pub const GameServer = struct {
             }
             self.mutex.unlock();
 
-try self.sendGameState(writer);}
+            try self.sendGameState(writer);
+        }
         self.mutex.lock();
         if (self.players[id]) |*player_info| {
             player_info.player.deinit();
