@@ -6,10 +6,10 @@ const Entity = @import("Entity.zig").Entity;
 
 pub const InputAction = enum {
     None,
-    MoveUp,
-    MoveDown,
-    MoveLeft,
-    MoveRight,
+    Up,
+    Down,
+    Left,
+    Right,
     Interact,
     Attack,
     UseItem,
