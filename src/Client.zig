@@ -11,7 +11,7 @@ var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 
-fn readLineAlloc(allocator: std.mem.Allocator, reader: anytype, max_len: usize) ![]u8 {
+fn readLineAlloc(allocator: std.mem.Allocator, reader: std.io.Reader, max_len: usize) ![]u8 {
     var line_writer = std.io.Writer.Allocating.init(allocator);
     defer line_writer.deinit();
 
