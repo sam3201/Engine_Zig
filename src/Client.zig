@@ -46,8 +46,6 @@ pub fn renderGameState(
 ) !void {
     const reader = std.io.bufferedReaderSize(4096, stream.reader()); // KEEP: The actual reader instance
 
-    const writer = std.io.bufferedWriterSize(1024, stream.writer());
-
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
