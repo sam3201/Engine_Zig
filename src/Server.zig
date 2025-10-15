@@ -80,15 +80,17 @@ pub const GameServer = struct {
         self.players[host_id] = .{
             .player = self.world_manager.player,
             .client_id = host_id,
-            .connection = undefined,
+            .connection = undefined, // Host doesn't need a connection
             .is_host = true,
         };
         self.player_count += 1;
         self.mutex.unlock();
 
+        // Start server rendering
         const server_thread = try Thread.spawn(.{}, runServerEngine, .{self});
         defer server_thread.join();
 
+        // Handle client connections
         while (true) {
             const connection = server.accept() catch |err| {
                 std.debug.print("Failed to accept connection: {}\n", .{err});
@@ -175,6 +177,9 @@ pub const GameServer = struct {
         self.mutex.unlock();
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
+
+        try writer.writeAll("Connected\n") catch {};
+        try writer.flush();
 
         while (true) {
             const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
