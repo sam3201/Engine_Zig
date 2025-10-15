@@ -216,6 +216,7 @@ pub const GameServer = struct {
         self.mutex.unlock();
         std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id });
     }
+
     fn sendGameState(self: *GameServer, writer: anytype) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
