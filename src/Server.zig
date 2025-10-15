@@ -179,8 +179,7 @@ pub const GameServer = struct {
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
         while (true) {
-            const line = reader.readUntilDelimiterOrEof('\n') catch |err|
-                {
+            const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
                     std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
                     break;
                 };
