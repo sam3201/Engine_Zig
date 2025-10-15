@@ -351,7 +351,7 @@ pub const Chunk = struct {
         };
     }
 };
-// src/Client.zig
+//src/Client.zig
 
 const std = @import("std");
 const net = std.net;
@@ -397,13 +397,11 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    std.io.bufferedReaderSize(4096, stream.reader());
-    const reader = std.io.bufferedReaderSize(4096, stream.reader());
+    const reader = std.io.bufferedReaderSize(4096, stream.reader()); 
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        // const reader_iface: *std.io.Reader = &reader;
         const line = try readLineAlloc(allocator, reader, 1024);
 
         defer allocator.free(line);
@@ -1593,15 +1591,14 @@ pub const GameServer = struct {
         };
     }
 
-    // FIX 3: Change return type to handle errors properly
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
-
         var buffer: [1024]u8 = undefined;
         var reader_buffer = std.io.bufferedReader(connection.stream.reader(), &buffer);
         var reader = reader_buffer.reader();
 
-        var writer_buffer = std.io.Writer(connection.stream.writer());
+        // I/O FIX 1: Use a buffered writer for efficiency
+        var writer_buffer = std.io.bufferedWriter(connection.stream.writer());
         var writer = writer_buffer.writer();
 
         // Create new player
@@ -1642,20 +1639,27 @@ pub const GameServer = struct {
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
+        // DEADLOCK FIX: Send the initial game state immediately upon connection
+        // so the client can render and send input.
+        try self.sendGameState(writer);
+
         while (true) {
-            const bytes_read = reader.read(&reader_buffer) catch |err| {
-                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                break;
-            };
+            // I/O FIX 2: Correctly read a line of input from the client
+            const line = reader.readUntilDelimiterOrEof('\n') catch |err|
+                {
+                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+                    break;
+                };
 
-            if (bytes_read == 0) break;
+            if (line == null) break; // EOF or stream closed
 
-            const input = std.mem.trim(u8, writer_buffer[0..bytes_read], "\n\r");
-            if (input.len == 0) continue;
+            // Trim newlines and carriage returns from the line
+            const trimmed_input = std.mem.trim(u8, line.?, "\n\r");
+            if (trimmed_input.len == 0) continue;
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
-                const action = player_info.player.processInput(input[0]);
+                const action = player_info.player.processInput(trimmed_input[0]);
                 // FIX 3: Now properly handles the error return from handlePlayerAction
                 try self.world_manager.handlePlayerAction(action);
             }
@@ -1672,7 +1676,6 @@ pub const GameServer = struct {
         self.players[id] = null;
         self.player_count -= 1;
         self.mutex.unlock();
-
         std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id });
     }
 
@@ -1680,7 +1683,6 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // Send chunk data around the host player
         const host_chunk = self.world_manager.getPlayerChunkCoord();
         var y: i32 = host_chunk.y - self.world_manager.loaded_radius;
         while (y <= host_chunk.y + self.world_manager.loaded_radius) : (y += 1) {
@@ -1708,6 +1710,7 @@ pub const GameServer = struct {
             }
         }
         _ = try writer.write("END\n");
+        try writer.flush();
     }
 };
 
