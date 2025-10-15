@@ -44,7 +44,7 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     canvas: *eng.Canvas,
 ) !void {
-    const reader = std.io.bufferedReaderSize(4096, stream.reader()); // KEEP: The actual reader instance
+    const reader = std.io.bufferedReaderSize(4096, stream.reader()); 
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
