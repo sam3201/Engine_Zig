@@ -129,7 +129,7 @@ pub const GameServer = struct {
         };
     }
 
-fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
+    fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
         var buffer: [1024]u8 = undefined;
         var reader_buffer = std.io.bufferedReader(connection.stream.reader(), &buffer);
@@ -142,8 +142,7 @@ fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         // Create new player
         self.mutex.lock();
         var player_id: ?usize = null;
-        for (self.players, 0..) |maybe_player, i|
-        {
+        for (self.players, 0..) |maybe_player, i| {
             if (maybe_player == null) {
                 player_id = i;
                 break;
@@ -181,14 +180,14 @@ fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         // DEADLOCK FIX: Send the initial game state immediately upon connection
         // so the client can render and send input.
         try self.sendGameState(writer);
-        
+
         while (true) {
             // I/O FIX 2: Correctly read a line of input from the client
             const line = reader.readUntilDelimiterOrEof('\n') catch |err|
-            {
-                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                break;
-            };
+                {
+                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+                    break;
+                };
 
             if (line == null) break; // EOF or stream closed
 
@@ -216,7 +215,8 @@ fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         self.player_count -= 1;
         self.mutex.unlock();
         std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id });
-    }    fn sendGameState(self: *GameServer, writer: anytype) !void {
+    }
+    fn sendGameState(self: *GameServer, writer: anytype) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
