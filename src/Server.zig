@@ -190,7 +190,7 @@ pub const GameServer = struct {
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
-                const action = player_info.player.processInput(input[0]); 
+                const action = player_info.player.processInput(input[0]);
                 try self.world_manager.handlePlayerAction(action);
             }
             self.mutex.unlock();
