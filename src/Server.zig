@@ -129,7 +129,6 @@ pub const GameServer = struct {
         };
     }
 
-    // FIX 3: Change return type to handle errors properly
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
