@@ -179,11 +179,11 @@ pub const GameServer = struct {
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
         while (true) {
-            const bytes_read = reader.read(&reader_buffer) catch |err| {
-                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                break;
-            };
-
++        const line = reader.readUntilDelimiterOrEof('\n') catch |err|
+        {
+            std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+            break;
+        };
             if (bytes_read == 0) break;
 
             const input = std.mem.trim(u8, writer_buffer[0..bytes_read], "\n\r");
