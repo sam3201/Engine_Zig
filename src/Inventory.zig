@@ -51,6 +51,18 @@ pub const Item = struct {
         return Item.init(.Consumable, name, @intFromEnum(variant), quantity, allocator);
     }
 
+    pub fn initWeapon(variant: WeaponVariant, quantity: u32, name: []const u8, allocator: std.mem.Allocator) Item {
+        return Item.init(.Weapon, name, @intFromEnum(variant), quantity, allocator);
+    }
+
+    pub fn initArmor(variant: ArmorVariant, quantity: u32, name: []const u8, allocator: std.mem.Allocator) Item {
+        return Item.init(.Armor, name, @intFromEnum(variant), quantity, allocator);
+    }
+
+    pub fn initAmmo(variant: AmmoVariant, quantity: u32, name: []const u8, allocator: std.mem.Allocator) Item {
+        return Item.init(.Ammo, name, @intFromEnum(variant), quantity, allocator);
+    }
+
     pub fn deinit(self: *Item) void {
         // If you later allocate per-item memory, free it here using self.allocator
         _ = self;
