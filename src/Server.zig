@@ -221,7 +221,6 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // Send chunk data around the host player
         const host_chunk = self.world_manager.getPlayerChunkCoord();
         var y: i32 = host_chunk.y - self.world_manager.loaded_radius;
         while (y <= host_chunk.y + self.world_manager.loaded_radius) : (y += 1) {
