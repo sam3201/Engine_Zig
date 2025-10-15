@@ -133,7 +133,7 @@ pub const GameServer = struct {
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
-        var reader_buffer = std.io.bufferedReader(connection.stream.reader());
+        var reader_buffer = std.io.Reader(connection.stream.reader());
         var reader = reader_buffer.reader();
 
         var writer_buffer = std.io.bufferedWriter(connection.stream.writer());
