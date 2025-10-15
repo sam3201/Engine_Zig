@@ -76,7 +76,7 @@ pub fn main() !void {
     var world = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &game_engine.canvas, player);
     defer world.deinit();
 
-    while (game_engine.running and player.isAlive()) {
+    while (game_engine.running and player.health > 0) {
         game_engine.clock.tick();
 
         if (Engine.readKey() catch null) |key| {
