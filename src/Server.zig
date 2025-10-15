@@ -180,7 +180,6 @@ pub const GameServer = struct {
 
         try self.sendGameState(writer);
 
-
         while (true) {
             const line = reader.readUntilDelimiterOrEof('\n') catch |err| {
                 std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
