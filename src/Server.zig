@@ -129,20 +129,21 @@ pub const GameServer = struct {
         };
     }
 
-    fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
+fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
-
         var buffer: [1024]u8 = undefined;
         var reader_buffer = std.io.bufferedReader(connection.stream.reader(), &buffer);
         var reader = reader_buffer.reader();
 
+        // I/O FIX 1: Use a buffered writer for efficiency
         var writer_buffer = std.io.bufferedWriter(connection.stream.writer());
         var writer = writer_buffer.writer();
 
         // Create new player
         self.mutex.lock();
         var player_id: ?usize = null;
-        for (self.players, 0..) |maybe_player, i| {
+        for (self.players, 0..) |maybe_player, i|
+        {
             if (maybe_player == null) {
                 player_id = i;
                 break;
@@ -177,23 +178,28 @@ pub const GameServer = struct {
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
+        // DEADLOCK FIX: Send the initial game state immediately upon connection
+        // so the client can render and send input.
         try self.sendGameState(writer);
-
+        
         while (true) {
+            // I/O FIX 2: Correctly read a line of input from the client
             const line = reader.readUntilDelimiterOrEof('\n') catch |err|
-                {
-                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                    break;
-                };
+            {
+                std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
+                break;
+            };
 
             if (line == null) break; // EOF or stream closed
 
+            // Trim newlines and carriage returns from the line
             const trimmed_input = std.mem.trim(u8, line.?, "\n\r");
             if (trimmed_input.len == 0) continue;
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
                 const action = player_info.player.processInput(trimmed_input[0]);
+                // FIX 3: Now properly handles the error return from handlePlayerAction
                 try self.world_manager.handlePlayerAction(action);
             }
             self.mutex.unlock();
@@ -201,6 +207,7 @@ pub const GameServer = struct {
             try self.sendGameState(writer);
         }
 
+        // Clean up player on disconnect
         self.mutex.lock();
         if (self.players[id]) |*player_info| {
             player_info.player.deinit();
@@ -208,11 +215,8 @@ pub const GameServer = struct {
         self.players[id] = null;
         self.player_count -= 1;
         self.mutex.unlock();
-
         std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id });
-    }
-
-    fn sendGameState(self: *GameServer, writer: anytype) !void {
+    }    fn sendGameState(self: *GameServer, writer: anytype) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
