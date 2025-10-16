@@ -122,7 +122,6 @@ pub const GameServer = struct {
         const reader = connection.stream.reader();
         const writer = connection.stream.writer();
 
-        // Create new player
         self.mutex.lock();
         var player_id: ?usize = null;
         for (self.players, 0..) |maybe_player, i| {
