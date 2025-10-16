@@ -158,7 +158,7 @@ pub const GameServer = struct {
 
         while (true) {
             var buf_idx: usize = 0;
-            while (buf_idx < read_buf.len) {
+            while (buf_idx < g_read_buffer.len) {
                 const byte = reader.readByte() catch |err| {
                     if (err == error.EndOfStream) {
                         if (buf_idx > 0) break;
