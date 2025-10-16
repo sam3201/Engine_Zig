@@ -38,7 +38,6 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-
     while (true) {
         const read = try reader.net_stream.reader(&g_read_buff);
 
