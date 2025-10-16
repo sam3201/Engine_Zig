@@ -12,7 +12,6 @@ var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
 var g_reader: ?std.io.Reader = null;
 
-
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
