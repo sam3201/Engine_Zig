@@ -8,7 +8,7 @@ const Chunk = @import("Chunk.zig");
 
 var g_stream: ?*net.Stream = null;
 const read_buff_max = 4096;
-var g_read_buf: [read_buff_max]u8 = undefined;
+var g_read_buff: [read_buff_max]u8 = undefined;
 const write_buff_max = 1024;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
@@ -53,7 +53,7 @@ pub fn renderGameState(
             };
 
             if (byte == '\n') break;
-            read_buf[buf_idx] = byte;
+            read_buff[buf_idx] = byte;
             buf_idx += 1;
         }
 
