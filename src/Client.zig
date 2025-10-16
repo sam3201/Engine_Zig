@@ -44,9 +44,13 @@ pub fn renderGameState(
         const found_delimiter = try reader.readUntilDelimiter('\n', line_writer.writer, &bytes_read);
         const line = line_writer.written();
         if (bytes_read == 0) break;
+const effective_line = if (found_delimiter) line[0 .. line.len - 1] else line;
 
-        if (std.mem.eql(u8, line, "END")) break;
+        // --- Processing Logic ---
+        if (std.mem.eql(u8, effective_line, "END")) break;
 
+        var it = std.mem.splitScalar(u8, effective_line, ' ');
+        const label = it.next() orelse continue;
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
 
