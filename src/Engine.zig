@@ -186,7 +186,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
 
     // 3. Flush the buffered data to the terminal.
     try stdout_writer.flush();
-}
+    }
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
