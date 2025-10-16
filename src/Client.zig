@@ -1,7 +1,6 @@
 //src/Client.zig
 
 const std = @import("std");
-const net = std.net;
 const eng = @import("Engine.zig");
 const PlayerModule = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
