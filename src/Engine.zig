@@ -209,7 +209,7 @@ const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |er
         
         total_written += written;
     }
-}} 
+
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
