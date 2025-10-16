@@ -40,23 +40,7 @@ pub fn renderGameState(
     const reader = stream.reader(&g_read_buff);
 
     while (true) {
-        var buf_idx: usize = 0;
-        while (buf_idx < read_buff_max) {
-            const byte = reader.readByte() catch |err| {
-                if (err == error.EndOfStream) {
-                    if (buf_idx > 0) break;
-                    return;
-                }
-                return err;
-            };
-
-            if (byte == '\n') break;
-            g_read_buff[buf_idx] = byte;
-            buf_idx += 1;
-        }
-
-        if (buf_idx == 0) break;
-        const line = g_read_buff[0..buf_idx];
+        const read = try reader.net_stream.read() .read(&g_read_buff);
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
