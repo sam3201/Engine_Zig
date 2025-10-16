@@ -29,7 +29,8 @@ if (g_stream) |*stream| {
         stream.close();
         g_stream = null;
         std.debug.print("Disconnected from server\n", .{});
-    }}
+    }
+}
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
     try stream.writeAll(input_data);
