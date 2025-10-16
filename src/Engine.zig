@@ -186,7 +186,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
         // Reset terminal color at the very end.
         try writer.writeAll("\x1b[0m");
 
-        // Write the entire completed buffer to stdout in a single operation.
         _ = try std.io.getStdOut().writeAll(self.render_buffer.items);
     }
 
