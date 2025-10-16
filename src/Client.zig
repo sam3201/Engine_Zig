@@ -48,6 +48,70 @@ pub fn sendInput(input_data: []const u8) !void {
         try writer.flush();
     }
 }
+pub fn renderGameState(
+    allocator: std.mem.Allocator,
+    stream: *net.Stream,
+    canvas: *eng.Canvas,
+) !void {
+    _ = allocator;
+    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+
+    while (true) {
+        const bytes_read = try g_reader.?.net_stream.reader(&g_read_buff).;
+
+        var it = std.mem.splitScalar(u8, line, ' ');
+        const label = it.next() orelse continue;
+
+        if (std.mem.eql(u8, label, "END")) break;
+
+        if (std.mem.eql(u8, label, "Tile")) {
+            const x_str = it.next() orelse continue;
+            const y_str = it.next() orelse continue;
+            const tile_type_str = it.next() orelse continue;
+
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+            const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10);
+            const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int));
+
+            const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
+            const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
+            const screen_x = x - camera_x;
+            const screen_y = y - camera_y;
+
+            if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
+            {
+                canvas.put(screen_x, screen_y, tile_type.getChar());
+                canvas.fillColor(screen_x, screen_y, tile_type.getColor());
+            }
+        } else if (std.mem.eql(u8, label, "Player")) {
+            const x_str = it.next() orelse continue;
+            const y_str = it.next() orelse continue;
+            const is_host_str = it.next() orelse continue;
+
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+            const is_host = std.mem.eql(u8, is_host_str, "true");
+
+            const camera_x = x - @divTrunc(@as(i32, @intCast(canvas.width)), 2);
+            const camera_y = y - @divTrunc(@as(i32, @intCast(canvas.height)), 2);
+            const screen_x = x - camera_x;
+            const screen_y = y - camera_y;
+
+            if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
+                screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
+            {
+                canvas.put(screen_x, screen_y, if (is_host) '@' else '#');
+                canvas.fillColor(screen_x, screen_y, if (is_host)
+                    eng.Color{ .r = 255, .g = 255, .b = 0 }
+                else
+                    eng.Color{ .r = 0, .g = 255, .b = 255 });
+            }
+        }
+    }
+}
+
 pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
