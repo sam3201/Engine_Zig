@@ -149,7 +149,7 @@ pub const Canvas = struct {
         }
     }
 
-pub fn flushToTerminal(self: *Canvas) !void {
+    pub fn flushToTerminal(self: *Canvas) !void {
         self.render_buffer.clearRetainingCapacity();
         var writer = self.render_buffer.writer(self.allocator);
 
