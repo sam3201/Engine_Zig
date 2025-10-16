@@ -191,10 +191,10 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // This avoids the 'error: WriteFailed' caused by the buffered writer 
     // when the terminal is in a non-blocking state (set by TerminalGuard).
 const bytes_to_write = self.render_buffer.items;
-    const fd = std.posix.STDOUT_FILENO;
-    const flags = try std.posix.fcntl(fd, std.posix.F.GETFL, 0);
-    const O_NONBLOCK: u32 = 0x0004;
-    _ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
+    //const fd = std.posix.STDOUT_FILENO;
+    //const flags = try std.posix.fcntl(fd, std.posix.F.GETFL, 0);
+    //const O_NONBLOCK: u32 = 0x0004;
+    //_ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
     _ = try std.posix.write(fd, bytes_to_write);
     
 }
