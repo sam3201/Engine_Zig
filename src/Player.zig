@@ -97,9 +97,9 @@ pub const Player = struct {
         return .{ .x = self.entity.x, .y = self.entity.y };
     }
 
-    pub fn move(self: *Player, x: i32, y: i32) void {
-        self.entity.x += x;
-        self.entity.y += y;
+    pub fn move(self: *Player, dx: i32, dy: i32) void {
+        self.entity.x += dx;
+        self.entity.y += dy;
     }
 
     pub fn processInput(self: *Player, input: u8) InputAction {
