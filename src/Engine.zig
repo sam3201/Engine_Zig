@@ -97,8 +97,8 @@ pub const Canvas = struct {
             .buf = try allocator.alloc(u8, width * height),
             .scene = try std.ArrayList(Renderable).initCapacity(allocator, 16),
             .updateFn = null,
+            .render_buffer = try std.ArrayList(u8).initCapacity(allocator, render_buffer_capacity),
         };
-        .render_buffer = try std.ArrayList(u8).initCapacity(allocator, render_buffer_capacity),
         canvas.updateFn = Canvas.update;
         return canvas;
     }
