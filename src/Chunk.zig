@@ -7,7 +7,7 @@ const WorldManager = @import("WorldManager.zig");
 
 pub var CHUNK_WIDTH: i32 = 80;
 pub var CHUNK_HEIGHT: i32 = 24;
-pub CHUNK_SIZE: i32 = CHUNK_WIDTH * CHUNK_HEIGHT;
+pub var CHUNK_SIZE: i32 = CHUNK_WIDTH * CHUNK_HEIGHT;
 
 pub const TileType = enum {
     Empty,
