@@ -43,8 +43,7 @@ pub fn renderGameState(
     const reader = stream.reader(&read_buf);
 
     while (true) {
-        try reader.readAlloc(allocator, &g_read_buf);
-        const bytes_read = reader.context.bytes_read;
+        const line = try reader.readUntilDelimiterOrEof(&g_read_buf, '\n');
 
         var line_writer = std.io.fixedBufferStream(&g_read_buf);
         var line_reader = line_writer.reader();
