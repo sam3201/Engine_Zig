@@ -24,10 +24,11 @@ pub fn connectToServer() !void {
 pub fn disconnectFromServer() void {
     if (g_socket) |socket| {
         posix.close(socket);
-        [cite_start]g_socket = null; [cite: 76]
-        [cite_start]std.debug.print("Disconnected from server\n", .{}); [cite: 76]
+        [cite_start]g_socket = null; 
+        [cite_start]std.debug.print("Disconnected from server\n", .{}); 
     }
 }
+
 pub fn sendInput(input_data: []const u8) !void {
     try g_stream_writer.writeAll(input_data);
     try g_stream_writer.flush();
