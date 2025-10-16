@@ -75,7 +75,6 @@ pub const GameServer = struct {
         const address = try net.Address.parseIp("127.0.0.1", 42069); 
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
-        // Set SO_REUSEADDR to allow the address to be reused immediately after the server closes
         try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
 
         try posix.bind(listener_socket, &address.any, address.getOsSockLen());
