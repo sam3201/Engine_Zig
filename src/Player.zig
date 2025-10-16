@@ -149,7 +149,7 @@ pub const Player = struct {
         }
     }
 
-    pub fn load(self: *Player, path: []const u8) !void {
+    pub fn load(name: []const u8, path: []const u8) !void {
         const fs = std.fs.cwd();
         var file = try fs.openFile(path, .{});
         defer file.close();
