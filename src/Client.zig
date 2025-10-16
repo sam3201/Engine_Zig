@@ -24,8 +24,8 @@ pub fn connectToServer() !net.Stream {
     return stream;
 }
 
-pub fn disconnectFromServer() void {
-    if (g_stream) |*s| {
+pub fn disconnectFromServer(stream: *net.Stream) void {
+    if (stream)  {
         stream.close();
         stream = null;
         std.debug.print("Disconnected from server\n", .{}); 
@@ -34,8 +34,8 @@ pub fn disconnectFromServer() void {
     }
 }
 
-pub fn sendInput(input_data: []const u8) !void {
-    try g_stream.writeAll(input_data);
+pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
+    try stream.writeAll(input_data);
 }
 
 pub fn renderGameState(
