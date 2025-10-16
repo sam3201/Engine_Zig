@@ -100,8 +100,8 @@ pub const GameServer = struct {
                 posix.close(player_info.socket);
             }
         }
-        [cite_start]self.world_manager.deinit(); [cite: 311]
-        [cite_start]self.server_engine.deinit(); [cite: 311]
+        self.world_manager.deinit(); 
+        self.server_engine.deinit();
     }
 
     pub fn startServer(self: *GameServer) !void {
