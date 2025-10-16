@@ -331,9 +331,8 @@ pub const TerminalGuard = struct {
 
         try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
 
-        const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
-        tg.orig_flags = flags;
-
+const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
+tg.orig_flags = flags;
         const nonblock_bits: usize = 0x0004;
         _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
 
