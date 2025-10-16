@@ -192,15 +192,24 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // when the terminal is in a non-blocking state (set by TerminalGuard).
     const bytes_to_write = self.render_buffer.items;
     
-    // Use an inline loop to ensure the *entire* buffer is written, 
-    // in case std.posix.write writes only a portion (though unlikely on TTY).
-    var total_written: usize = 0;
+}   var total_written: usize = 0;
     while (total_written < bytes_to_write.len) {
         const chunk = bytes_to_write[total_written..];
-        const written = try std.posix.write(std.posix.STDOUT_FILENO, chunk);
+        
+        // **CRITICAL FIX:** Use catch |err| to handle error.WouldBlock.
+        // If write returns error.WouldBlock, we treat it as if 0 bytes were written (meaning, retry).
+        const written = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
+            error.WouldBlock => {
+                // Cannot write now, but we are in a non-blocking loop, so we wait briefly and retry.
+                std.time.sleep(100); // Sleep for 100 nanoseconds to yield control
+                0 // Pretend 0 bytes were written for this attempt
+            },
+            else => return err, // Propagate all other errors
+        };
+        
         total_written += written;
     }
-}    
+} 
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
