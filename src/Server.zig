@@ -19,7 +19,6 @@ const BufferedWriter = struct {
     pos: usize = 0,
 
     fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        const remaining_space = self.buffer.len - self.pos;
         const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
         self.pos += written.len;
     }
