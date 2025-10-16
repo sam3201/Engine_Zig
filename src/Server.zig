@@ -94,9 +94,9 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
-        for (&self.players) |*maybe_player| [cite_start]{ [cite: 308]
-            if (maybe_player.*) |*player_info| [cite_start]{ [cite: 309]
-                [cite_start]player_info.player.deinit(); [cite: 310]
+        for (&self.players) |*maybe_player| { 
+            if (maybe_player.*) |*player_info| { 
+                [cite_start]player_info.player.deinit(); 
                 posix.close(player_info.socket);
             }
         }
