@@ -39,6 +39,9 @@ pub fn renderGameState(
         const read = try reader.readAlloc(
             &g_reader,
             &allocator,
+            1024,
+            std.math.maxInt(u32),
+            .{ .seekable = false },
         );
 
         defer allocator.free(line);
