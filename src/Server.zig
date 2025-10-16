@@ -18,7 +18,6 @@ pub const GameServer = struct {
     player_count: usize,
     mutex: Thread.Mutex,
     server_engine: Engine.Engine,
-    next_client_id: u32,
 
     pub const PlayerInfo = struct {
         player: Player,
