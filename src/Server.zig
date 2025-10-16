@@ -12,7 +12,6 @@ const Chunk = @import("Chunk.zig");
 var g_server: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
-// A simple buffered writer to reduce syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
