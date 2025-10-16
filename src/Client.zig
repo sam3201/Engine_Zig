@@ -5,6 +5,7 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
+const g_stream: ?net.Stream = null;
 var g_connection: ?net.Server.Connection = null;
 var g_stream_reader: ?net.Stream.Reader = null;
 const read_buff_max = 4096;
