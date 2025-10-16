@@ -41,6 +41,10 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
 
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
+    var stream = std.io.fixedBufferStream(g_read_buff[0..bytes_read]);
+    var reader = stream.reader();
+    var line_buffer: [256]u8 = undefined;
+
         const line = line_buffer.items;
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
