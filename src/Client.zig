@@ -45,7 +45,7 @@ pub fn renderGameState(
         }
 
         var bytes_read: usize = 0;
-        
+
         // FIX 2: The correct 0.15.1 function name is readUntilDelimiterOrEof.
         const found_delimiter = try reader.readUntilDelimiterOrEof('\n', line_writer.writer, &bytes_read);
 
