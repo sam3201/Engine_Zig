@@ -34,7 +34,7 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
     }
 }
 
-pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
+pub fn sendInput(input_data: []const u8) !void {
     try stream.writeAll(input_data);
 }
 
