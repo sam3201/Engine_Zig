@@ -179,7 +179,7 @@ pub const Canvas = struct {
 
         try writer.writeAll("\x1b[0m");
 
-        _ = writer.writeAll(self.render_buffer.items);
+        _ = try writer.writeAll(self.render_buffer.items);
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
