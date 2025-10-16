@@ -285,7 +285,7 @@ pub const Engine = struct {
                 self.background_color,
             );
 
-            self.Canvas.updateFn(&self.canvas);
+            self.canvas.updateFn(&self.canvas);
 
             if (self.update) |updateFn| {
                 updateFn();
