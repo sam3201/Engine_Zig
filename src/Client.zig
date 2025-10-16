@@ -55,10 +55,10 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             const y_str = it.next() orelse continue; 
             const tile_type_str = it.next() orelse continue; 
 
-            [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 82]
-            [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 82]
-            [cite_start]const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10); [cite: 83]
-            [cite_start]const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int)); [cite: 83]
+            const x = try std.fmt.parseInt(i32, x_str, 10); 
+            const y = try std.fmt.parseInt(i32, y_str, 10); 
+            const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10); 
+            const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int)); 
 
             const player_x = 40; // Assuming player is centered for now
             const player_y = 12;
