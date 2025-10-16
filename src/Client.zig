@@ -22,7 +22,6 @@ pub fn connectToServer() !void {
     g_stream = try net.tcpConnectToAddress(address);
     g_connection = try g_stream.?.accept();
 
-
     g_stream_writer = g_stream.?.writer(&g_write_buff);
 
     std.debug.print("Connected to server\n", .{});
