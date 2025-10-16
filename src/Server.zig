@@ -77,7 +77,6 @@ pub const GameServer = struct {
             .client_id = self.client_id,
             .connection = undefined,
         };
-        self.player_count += 1;
         self.client_id += 1;
         self.mutex.unlock();
 
