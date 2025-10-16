@@ -41,9 +41,6 @@ pub fn sendInput(input_data: []const u8) !void {
 pub fn renderGameState(canvas: *eng.Canvas) !void {
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    const allocator = g_allocator.?;
-    const io_reader = g_stream_reader.?.interface();
-
     var line_buffer = std.ArrayList(u8).init(allocator);
     defer line_buffer.deinit();
 
