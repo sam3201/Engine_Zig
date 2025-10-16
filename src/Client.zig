@@ -43,8 +43,8 @@ pub fn renderGameState(
         var line_writer = std.io.fixedBufferStream(&g_read_buf);
         var line_reader = line_writer.reader();
 
-        // Get the full line slice (including the delimiter if found)
-        const line = line_writer.written();
+        var line = try line_reader.readUntilDelimiterAlloc(allocator, '\n', 1024);
+        defer allocator.free(line);
 
         // Release the memory ownership from the writer, which we must now free ourselves.
 
