@@ -89,7 +89,7 @@ pub const Item = struct {
                 return switch (v) {
                     .Potion => "Potion",
                     .Food => "Food",
-                }
+                };
             },
             .Weapon => "Weapon",
             .Armor => "Armor",
