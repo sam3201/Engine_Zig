@@ -160,8 +160,8 @@ pub const GameServer = struct {
         }
 
         if (player_id == null) {
-            [cite_start]_ = posix.write(socket, "Server full\n") catch {}; [cite: 327]
-            [cite_start]self.mutex.unlock(); [cite: 327]
+            _ = posix.write(socket, "Server full\n") catch {}; 
+            self.mutex.unlock(); 
             return;
         }
 
