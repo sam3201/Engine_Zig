@@ -291,7 +291,7 @@ pub const Engine = struct {
             }
 
             self.canvas.render();
-            self.canvas.flushToTerminal();
+            try self.canvas.flushToTerminal();
             self.clock.sleepUntilNextFrame();
         }
 
