@@ -86,7 +86,7 @@ pub const Item = struct {
         return switch (self.item_type) {
             .Consumable => {
                 const v: ConsumableVariant = @enumFromInt(self.variant_char);
-                switch (v) {
+                return switch (v) {
                     .Potion => "Potion",
                     .Food => "Food",
                 }
