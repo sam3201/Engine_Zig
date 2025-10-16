@@ -241,7 +241,7 @@ pub const GameServer = struct {
             }
         }
 
-        for (self.players, 0..) |maybe_player, i| { 
+        for (self.players) |maybe_player| { 
             if (maybe_player) |player_info| { 
                 const pos = player_info.player.getPosition();
                 const is_host = player_info.client_id == 0;
