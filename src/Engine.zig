@@ -14,12 +14,9 @@ pub const Color = struct {
     g: u8 = 0,
     b: u8 = 0,
 
-    fn eql(self: Color, a: Color, b: Color) bool {
-        
-    }
-        return a.r == b.r and a.g == b.g and a.b == b.b;
-    }
-};
+}pub fn eql(self: Color, other: Color) bool {
+        return self.r == other.r and self.g == other.g and self.b == other.b;
+    };
 
 pub const Renderable = struct {
     x: i32,
