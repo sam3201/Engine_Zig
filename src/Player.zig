@@ -17,8 +17,8 @@ pub const InputAction = enum {
 
     pub fn fromKey(key: u8) InputAction {
         return switch (key) {
-            'w', 'W' => .MoveUp,
-            's', 'S' => .MoveDown,
+            'w', 'W' => .Up,
+            's', 'S' => .Down
             'a', 'A' => .MoveLeft,
             'd', 'D' => .MoveRight,
             'e', 'E' => .Interact,
