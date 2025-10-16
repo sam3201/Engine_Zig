@@ -83,6 +83,7 @@ pub const Canvas = struct {
     scene: std.ArrayList(Renderable),
 
     render_buffer: std.ArrayList(u8), 
+
     updateFn: ?UpdateFn = null,
 
     pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
