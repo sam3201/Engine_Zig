@@ -333,7 +333,7 @@ pub const Chunk = struct {
         var file = std.fs.cwd().openFile(filename, .{}) catch return null;
         defer file.close();
 
-        var tiles: [CHUNK_SIZE * CHUNK_HEIGHT]TileType = undefined;
+        var tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType = undefined;
         _ = try file.readAll(std.mem.sliceAsBytes(&tiles));
 
         return Chunk{
