@@ -19,7 +19,7 @@ pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
     g_stream_reader = stream.reader();
-    g_reader = &g_stream_reader.interface;
+    g_reader = &g_stream_reader.?.reader();
     std.debug.print("Connected to server\n", .{});
     return stream;
 }
