@@ -12,6 +12,7 @@ pub const InputAction = enum {
     INTERACT,
     ATTACK,
     USEITEM,
+    DROPITEM,
     OPENINVENTORY,
     NONE,
 
