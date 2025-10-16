@@ -43,14 +43,6 @@ pub fn sendInput(input_data: []const u8) !void {
     }
 }
 
-pub fn renderGameState(
-    allocator: std.mem.Allocator,
-    stream: *net.Stream,
-    canvas: *eng.Canvas,
-) !void {
-    _ = allocator;
-    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
-
 pub fn renderGameState(canvas: *eng.Canvas) !void {
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
