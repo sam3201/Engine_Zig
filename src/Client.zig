@@ -119,7 +119,7 @@ pub fn update(canvas: *eng.Canvas) void {
         if (g_allocator) |alloc| {
             const reader_struct = s.reader(&g_read_buf);
             const reader = reader_struct.interface;
-            renderGameState(alloc, reader, canvas);
+            try renderGameState(alloc, reader, canvas);
         }
     }
 }
