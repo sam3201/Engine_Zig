@@ -5,7 +5,6 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-// Use optional types to represent nullable global variables.
 var g_stream: ?net.Stream = null;
 
 // The buffered reader itself holds the state and a buffer.
