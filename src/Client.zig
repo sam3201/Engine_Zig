@@ -25,12 +25,12 @@ pub fn connectToServer() !net.Stream {
 }
 
 pub fn disconnectFromServer(stream: *net.Stream) void {
-if (g_stream) |*stream| {
-        stream.close();
-        g_stream = null;
-        stream.close();
-        std.debug.print("Disconnected from server\n", .{});
-    }}
+    stream.close();
+    if (g_allocator) |alloc| {
+        alloc.destroy(stream);
+    }
+    std.debug.print("Disconnected from server\n", .{});
+}
 
 pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
     try stream.writeAll(input_data);
