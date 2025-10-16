@@ -52,7 +52,7 @@ pub fn renderGameState(
                 }
                 return err;
             };
-            
+
             if (byte == '\n') break;
             read_buf[buf_idx] = byte;
             buf_idx += 1;
@@ -65,7 +65,6 @@ pub fn renderGameState(
         const label = it.next() orelse continue;
 
         if (std.mem.eql(u8, label, "END")) break;
-
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
