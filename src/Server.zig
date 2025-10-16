@@ -258,7 +258,6 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
     const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
     const blue = Engine.Color{ .r = 100, .g = 150, .b = 255 };
 
-    // Server title
     const title = "OPEN WORLD GAME SERVER";
     const title_start = (80 - title.len) / 2;
     for (title, 0..) |char, i| {
