@@ -52,7 +52,6 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
     var line_buffer = std.ArrayList(u8).init(allocator);
     defer line_buffer.deinit();
 
-    // Use a while loop with `takeDelimiterExclusive` to read lines.
     while (io_reader.takeDelimiterExclusive(&line_buffer, '\n')) |_| {
         const line = line_buffer.items;
         var it = std.mem.splitScalar(u8, line, ' ');
