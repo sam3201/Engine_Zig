@@ -80,7 +80,6 @@ pub fn main() !void {
         game_engine.clock.tick();
 
         if (Engine.readKey() catch null) |key| {
-            if (key == 'q' or key == 'Q') break;
             try world.processPlayerInput(key);
 
             // Open in-game menu (not pausing server, just overlay)
