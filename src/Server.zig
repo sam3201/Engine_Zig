@@ -105,10 +105,10 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        [cite_start]std.debug.print("Server listening on 127.0.0.1:42069\n", .{}); [cite: 313]
+        std.debug.print("Server listening on 127.0.0.1:42069\n", .{}); 
 
-        [cite_start]const server_thread = try Thread.spawn(.{}, runServerEngine, .{self}); [cite: 316]
-        [cite_start]defer server_thread.join(); [cite: 316]
+        const server_thread = try Thread.spawn(.{}, runServerEngine, .{self}); [cite: 316]
+        defer server_thread.join(); [cite: 316]
 
         while (true) {
             var client_address: net.Address = undefined;
