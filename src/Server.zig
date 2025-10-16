@@ -58,7 +58,7 @@ pub const GameServer = struct {
         for (&self.players) |*maybe_player| {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
-                player_info..stream.close();
+                player_info.stream.close();
             }
         }
 
