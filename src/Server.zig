@@ -217,34 +217,33 @@ pub const GameServer = struct {
     }
 
     fn sendGameState(self: *GameServer, writer: *BufferedWriter) !void {
-        [cite_start]self.mutex.lock(); [cite: 344]
-        [cite_start]defer self.mutex.unlock(); [cite: 344]
+        self.mutex.lock(); 
+        defer self.mutex.unlock(); 
 
-        [cite_start]const host_chunk = self.world_manager.getPlayerChunkCoord(); [cite: 345]
-        [cite_start]var y: i32 = host_chunk.y - self.world_manager.loaded_radius; [cite: 345]
-        [cite_start]while (y <= host_chunk.y + self.world_manager.loaded_radius) : (y += 1) { [cite: 345]
-            [cite_start]var x: i32 = host_chunk.x - self.world_manager.loaded_radius; [cite: 346]
+        const host_chunk = self.world_manager.getPlayerChunkCoord(); 
+        var y: i32 = host_chunk.y - self.world_manager.loaded_radius; 
+        while (y <= host_chunk.y + self.world_manager.loaded_radius) : (y += 1) { 
+            var x: i32 = host_chunk.x - self.world_manager.loaded_radius;
             while (x <= host_chunk.x + self.world_manager.loaded_radius) : (x += 1) {
-                [cite_start]const coord = Chunk.ChunkCoord{ .x = x, .y = y }; [cite: 347]
-                if (self.world_manager.chunks.get(coord)) |chunk| [cite_start]{ [cite: 348]
+                const coord = Chunk.ChunkCoord{ .x = x, .y = y }; 
+                if (self.world_manager.chunks.get(coord)) |chunk| { 
                     var cy: i32 = 0;
                     while (cy < Chunk.CHUNK_HEIGHT) : (cy += 1) {
                         var cx: i32 = 0;
                         while (cx < Chunk.CHUNK_WIDTH) : (cx += 1) {
-                            [cite_start]const tile = chunk.getTile(cx, cy); [cite: 350]
-                            [cite_start]const world_x = x * Chunk.CHUNK_WIDTH + cx; [cite: 351]
-                            [cite_start]const world_y = y * Chunk.CHUNK_HEIGHT + cy; [cite: 351]
-                            [cite_start]try writer.print("Tile {d} {d} {d}\n", .{ world_x, world_y, @intFromEnum(tile) }); [cite: 352]
+                            const tile = chunk.getTile(cx, cy); 
+                            const world_x = x * Chunk.CHUNK_WIDTH + cx; 
+                            const world_y = y * Chunk.CHUNK_HEIGHT + cy; 
+                            try writer.print("Tile {d} {d} {d}\n", .{ world_x, world_y, @intFromEnum(tile) }); 
                         }
                     }
                 }
             }
         }
 
-        // Send player positions
-        for (self.players, 0..) |maybe_player, i| [cite_start]{ [cite: 353]
-            if (maybe_player) |player_info| [cite_start]{ [cite: 354]
-                [cite_start]const pos = player_info.player.getPosition(); [cite: 355]
+        for (self.players, 0..) |maybe_player, i| { 
+            if (maybe_player) |player_info| { 
+                const pos = player_info.player.getPosition();
                 const is_host = player_info.client_id == 0;
                 try writer.print("Player {d} {d} {s}\n", .{ pos.x, pos.y, if (is_host) "true" else "false" });
             }
