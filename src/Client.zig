@@ -125,7 +125,7 @@ pub fn update(canvas: *eng.Canvas) void {
 
     if (g_stream) |s| {
         if (g_allocator) |alloc| {
-            const reader = s.reader(&g_read_buf);
+            const reader = s.reader(&g_read_buff);
             _ = renderGameState(alloc, reader, canvas) catch {};
         }
     }
@@ -142,7 +142,7 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
-    g_reader = stream.reader(&g_read_buf);
+    g_reader = stream.reader(&g_read_buff);
 
     defer disconnectFromServer(&stream);
 
