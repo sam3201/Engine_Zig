@@ -39,8 +39,7 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    var read_buf: [read_buff_max]u8 = undefined;
-    const reader = &stream.reader(&read_buf);
+    const reader = &stream.reader(&g_read_buf);
 
     while (true) {
         var buf_idx: usize = 0;
