@@ -48,7 +48,6 @@ pub const GameServer = struct {
             .player_count = 0,
             .mutex = Thread.Mutex{},
             .server_engine = server_engine,
-            .next_client_id = 0,
         };
     }
 
