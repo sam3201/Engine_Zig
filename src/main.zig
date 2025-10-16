@@ -11,6 +11,7 @@ pub fn main() !void {
 
     const WIDTH = 84;
     const HEIGHT = 80;
+    
     const FPS = 60; 
 
     var engine = try Engine.Engine.init(
