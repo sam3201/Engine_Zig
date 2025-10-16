@@ -178,7 +178,7 @@ pub const GameServer = struct {
         try self.sendGameState(writer);
 
         while (true) {
-            const line = reader.net_stream.reader(.interface, &read_buffer, '\n') catch |err|
+            const line = reader.readAlloc()
                 {
                     std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
                     break;
