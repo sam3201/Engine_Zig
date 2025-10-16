@@ -16,6 +16,7 @@ pub const Color = struct {
 
 pub fn eql(self: Color, other: Color) bool {
         return self.r == other.r and self.g == other.g and self.b == other.b;
+}
     };
 
 pub const Renderable = struct {
