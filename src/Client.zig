@@ -40,7 +40,7 @@ pub fn renderGameState(
     const reader = stream.reader(&g_read_buff);
 
     while (true) {
-        const read = try reader.net_stream.read() .read(&g_read_buff);
+        const read = try reader.net_stream.read().read(&g_read_buff);
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
