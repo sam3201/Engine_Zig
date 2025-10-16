@@ -87,6 +87,8 @@ pub const Canvas = struct {
     updateFn: ?UpdateFn = null,
 
     pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
+    const render_buffer_capacity = (width * height) + (width * height * 20) + height;
+
         var canvas = Canvas{
             .allocator = allocator,
             .width = width,
