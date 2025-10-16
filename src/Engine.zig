@@ -82,7 +82,7 @@ pub const Canvas = struct {
     buf: []u8,
     scene: std.ArrayList(Renderable),
 
-    render_buffer: std.ArrayList(u8), 
+    render_buffer: std.ArrayList(u8),
 
     updateFn: ?UpdateFn = null,
 
