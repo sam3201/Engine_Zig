@@ -9,7 +9,7 @@ const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_server: ?*GameServer = null;
-const g_connection: ?net.Server.Connection = null;
+var g_connection: ?net.Server.Connection = null;
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
