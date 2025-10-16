@@ -9,7 +9,7 @@ const Chunk = @import("Chunk.zig");
 var g_stream: ?*net.Stream = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
-const g_reader = ?*net.Stream.Reader = null;
+var g_reader: net.Stream.Reader = undefined;
 const write_buff_max = 4096;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
