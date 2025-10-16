@@ -36,6 +36,7 @@ pub fn renderGameState(
     stream: *net.Stream,
     canvas: *eng.Canvas,
 ) !void {
+    _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
