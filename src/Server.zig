@@ -231,7 +231,7 @@ pub const GameServer = struct {
         for (self.players, 0..) |maybe_player, i| {
             if (maybe_player) |player_info| {
                 const pos = player_info.player.getPosition();
-                try writer.print("Player {d} {d} {d} {s}\n", .{ i, pos.x, pos.y, if (player_info.is_host) "true" else "false" });
+                try writer.print("Player {d} {d} {d} {s}\n", .{ i, pos.x, pos.y, if (player_info.id == 0) "true" else "false" });
             }
         }
         try writer.writeAll("END\n");
