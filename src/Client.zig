@@ -37,6 +37,7 @@ pub fn renderGameState(
 
     while (true) {
         const buff_len = try reader.readSliceAll(&g_read_buf);
+        var line = try allocator.alloc(u8, buff_len);
         const read = try reader.readAlloc(
             &g_reader,
             &allocator,
