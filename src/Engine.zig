@@ -189,6 +189,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
         // Write the entire completed buffer to stdout in a single operation.
         _ = try std.io.getStdOut().writeAll(self.render_buffer.items);
     }
+
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
