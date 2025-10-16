@@ -156,7 +156,6 @@ pub const GameServer = struct {
 
         try self.sendGameState(writer);
 
-        var read_buf: [1024]u8 = undefined;
         while (true) {
             var buf_idx: usize = 0;
             while (buf_idx < read_buf.len) {
