@@ -80,7 +80,6 @@ pub const GameServer = struct {
         self.players[host_id] = .{
             .player = self.world_manager.player,
             .client_id = host_id,
-            .connection = undefined, // Host doesn't need a connection
             .is_host = true,
         };
         self.player_count += 1;
