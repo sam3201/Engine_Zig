@@ -132,7 +132,9 @@ pub const GameServer = struct {
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
-        var buffer: [1024]u8 = undefined;
+        var read_buffer: [1024]u8 = undefined;
+        var write_buffer: [1024]u8 = undefined;
+
         var reader = connection.stream.reader(&buffer);
 
         var write_buffer: [1024]u8 = undefined;
