@@ -66,7 +66,7 @@ pub const GameServer = struct {
         var key_iterator = world_manager.chunks.keyIterator(); 
         while (key_iterator.next()) |coord| { 
             if (world_manager.chunks.getPtr(coord.*)) |chunk| { 
-                [cite_start]chunk.generate(); [cite: 305]
+                [cite_start]chunk.generate(); 
             }
         }
 
