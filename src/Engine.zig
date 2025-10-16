@@ -201,7 +201,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
         const written = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
             error.WouldBlock => {
                 std.Thread.sleep(100); 
-                0; 
             },
             else => return err, 
         };
