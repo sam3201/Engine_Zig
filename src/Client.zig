@@ -78,17 +78,17 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
                 screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
             {
-                [cite_start]canvas.put(screen_x, screen_y, tile_type.getChar()); [cite: 86]
-                [cite_start]canvas.fillColor(screen_x, screen_y, tile_type.getColor()); [cite: 86]
+                canvas.put(screen_x, screen_y, tile_type.getChar()); 
+                canvas.fillColor(screen_x, screen_y, tile_type.getColor()); 
             }
-        [cite_start]} else if (std.mem.eql(u8, label, "Player")) { [cite: 87]
-            [cite_start]const x_str = it.next() orelse continue; [cite: 87]
-            [cite_start]const y_str = it.next() orelse continue; [cite: 87]
-            [cite_start]const is_host_str = it.next() orelse continue; [cite: 87]
+        } else if (std.mem.eql(u8, label, "Player")) { 
+            const x_str = it.next() orelse continue; 
+            const y_str = it.next() orelse continue; 
+            const is_host_str = it.next() orelse continue; 
 
-            [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 88]
-            [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 88]
-            [cite_start]const is_host = std.mem.eql(u8, is_host_str, "true"); [cite: 89]
+            const x = try std.fmt.parseInt(i32, x_str, 10); 
+            const y = try std.fmt.parseInt(i32, y_str, 10); 
+            const is_host = std.mem.eql(u8, is_host_str, "true"); 
 
             const player_x = 40;
             const player_y = 12;
