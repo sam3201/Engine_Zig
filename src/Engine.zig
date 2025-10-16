@@ -197,8 +197,6 @@ const bytes_to_write = self.render_buffer.items;
     _ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
     _ = try std.posix.write(fd, bytes_to_write);
     
-    // Note: We don't need a loop (while (total_written < bytes_to_write.len))
-    // because TTY writes typically write the full buffer in one call.
 }
     
     
