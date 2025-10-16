@@ -197,21 +197,19 @@ const bytes_to_write = self.render_buffer.items;
         const chunk = bytes_to_write[total_written..];
         
         // This entire expression block must resolve to a usize.
-        const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
+const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
             error.WouldBlock => {
-                // Cannot write now, so we yield control and retry.
-                std.Thread.sleep(100); 
-                
-                // This '0' is the final expression of the block, 
-                // resolving the entire 'catch' to 0 (usize).
-                0 
+                // FIX: Use the comma operator to combine the void sleep call
+                // with the final usize return value (0).
+                std.Thread.sleep(100), 
+                0 // This '0' is now the final expression's result.
             },
             else => return err, // Propagate all other errors
         };
         
         total_written += written;
     }
-} 
+}} 
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
