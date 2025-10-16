@@ -58,7 +58,6 @@ pub fn renderGameState(
         const line = line_writer.written();
 
         // Release the memory ownership from the writer, which we must now free ourselves.
-        const effective_line = if (found_delimiter) line[0 .. line.len - 1] else line;
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
