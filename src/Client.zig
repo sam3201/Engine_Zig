@@ -39,7 +39,8 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
         return err;
     };
 
-    while (io_reader.takeDelimiterExclusive(&line_buffer, '\n')) |_| {
+    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+
         const line = line_buffer.items;
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
