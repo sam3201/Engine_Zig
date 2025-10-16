@@ -46,7 +46,8 @@ pub fn renderGameState(
             .{ .seekable = false },
         );
 
-        defer allocator.free(line);
+        var line_it = std.mem.splitScalar(u8, read, '\n');
+        const line = line_it.next() orelse continue;
 
         if (std.mem.eql(u8, line, "END")) break;
 
