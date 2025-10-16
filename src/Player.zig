@@ -94,7 +94,7 @@ pub const Player = struct {
         return .{ .x = self.entity.x, .y = self.entity.y };
     }
 
-    pub fn processInput(self: *Player, input: u8) u8 {
+    pub fn processInput(self: *Player, input: u8) InputAction {
         _ = self;
 
         return InputAction.fromKey(input);
