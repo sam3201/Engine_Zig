@@ -143,7 +143,7 @@ pub const Player = struct {
         try w.print("level: {d}\n", .{self.level});
         try w.print("x: {d}\n", .{self.entity.x});
         try w.print("y: {d}\n", .{self.entity.y});
-        try w.print("inventory:\n");
+        try w.print("inventory:\n", .{});
         for (self.inventory.items.items) |it| {
             try it.saveToFile(w);
         }
