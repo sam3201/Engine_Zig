@@ -179,10 +179,11 @@ pub const Canvas = struct {
 
         try writer.writeAll("\x1b[0m");
 
-        try writer.writeAll(self.render_buffer.items);
-        var stdout_writer = std.fs.File.stdout().writer(self.render_buffer).interface;
-        try stdout_writer.writeAll(self.render_buffer.items);
-        try stdout_writer.flush(); 
+        //try writer.writeAll(self.render_buffer.items);
+        //var stdout_writer = std.fs.File.stdout().writer(self.render_buffer).interface;
+        //try stdout_writer.writeAll(self.render_buffer.items);
+        //try stdout_writer.flush(); 
+        try writer.print("\x1b[{d};{d}H", .{ self.height, self.width });
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
