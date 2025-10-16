@@ -47,7 +47,8 @@ pub fn sendInput(input_data: []const u8) !void {
         try writer.interface().writeAll(input_data);
         try writer.flush();
     }
-}pub fn update(canvas: *eng.Canvas) void {
+}
+pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
     if (input) |key| {
