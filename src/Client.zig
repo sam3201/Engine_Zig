@@ -37,8 +37,8 @@ pub fn disconnectFromServer() void {
 }
 
 pub fn sendInput(input_data: []const u8) !void {
-        try writer.interface.writeAll(input_data);
-        try writer.flush();
+    try writer.interface.writeAll(input_data);
+    try writer.flush();
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
