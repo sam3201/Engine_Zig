@@ -1,4 +1,3 @@
-//src/Server.zig
 // src/Server.zig
 
 const std = @import("std");
@@ -13,7 +12,6 @@ const Chunk = @import("Chunk.zig");
 var g_server: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
-// A simple buffered writer to reduce syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
@@ -51,12 +49,12 @@ pub const GameServer = struct {
     player_count: usize,
     mutex: Thread.Mutex,
     server_engine: Engine.Engine,
-    listener: posix.socket_t, // Store the listener socket
+    listener: posix.socket_t, 
 
     pub const PlayerInfo = struct {
         player: Player,
         client_id: usize,
-        socket: posix.socket_t, // Store client socket directly
+        socket: posix.socket_t, 
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
