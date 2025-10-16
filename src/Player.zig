@@ -70,7 +70,7 @@ pub const Player = struct {
             .health = 100,
             .max_health = 100,
             .level = 1,
-            .name = "Player",
+            .name = name, 
             .inventory = inv,
         };
         return p;
