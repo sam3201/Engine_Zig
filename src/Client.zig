@@ -17,7 +17,7 @@ var g_reader: ?net.Stream.Reader = null;
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
-    const reader = stream.reader();
+    g_reader = stream.reader();
     std.debug.print("Connected to server\n", .{});
     return stream;
 }
