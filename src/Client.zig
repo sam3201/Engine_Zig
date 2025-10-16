@@ -133,11 +133,9 @@ pub fn main() !void {
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    var stream = try connectToServer();
-    g_stream = stream;
-    g_allocator = allocator;
+    try connectToServer();
 
-    defer disconnectFromServer(&stream);
+    defer disconnectFromServer();
 
     engine.canvas.setUpdateFn(update);
 
