@@ -174,12 +174,12 @@ pub const GameServer = struct {
             .client_id = client_id,
             .socket = socket,
         };
-        [cite_start]self.player_count += 1; [cite: 330]
+        self.player_count += 1; 
         self.mutex.unlock();
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
-        [cite_start]try self.sendGameState(&writer); [cite: 331]
+        try self.sendGameState(&writer); 
 
         var read_buf: [1024]u8 = undefined;
         while (true) {
@@ -189,17 +189,17 @@ pub const GameServer = struct {
                 break;
             };
 
-            if (bytes_read == 0) { // Client closed connection
+            if (bytes_read == 0) { 
                 break;
             }
 
-            [cite_start]const line = std.mem.trim(u8, read_buf[0..bytes_read], "\n\r"); [cite: 338]
-            [cite_start]if (line.len == 0) continue; [cite: 338]
+            const line = std.mem.trim(u8, read_buf[0..bytes_read], "\n\r"); 
+            if (line.len == 0) continue; 
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
-                [cite_start]const action = player_info.player.processInput(line[0]); [cite: 339]
-                [cite_start]try self.world_manager.handlePlayerAction(action); [cite: 339]
+                const action = player_info.player.processInput(line[0]); 
+                try self.world_manager.handlePlayerAction(action); 
             }
             self.mutex.unlock();
 
@@ -207,13 +207,13 @@ pub const GameServer = struct {
         }
 
         self.mutex.lock();
-        if (self.players[id]) |*player_info| [cite_start]{ [cite: 341]
-            [cite_start]player_info.player.deinit(); [cite: 342]
+        if (self.players[id]) |*player_info| { 
+            player_info.player.deinit(); 
         }
-        [cite_start]self.players[id] = null; [cite: 343]
-        [cite_start]self.player_count -= 1; [cite: 343]
+        self.players[id] = null; 
+        self.player_count -= 1; 
         self.mutex.unlock();
-        [cite_start]std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id }); [cite: 343]
+        std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id }); 
     }
 
     fn sendGameState(self: *GameServer, writer: *BufferedWriter) !void {
