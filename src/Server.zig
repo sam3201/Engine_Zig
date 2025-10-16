@@ -135,7 +135,7 @@ pub const GameServer = struct {
         var read_buffer: [1024]u8 = undefined;
         var write_buffer: [1024]u8 = undefined;
 
-        var reader = connection.stream.reader(&buffer);
+        var reader = connection.stream.reader(&read_buffer);
 
         var write_buffer: [1024]u8 = undefined;
         var writer = connection.stream.writer(&write_buffer);
