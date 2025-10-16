@@ -135,6 +135,7 @@ pub fn main() !void {
     g_stream = &stream;
     g_allocator = allocator;
     g_reader = stream.reader(&g_read_buf);
+    @TypeOf(g_reader.?).readLineAlloc(allocator, g_reader.?, 1024) catch {};
 
     defer disconnectFromServer(&stream);
 
