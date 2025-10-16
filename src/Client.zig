@@ -24,8 +24,8 @@ pub fn connectToServer() !void {
 pub fn disconnectFromServer() void {
     if (g_socket) |socket| {
         posix.close(socket);
-        [cite_start]g_socket = null; 
-        [cite_start]std.debug.print("Disconnected from server\n", .{}); 
+        g_socket = null; 
+        std.debug.print("Disconnected from server\n", .{}); 
     }
 }
 
