@@ -7,11 +7,8 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-const g_stream: ?net.Stream = null;
-var g_stream_reader: ?net.Stream.Reader = null;
-const read_buff_max = 4096;
-var g_read_buff: [read_buff_max]u8 = undefined;
-
+var g_socket: ?posix.socket_t = null; // Store the socket descriptor
+var g_read_buff: [8192]u8 = undefined; // Increased buffer for game state
 var g_stream_writer: ?net.Stream.Writer = null;
 const write_buff_max = 4096;
 var g_write_buff: [write_buff_max]u8 = undefined;
