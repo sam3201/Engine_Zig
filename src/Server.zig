@@ -113,8 +113,8 @@ pub const GameServer = struct {
             var client_address: net.Address = undefined;
             var client_address_len: posix.socklen_t = @sizeOf(net.Address);
             const client_socket = posix.accept(self.listener, &client_address.any, &client_address_len, 0) catch |err| {
-                [cite_start]std.debug.print("Failed to accept connection: {}\n", .{err}); [cite: 317]
-                [cite_start]continue; [cite: 318]
+                std.debug.print("Failed to accept connection: {}\n", .{err}); 
+                continue; 
             };
 
             [cite_start]const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket }); [cite: 319]
