@@ -38,7 +38,7 @@ pub fn disconnectFromServer() void {
 
 pub fn sendInput(input_data: []const u8) !void {
     try g_stream_writer.writeAll(input_data);
-    try writer.flush();
+    try g_stream_writer.flush();
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
