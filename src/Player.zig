@@ -136,7 +136,7 @@ pub const Player = struct {
         defer file.close();
 
         var write_buf: [1024]u8 = undefined;
-        var w = file.writer(write_buf[0..]);
+        var w = file.writer(write_buf[0..]).interface;
         try w.writeAll("player\n");
         try w.print("health: {d}\n", .{self.health});
         try w.print("max_health: {d}\n", .{self.max_health});
