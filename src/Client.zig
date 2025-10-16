@@ -114,10 +114,8 @@ pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
     if (input) |key| {
-        if (g_stream) |s| {
             var buf: [2]u8 = .{ key, '\n' };
-            _ = sendInput(s, &buf) catch {};
-        }
+            _ = sendInput(&buf) catch {};
     }
 
     if (g_stream and g_allocator) {
