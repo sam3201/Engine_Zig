@@ -65,7 +65,6 @@ pub const GameServer = struct {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
                 player_info.* = undefined;
-                player_info.* = null;
                 Client.disconnectFromServer();
             }
         }
