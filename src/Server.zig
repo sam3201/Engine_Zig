@@ -135,8 +135,8 @@ pub const GameServer = struct {
             server.mutex.lock(); 
             defer server.mutex.unlock(); 
 
-            [cite_start]server.world_manager.draw(); [cite: 321]
-            [cite_start]drawServerOverview(canvas, server); [cite: 321]
+            server.world_manager.draw(); 
+            drawServerOverview(canvas, server); 
         }
     }
 
