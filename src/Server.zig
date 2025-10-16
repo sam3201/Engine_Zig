@@ -166,8 +166,8 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        [cite_start]const client_id = self.player_count; [cite: 328]
-        [cite_start]const new_player = try Player.createArrowPlayer("player", self.allocator, 30, 15); [cite: 329]
+        const client_id = self.player_count; 
+        const new_player = try Player.createArrowPlayer("player", self.allocator, 30, 15); 
 
         self.players[id] = .{
             .player = new_player,
