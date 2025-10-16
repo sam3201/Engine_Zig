@@ -190,19 +190,20 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // 3. Output the entire frame using unbuffered POSIX write.
     // This avoids the 'error: WriteFailed' caused by the buffered writer 
     // when the terminal is in a non-blocking state (set by TerminalGuard).
-    const bytes_to_write = self.render_buffer.items;
+}const bytes_to_write = self.render_buffer.items;
     
-   var total_written: usize = 0;
+    var total_written: usize = 0;
     while (total_written < bytes_to_write.len) {
         const chunk = bytes_to_write[total_written..];
         
-        // **CRITICAL FIX:** Use catch |err| to handle error.WouldBlock.
-        // If write returns error.WouldBlock, we treat it as if 0 bytes were written (meaning, retry).
-        const written = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
+        // CRITICAL FIX: Ensure the catch block returns the correct type (usize).
+        const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
             error.WouldBlock => {
+                // Cannot write now, so we yield control and retry.
                 std.Thread.sleep(100); 
+                break :blk 0; // FIX: Use 'break :blk 0' to explicitly return 0 (usize) from the switch block
             },
-            else => return err, 
+            else => return err, // Propagate all other errors
         };
         
         total_written += written;
