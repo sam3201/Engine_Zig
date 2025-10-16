@@ -34,9 +34,16 @@ pub fn sendInput(input_data: []const u8) !void {
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
-    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+const bytes_read = posix.read(socket, &g_read_buff) catch |err| {
+        if (err == error.WouldBlock) return; // No new data, just return
+        return err;
+    };
 
-
+    if (bytes_read == 0) {
+        // Server closed connection
+        disconnectFromServer();
+        return;
+    }
     while (io_reader.takeDelimiterExclusive(&line_buffer, '\n')) |_| {
         const line = line_buffer.items;
         var it = std.mem.splitScalar(u8, line, ' ');
