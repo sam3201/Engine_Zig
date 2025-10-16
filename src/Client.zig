@@ -18,7 +18,7 @@ pub fn connectToServer() !void {
 
     g_socket = socket;
 
-    [cite_start]std.debug.print("Connected to server\n", .{}); [cite: 75]
+    std.debug.print("Connected to server\n", .{}); 
 }
 
 pub fn disconnectFromServer() void {
