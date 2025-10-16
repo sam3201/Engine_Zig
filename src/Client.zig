@@ -103,6 +103,8 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
                 else
                     eng.Color{ .r = 0, .g = 255, .b = 255 });
             }
+        } else |err| {
+            std.debug.print("Error: {s}\n", .{err});
         }
     }
 }
