@@ -7,6 +7,7 @@ const PlayerModule = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_stream: ?*net.Stream = null;
+const read_buff_max = 4096;
 var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
