@@ -85,7 +85,7 @@ pub const Player = struct {
             .max_health = 80,
             .level = 1,
             .name = name,
-            .inventory = Inventory.Inventory.init(allocator);inv,
+            .inventory = Inventory.Inventory.init(allocator),
         };
         return p;
     }
