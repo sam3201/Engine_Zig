@@ -69,8 +69,8 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
                 screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
             {
-                [cite_start]canvas.put(screen_x, screen_y, tile_type.getChar()); [cite: 86]
-                [cite_start]canvas.fillColor(screen_x, screen_y, tile_type.getColor()); [cite: 86]
+                canvas.put(screen_x, screen_y, tile_type.getChar()); 
+                canvas.fillColor(screen_x, screen_y, tile_type.getColor()); 
             }
         [cite_start]} else if (std.mem.eql(u8, label, "Player")) { [cite: 87]
             [cite_start]const x_str = it.next() orelse continue; [cite: 87]
