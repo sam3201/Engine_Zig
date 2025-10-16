@@ -38,21 +38,8 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        var line_writer = std.io.Writer.Allocating.init(allocator);
-        // Ensure memory is released or freed
-        defer {
-            if (line_writer.slice.len > 0) line_writer.deinit();
-        }
-
-        var bytes_read: usize = 0;
-
-        // FIX 2: The correct 0.15.1 function name is readUntilDelimiterOrEof.
-        const found_delimiter = try reader.readUntilDelimiterOrEof('\n', line_writer.writer, &bytes_read);
-
-        // If no bytes were read, we hit EOF or stream closure.
-        if (bytes_read == 0) {
-            if (!found_delimiter) break; // End of stream
-        }
+        var line_writer = std.io.fixedBufferStream(&g_write_buf);
+        try reader.readUntilDelimiterOrEof(line_writer.writer(), '\n');
 
         // Get the full line slice (including the delimiter if found)
         const line = line_writer.written();
