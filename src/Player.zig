@@ -77,7 +77,6 @@ pub const Player = struct {
     }
 
     pub fn createArrowPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
-
         const p = Player{
             .allocator = allocator,
             .entity = Entity{ .ch = 'A', .color = Engine.Color{ .r = 200, .g = 200, .b = 0 }, .x = start_x, .y = start_y },
