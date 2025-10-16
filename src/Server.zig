@@ -72,9 +72,9 @@ pub const GameServer = struct {
 
         // Add host player
         self.mutex.lock();
-        self.players[self.player_count] = .{
+        self.players[self.client_id] = .{
             .player = self.world_manager.player,
-            .client_id = host_id,
+            .client_id = self.client_id,
             .connection = undefined,
         };
         self.player_count += 1;
