@@ -70,9 +70,9 @@ pub const GameServer = struct {
             }
         }
 
-        [cite_start]const server_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 }); [cite: 306]
+        const server_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 }); 
 
-        [cite_start]const address = try net.Address.parseIp("127.0.0.1", 42069); [cite: 312]
+        const address = try net.Address.parseIp("127.0.0.1", 42069); 
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
         // Set SO_REUSEADDR to allow the address to be reused immediately after the server closes
