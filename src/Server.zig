@@ -137,9 +137,6 @@ pub const GameServer = struct {
     fn handleClient(self: *GameServer) !void {
         defer g_connection.stream.close();
 
-        var reader = g_connection.stream.reader();
-        var writer = g_connection.stream.writer();
-
         // Create new player
         self.mutex.lock();
         var player_id: ?usize = null;
