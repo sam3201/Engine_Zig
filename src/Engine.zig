@@ -150,12 +150,14 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-    var stdout_buffer = [_]u8{0} ** 4096;
+    // 1. Clear the internal dynamic buffer for the new frame.
+    self.render_buffer.clearRetainingCapacity();
     
-    var stdout_writer_struct = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout_writer = &stdout_writer_struct.interface;
+    // 2. Create a writer that targets the internal buffer (self.render_buffer).
+    var writer = self.render_buffer.writer(); // Note: No allocator needed for ArrayList writer in modern Zig
 
-    try stdout_writer.writeAll("\x1b[H");
+    // Move cursor to top-left corner
+    try writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
 
@@ -167,25 +169,38 @@ pub fn flushToTerminal(self: *Canvas) !void {
             const ch = self.buf[idx];
             const color = self.colors[idx];
 
+            // Only write a new color escape sequence if the color has changed.
             if (last_color == null or !last_color.?.eql(color)) {
-                try stdout_writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                // Write 24-bit ANSI color code (\x1b[38;2;R;G;Bm)
+                try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                 last_color = color;
             }
 
-            try stdout_writer.writeByte(ch);
+            try writer.writeByte(ch);
         }
         if (y < self.height - 1) {
-            try stdout_writer.writeAll("\n");
+            // Write a newline to move to the next row
+            try writer.writeAll("\n");
         }
     }
 
-    try stdout_writer.writeAll("\x1b[0m");
+    // Reset all terminal attributes (color, bold, etc.)
+    try writer.writeAll("\x1b[0m");
 
-
-    try stdout_writer.flush();
-
+    // 3. Output the entire frame using unbuffered POSIX write.
+    // This avoids the 'error: WriteFailed' caused by the buffered writer 
+    // when the terminal is in a non-blocking state (set by TerminalGuard).
+    const bytes_to_write = self.render_buffer.items;
+    
+    // Use an inline loop to ensure the *entire* buffer is written, 
+    // in case std.posix.write writes only a portion (though unlikely on TTY).
+    var total_written: usize = 0;
+    while (total_written < bytes_to_write.len) {
+        const chunk = bytes_to_write[total_written..];
+        const written = try std.posix.write(std.posix.STDOUT_FILENO, chunk);
+        total_written += written;
     }
-    pub fn addRenderable(self: *Canvas, r: Renderable) !void {
+}    pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
 
