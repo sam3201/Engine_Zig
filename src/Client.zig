@@ -37,7 +37,6 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-
         var line_it = std.mem.splitScalar(u8, read, '\n');
         const line = line_it.next() orelse continue;
 
