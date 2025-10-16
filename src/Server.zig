@@ -7,6 +7,7 @@ const Player = @import("Player.zig").Player;
 const WorldManager = @import("WorldManager.zig");
 const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
+const Client = @import("Client.zig");
 
 var g_server: ?*GameServer = null;
 var g_connection: ?net.Server.Connection = null;
