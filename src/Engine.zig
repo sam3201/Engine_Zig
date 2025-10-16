@@ -192,22 +192,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // when the terminal is in a non-blocking state (set by TerminalGuard).
 const bytes_to_write = self.render_buffer.items;
     
-    var total_written: usize = 0;
-    while (total_written < bytes_to_write.len) {
-        const chunk = bytes_to_write[total_written..];
-        
-    const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
-    error.WouldBlock => {
-        std.Thread.sleep(100), 0;
-        continue; 
-    },
-    // This case exits the parent function (flushToTerminal),
-    // throwing an error, so it doesn't need to return a usize.
-    else => return err, 
-};
-
-// ... is perfectly valid Zig syntax for error handling and yields a usize.
-total_written += written; // This requires 'written' to be a usize.} 
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
