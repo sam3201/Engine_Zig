@@ -37,7 +37,7 @@ pub fn disconnectFromServer() void {
 }
 
 pub fn sendInput(input_data: []const u8) !void {
-    try writer.writeAll(input_data);
+    try g_stream_writer.writeAll(input_data);
     try writer.flush();
 }
 
