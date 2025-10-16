@@ -6,7 +6,6 @@ const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_connection: ?net.Server.Connection = null;
-
 var g_stream_reader: ?net.Stream.Reader = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
