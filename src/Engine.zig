@@ -14,7 +14,9 @@ pub const Color = struct {
     g: u8 = 0,
     b: u8 = 0,
 
-    fn eql(a: Color, b: Color) bool {
+    fn eql(self: Color, a: Color, b: Color) bool {
+        
+    }
         return a.r == b.r and a.g == b.g and a.b == b.b;
     }
 };
