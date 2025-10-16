@@ -117,7 +117,7 @@ pub fn update(canvas: *eng.Canvas) void {
 
     if (g_stream) |s| {
         if (g_allocator) |alloc| {
-            const reader = s.reader();
+            const reader = s.reader(&g_read_buf);
             _ = renderGameState(alloc, reader, canvas);
         }
     }
