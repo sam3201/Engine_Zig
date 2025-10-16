@@ -121,7 +121,7 @@ pub fn update(canvas: *eng.Canvas) void {
     }
 
     if (g_stream and g_allocator) {
-        _ = renderGameState(g_allocator, canvas) catch {};
+        _ = renderGameState(canvas) catch {};
     }
 }
 
