@@ -5,7 +5,6 @@ const Engine = @import("Engine.zig");
 const Entity = @import("Entity.zig").Entity;
 
 pub const InputAction = enum {
-    None,
     UP,
     DOWN,
     LEFT,
@@ -14,6 +13,7 @@ pub const InputAction = enum {
     ATTACK,
     USEITEM,
     OPENINVENTORY,
+    NONE,
 
     pub fn fromKey(key: u8) InputAction {
         return switch (key) {
