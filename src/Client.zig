@@ -20,8 +20,8 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: std.net.Stream.Reader, ma
         var buf: [1]u8 = undefined;
         const len = try reader.read(&buf);
         if (len == 0) break;
-        _ = try line_writer.writer.write(&buf);         
-    } 
+        _ = try line_writer.writer.write(&buf);
+    }
 
     const line = line_writer.written();
     if (line.len > max_len) return error.StreamTooLong;
