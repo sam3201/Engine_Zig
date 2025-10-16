@@ -32,7 +32,6 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
 
 pub fn renderGameState(
     allocator: std.mem.Allocator,
-    // reader: std.io.Reader,
     stream: *net.Stream,
     canvas: *eng.Canvas,
 ) !void {
