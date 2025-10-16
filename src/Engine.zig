@@ -149,44 +149,45 @@ pub const Canvas = struct {
         }
     }
 
-    pub fn flushToTerminal(self: *Canvas) !void {
-        self.render_buffer.clearRetainingCapacity();
-        var writer = self.render_buffer.writer(self.allocator);
+pub fn flushToTerminal(self: *Canvas) !void {
+    // In 0.15.1, you get a writer for stdout by first creating a
+    // buffer instance, then creating a writer instance that uses it.
+    var stdout_buffer = [_]u8{0} ** 4096; // Example 4KB stack buffer
+    var stdout_writer_struct = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout_writer = &stdout_writer_struct.interface;
 
-        try writer.writeAll("\x1b[H");
+    try stdout_writer.writeAll("\x1b[H");
 
-        var last_color: ?Color = null;
+    var last_color: ?Color = null;
 
-        var y: usize = 0;
-        while (y < self.height) : (y += 1) {
-            var x: usize = 0;
-            while (x < self.width) : (x += 1) {
-                const idx = y * self.width + x;
-                const ch = self.buf[idx];
-                const color = self.colors[idx];
+    var y: usize = 0;
+    while (y < self.height) : (y += 1) {
+        var x: usize = 0;
+        while (x < self.width) : (x += 1) {
+            const idx = y * self.width + x;
+            const ch = self.buf[idx];
+            const color = self.colors[idx];
 
-                if (last_color == null or !last_color.?.eql(color)) {
-                    try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
-                    last_color = color;
-                }
-
-                try writer.writeByte(ch);
+            if (last_color == null or !last_color.?.eql(color)) {
+                // Use stdout_writer.print() directly.
+                try stdout_writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                last_color = color;
             }
-            if (y < self.height - 1) {
-                try writer.writeAll("\n");
-            }
+
+            // Use stdout_writer.writeByte() directly.
+            try stdout_writer.writeByte(ch);
         }
-
-        try writer.writeAll("\x1b[0m");
-
-        //try writer.writeAll(self.render_buffer.items);
-        //var stdout_writer = std.fs.File.stdout().writer(self.render_buffer).interface;
-        //try stdout_writer.writeAll(self.render_buffer.items);
-        //try stdout_writer.flush(); 
-        //print the items
-        try writer.print("{s}", .{self.render_buffer.items});
+        if (y < self.height - 1) {
+            try stdout_writer.writeAll("\n");
+        }
     }
 
+    try stdout_writer.writeAll("\x1b[0m");
+
+    // Flush the buffered standard output to the terminal.
+    // This is the only necessary flush.
+    try stdout_writer.flush(); 
+}
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
