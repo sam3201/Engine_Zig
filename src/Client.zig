@@ -53,7 +53,7 @@ pub fn renderGameState(
             };
 
             if (byte == '\n') break;
-            read_buff[buf_idx] = byte;
+            read_buf[buf_idx] = byte;
             buf_idx += 1;
         }
 
