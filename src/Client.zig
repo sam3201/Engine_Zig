@@ -38,6 +38,10 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
+    if (g_reader) |reader| {
+        g_reader = g_reader.interface;
+    }
+
     while (true) {
         var buf_idx: usize = 0;
         while (buf_idx < read_buff_max and buf_idx < g_read_buff.len) {
