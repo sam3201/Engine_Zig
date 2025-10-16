@@ -154,7 +154,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
     
     // 2. Create a writer that targets the internal buffer (self.render_buffer).
-    var writer = self.render_buffer.writer(); // Note: No allocator needed for ArrayList writer in modern Zig
+    var writer = self.render_buffer.writer(self.allocator); // Note: No allocator needed for ArrayList writer in modern Zig
 
     // Move cursor to top-left corner
     try writer.writeAll("\x1b[H");
