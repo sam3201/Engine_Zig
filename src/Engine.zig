@@ -150,14 +150,11 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-    // 1. Declare a sufficiently large, stack-allocated buffer.
     var stdout_buffer = [_]u8{0} ** 4096;
     
-    // 2. Create the buffered writer. The writer struct owns the interface.
     var stdout_writer_struct = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout_writer = &stdout_writer_struct.interface;
 
-    // Use stdout_writer directly to build the frame output
     try stdout_writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
@@ -184,8 +181,9 @@ pub fn flushToTerminal(self: *Canvas) !void {
 
     try stdout_writer.writeAll("\x1b[0m");
 
-    // 3. Flush the buffered data to the terminal.
+
     try stdout_writer.flush();
+
     }
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
