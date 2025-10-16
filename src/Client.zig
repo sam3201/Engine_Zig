@@ -37,7 +37,7 @@ pub fn disconnectFromServer() void {
 }
 
 pub fn sendInput(input_data: []const u8) !void {
-    try writer.interface.writeAll(input_data);
+    try writer.writeAll(input_data);
     try writer.flush();
 }
 
