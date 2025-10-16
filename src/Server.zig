@@ -136,7 +136,7 @@ pub const GameServer = struct {
 
         const reader = connection.stream.reader(&read_buffer);
         std.debug.print("Type of reader: {}\n", .{@TypeOf(reader)});
-        const writer = connection.stream.writer(&write_buffer);
+        const writer = connection.stream.writer(&write_buffer).interface;
 
         // Create new player
         self.mutex.lock();
