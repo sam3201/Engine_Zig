@@ -61,11 +61,11 @@ pub const GameServer = struct {
     pub fn init(allocator: std.mem.Allocator) !GameServer {
         var canvas = try Engine.Canvas.init(allocator, 80, 24); 
         const host_player = try Player.createWASDPlayer("host", allocator, 30, 15); 
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &canvas, host_player); [cite: 302]
-        [cite_start]try world_manager.updateChunks(); [cite: 303]
-        [cite_start]var key_iterator = world_manager.chunks.keyIterator(); [cite: 303]
-        while (key_iterator.next()) |coord| [cite_start]{ [cite: 303]
-            if (world_manager.chunks.getPtr(coord.*)) |chunk| [cite_start]{ [cite: 304]
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &canvas, host_player); 
+        try world_manager.updateChunks(); 
+        var key_iterator = world_manager.chunks.keyIterator(); 
+        while (key_iterator.next()) |coord| [cite_start] { 
+            if (world_manager.chunks.getPtr(coord.*)) |chunk| [cite_start]{ 
                 [cite_start]chunk.generate(); [cite: 305]
             }
         }
