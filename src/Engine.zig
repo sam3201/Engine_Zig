@@ -183,7 +183,8 @@ pub const Canvas = struct {
         //var stdout_writer = std.fs.File.stdout().writer(self.render_buffer).interface;
         //try stdout_writer.writeAll(self.render_buffer.items);
         //try stdout_writer.flush(); 
-        try writer.print(self.render_buffer.items);
+        //print the items
+        try writer.print("{s}", .{self.render_buffer.items});
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
