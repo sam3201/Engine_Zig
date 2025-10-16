@@ -24,7 +24,6 @@ pub const GameServer = struct {
     pub const PlayerInfo = struct {
         player: Player,
         client_id: u32,
-        connection: net.Server.Connection,
         is_host: bool,
     };
 
