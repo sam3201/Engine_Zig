@@ -156,6 +156,5 @@ pub const Player = struct {
         };
         defer file.close();
     }
-    _ = deinit();
 };
 
