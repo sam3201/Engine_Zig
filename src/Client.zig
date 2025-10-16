@@ -34,7 +34,7 @@ pub fn sendInput(input_data: []const u8) !void {
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
-const bytes_read = posix.read(g_socket, &g_read_buff) catch |err| {
+    const bytes_read = posix.read(g_socket, &g_read_buff) catch |err| {
         if (err == error.WouldBlock) return; 
         return err;
     };
