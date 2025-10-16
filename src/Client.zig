@@ -134,7 +134,7 @@ pub fn main() !void {
     defer engine.deinit();
 
     var stream = try connectToServer();
-    g_stream = &stream;
+    g_stream = stream;
     g_allocator = allocator;
 
     defer disconnectFromServer(&stream);
