@@ -13,7 +13,7 @@ var g_server: ?*GameServer = null;
 var g_connection: ?net.Server.Connection = undefined;
 var g_read_buffer: [1024]u8 = undefined;
 var g_write_buffer: [1024]u8 = undefined;
-var g_reader = ?g_connection.reader(g_read_buffer[0..]);
+var g_reader = ?g_connection.reader(g_read_buffer[0..]).interface();
 var g_writer = ?g_connection.writer(g_write_buffer[0..]);
 
 const MAX_PLAYERS = 64;
