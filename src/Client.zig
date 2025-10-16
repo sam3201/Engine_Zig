@@ -38,7 +38,11 @@ pub fn renderGameState(
 
     while (true) {
         var line_writer = std.io.Writer.Allocating.init(allocator);
-        const line = line_it.next() orelse continue;
+        defer line_writer.deinit();
+
+        var bytes_read: usize = 0;
+        const found_delimiter = try reader.readUntilDelimiterOrEof(line_writer.writer(), '\n');
+        
 
         if (std.mem.eql(u8, line, "END")) break;
 
