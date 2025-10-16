@@ -12,12 +12,10 @@ var g_read_buff: [read_buff_max]u8 = undefined;
 const write_buff_max = 4096;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
-var g_reader: ?net.Stream.Reader = null;
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const stream = try net.tcpConnectToAddress(address);
-    g_reader = stream.reader(&g_read_buff);
     std.debug.print("Connected to server\n", .{});
     return stream;
 }
@@ -33,15 +31,18 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
 
 pub fn renderGameState(
     allocator: std.mem.Allocator,
+    stream: *net.Stream,
     canvas: *eng.Canvas,
 ) !void {
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
+    const reader = stream.reader();
+
     while (true) {
         var buf_idx: usize = 0;
-        while (buf_idx < read_buff_max and buf_idx < g_read_buff.len) {
-            const byte = try g_reader.readByte() catch |err| {
+        while (buf_idx < read_buff_max) {
+            const byte = reader.readByte() catch |err| {
                 if (err == error.EndOfStream) {
                     if (buf_idx > 0) break;
                     return;
@@ -115,17 +116,16 @@ pub fn update(canvas: *eng.Canvas) void {
 
     if (input) |key| {
         if (g_stream) |s| {
-            var buf: [1]u8 = .{key};
+            var buf: [2]u8 = .{ key, '\n' };
             _ = sendInput(s, &buf) catch {};
         }
     }
 
-    // if (g_stream) {
-    if (g_allocator) |alloc| {
-        //const reader = s.reader(&g_read_buff);
-        _ = renderGameState(alloc, canvas) catch {};
+    if (g_stream) |s| {
+        if (g_allocator) |alloc| {
+            _ = renderGameState(alloc, s, canvas) catch {};
+        }
     }
-    // }
 }
 
 pub fn main() !void {
@@ -139,7 +139,6 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
-    g_reader = stream.reader(&g_read_buff);
 
     defer disconnectFromServer(&stream);
 
