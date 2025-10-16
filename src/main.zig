@@ -10,7 +10,7 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     const WIDTH = 50;
-    const HEIGHT = 60;
+    const HEIGHT = 24;
     const FPS = 30; 
 
     var engine = try Engine.Engine.init(
