@@ -190,8 +190,8 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // 3. Output the entire frame using unbuffered POSIX write.
     // This avoids the 'error: WriteFailed' caused by the buffered writer 
     // when the terminal is in a non-blocking state (set by TerminalGuard).
-const bytes_to_write = self.render_buffer.items;
-try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
+    const bytes_to_write = self.render_buffer.items;
+    try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
 }
     
     
