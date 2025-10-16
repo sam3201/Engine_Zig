@@ -66,9 +66,6 @@ pub fn renderGameState(
 
         if (std.mem.eql(u8, label, "END")) break;
 
-        var it = std.mem.splitScalar(u8, line, ' ');
-        const label = it.next() orelse continue;
-
         if (std.mem.eql(u8, label, "Tile")) {
             const x_str = it.next() orelse continue;
             const y_str = it.next() orelse continue;
