@@ -9,6 +9,9 @@ const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
 var g_server: ?*GameServer = null;
+var g_read_buffer: [4096]u8 = undefined;
+var g_write_buffer: [4096]u8 = undefined;
+
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
