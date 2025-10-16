@@ -13,6 +13,10 @@ pub const Color = struct {
     r: u8 = 0,
     g: u8 = 0,
     b: u8 = 0,
+
+    fn eql(a: Color, b: Color) bool {
+        return a.r == b.r and a.g == b.g and a.b == b.b;
+    }
 };
 
 pub const Renderable = struct {
