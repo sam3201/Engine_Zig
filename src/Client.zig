@@ -51,9 +51,22 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    while (true) {
-        const bytes_read = try g_reader.?.net_stream.reader(&g_read_buff).;
+pub fn renderGameState(canvas: *eng.Canvas) !void {
+    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
+    if (g_allocator == null or g_stream_reader == null) {
+        return;
+    }
+
+    const allocator = g_allocator.?;
+    const io_reader = g_stream_reader.?.interface();
+
+    var line_buffer = std.ArrayList(u8).init(allocator);
+    defer line_buffer.deinit();
+
+    // Use a while loop with `takeDelimiterExclusive` to read lines.
+    while (io_reader.takeDelimiterExclusive(&line_buffer, '\n')) |_| {
+        const line = line_buffer.items;
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
 
