@@ -103,6 +103,7 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
                 else
                     eng.Color{ .r = 0, .g = 255, .b = 255 });
             }
+            line_buffer.clearAndFree();
         } else |err| {
             if (err != error.EndOfStream) return err;
         }
