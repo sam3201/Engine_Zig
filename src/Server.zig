@@ -277,7 +277,7 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
             for (status_text, 0..) |char, j| {
                 if (j >= 75) break;
                 engine.put(@intCast(j + 5), y_offset, char);
-                engine.fillColor(@intCast(j + 5), y_offset, if (player_info.is_host) green else blue);
+                engine.fillColor(@intCast(j + 5), y_offset, if (player_info.client_id == 0) green else blue);
             }
             y_offset += 1;
         }
