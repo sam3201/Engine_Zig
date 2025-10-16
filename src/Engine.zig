@@ -204,7 +204,7 @@ const bytes_to_write = self.render_buffer.items;
                 
                 // This '0' is the final expression of the block, 
                 // resolving the entire 'catch' to 0 (usize).
-                0 
+                return 0; 
             },
             else => return err, // Propagate all other errors
         };
