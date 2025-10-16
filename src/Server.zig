@@ -14,6 +14,7 @@ var g_read_buffer: [1024]u8 = undefined;
 var g_write_buffer: [1024]u8 = undefined;
 var g_reader = std.io.fixedBufferStream(&g_read_buffer).reader();
 var g_writer = std.io.fixedBufferStream(&g_write_buffer).writer();
+
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
