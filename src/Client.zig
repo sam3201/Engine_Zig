@@ -7,8 +7,6 @@ const Chunk = @import("Chunk.zig");
 
 var g_stream: ?net.Stream = null;
 
-// The buffered reader itself holds the state and a buffer.
-// Declare it as an optional struct, not just a pointer.
 var g_stream_reader: ?net.Stream.Reader = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
