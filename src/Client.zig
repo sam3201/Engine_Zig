@@ -41,7 +41,7 @@ pub fn renderGameState(
     while (true) {
         var buf_idx: usize = 0;
         while (buf_idx < read_buff_max and buf_idx < g_read_buff.len) {
-            const byte = try g_reader.interface.readByte() catch |err| {
+            const byte = try g_reader.read_buff_max.readByte() catch |err| {
                 if (err == error.EndOfStream) {
                     if (buf_idx > 0) break;
                     return;
