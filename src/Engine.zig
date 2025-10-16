@@ -201,6 +201,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
         total_written += written;
     }
 }    
+
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
