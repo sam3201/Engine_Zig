@@ -91,7 +91,7 @@ pub const GameServer = struct {
 
         // Handle client connections
         while (true) {
-            const connection = server.accept() catch |err| {
+            g_connection = server.accept() catch |err| {
                 std.debug.print("Failed to accept connection: {}\n", .{err});
                 continue;
             };
