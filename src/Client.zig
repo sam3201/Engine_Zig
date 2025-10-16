@@ -118,8 +118,7 @@ pub fn update(canvas: *eng.Canvas) void {
     if (g_stream) |s| {
         if (g_allocator) |alloc| {
             if (s.reader()) |reader| {
-                _ = renderGameState(s, alloc, reader, canvas) catch {};
-            }
+            _ = renderGameState(alloc, reader_interface, canvas) catch {}; // Adjusted call}
         }
     }
 }
