@@ -128,17 +128,19 @@ pub fn update(canvas: *eng.Canvas) void {
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
-    const allocator = gpa.allocator;
+    const allocator = gpa.allocator();
 
     var engine = try eng.Engine.init(allocator, 80, 24, 60, eng.Color{ .r = 0, .g = 0, .b = 0 });
     defer engine.deinit();
 
-    try connectToServer();
+    var stream = try connectToServer();
+    g_stream = &stream;
     g_allocator = allocator;
 
-    defer disconnectFromServer();
+    defer disconnectFromServer(&stream);
 
     engine.canvas.setUpdateFn(update);
 
     try engine.run();
 }
+
