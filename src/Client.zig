@@ -136,6 +136,7 @@ pub fn main() !void {
     g_stream = &stream;
     g_allocator = allocator;
     g_reader = std.io.bufferedReader(stream.reader(), &g_read_buf).reader();
+
     defer disconnectFromServer(&stream);
 
     engine.canvas.setUpdateFn(update);
