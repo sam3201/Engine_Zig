@@ -38,7 +38,7 @@ const BufferedWriter = struct {
 
     fn flush(self: *BufferedWriter) !void {
         if (self.pos == 0) return;
-        = try posix.write(self.socket, self.buffer[0..self.pos]);
+        _ = try posix.write(self.socket, self.buffer[0..self.pos]);
         self.pos = 0;
     }
 };
