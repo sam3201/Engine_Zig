@@ -8,7 +8,7 @@ const WorldManager = @import("WorldManager.zig");
 const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-var global_server: ?*GameServer = null;
+var g: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
