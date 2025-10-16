@@ -78,7 +78,7 @@ pub const GameServer = struct {
         try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
 
         try posix.bind(listener_socket, &address.any, address.getOsSockLen());
-        try posix.listen(listener_socket, 128); // 128 is the backlog queue size
+        try posix.listen(listener_socket, 128); 
 
         return GameServer{
             .allocator = allocator,
