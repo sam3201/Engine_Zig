@@ -136,7 +136,7 @@ fn optionsMenu(engine: *Engine.Engine) !void {
         engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         options.draw(&engine.canvas);
         engine.canvas.render();
-        try engine.canvas.flushToTerminal();
+        engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
 
