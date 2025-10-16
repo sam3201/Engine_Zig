@@ -29,7 +29,7 @@ const BufferedWriter = struct {
             try self.flush();
         }
         if (data.len > self.buffer.len) {
-            = try posix.write(self.socket, data);
+            _ = try posix.write(self.socket, data);
         } else {
             @memcpy(self.buffer[self.pos..][0..data.len], data);
             self.pos += data.len;
