@@ -8,7 +8,7 @@ const WorldManager = @import("WorldManager.zig");
 const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-var g: ?*GameServer = null;
+var g_server: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
@@ -111,8 +111,7 @@ pub const GameServer = struct {
     }
 
     fn updateCallback(canvas: *Engine.Canvas) void {
-        // get the global server instance
-        if (global_server) |server| {
+        if (g_server) |server| {
             server.mutex.lock();
             defer server.mutex.unlock();
 
@@ -122,7 +121,7 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
-        global_server = self;
+        g_server= self;
         self.server_engine.canvas.setUpdateFn(updateCallback);
         self.server_engine.run() catch |err| {
             std.debug.print("Server engine error: {}\n", .{err});
