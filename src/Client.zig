@@ -40,7 +40,7 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const bytes_read = try g_reader.?.read(&g_read_buff); 
+        const bytes_read = try g_reader.?.read(&g_read_buff);
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
