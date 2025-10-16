@@ -18,7 +18,7 @@ fn readLineAlloc(allocator: std.mem.Allocator, reader: std.io.Reader, max_len: u
 
     _ = try reader.streamDelimiter(&line_writer.writer, '\n');
 
-    if (line_writer.written().len > max_len) return error.StreamTooLong;
+    try line_writer.writer.writeByte('\n');
 
     const line = line_writer.written();
     if (line.len > max_len) return error.StreamTooLong;
