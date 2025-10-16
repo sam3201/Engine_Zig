@@ -74,7 +74,7 @@ pub const GameServer = struct {
         self.mutex.lock();
         self.players[self.player_count] = .{
             .player = self.world_manager.player,
-            .client_id = @as(u32, self.player_count,
+            .client_id = @as(u32, self.player_count),
         };
         self.player_count += 1;
         self.mutex.unlock();
