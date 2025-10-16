@@ -108,6 +108,7 @@ pub const Canvas = struct {
         self.scene.deinit(self.allocator);
         self.allocator.free(self.colors);
         self.allocator.free(self.buf);
+        self.render_buffer.deinit(self.allocator);
     }
 
     pub fn clear(self: *Canvas, ch: u8, color: Color) void {
