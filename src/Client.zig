@@ -10,8 +10,7 @@ var g_stream: ?*net.Stream = null;
 var g_read_buf: [4096]u8 = undefined;
 var g_write_buf: [1024]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
-var g_reader = std.io.BufferedReader.init(g_stream.reader(), &g_read_buf).reader();
-
+var g_reader: ?*net.Stream.Reader = null;
 fn readLineAlloc(allocator: std.mem.Allocator, reader: std.io.Reader, max_len: usize) ![]u8 {
     var line_writer = std.io.Writer.Allocating.init(allocator);
     defer line_writer.deinit();
