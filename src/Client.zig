@@ -37,7 +37,6 @@ pub fn disconnectFromServer() void {
 }
 
 pub fn sendInput(input_data: []const u8) !void {
-    // Write using the buffered writer interface.
     if (g_stream_writer) |*writer| {
         try writer.interface().writeAll(input_data);
         try writer.flush();
