@@ -94,13 +94,14 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
                 canvas.fillColor(screen_x, screen_y, if (is_host)
                     eng.Color{ .r = 255, .g = 255, .b = 0 }
                 else
-                    [cite_start]eng.Color{ .r = 0, .g = 255, .b = 255 }); [cite: 93]
+                    eng.Color{ .r = 0, .g = 255, .b = 255 }); 
             }
         }
     } else |err| {
-        [cite_start]if (err != error.EndOfStream) return err; [cite: 95]
+        if (err != error.EndOfStream) return err; 
     }
 }
+
 pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
