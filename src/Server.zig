@@ -12,6 +12,7 @@ const Chunk = @import("Chunk.zig");
 var g_server: ?*GameServer = null;
 const MAX_PLAYERS = 64;
 
+// A simple buffered writer to reduce syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
@@ -49,12 +50,12 @@ pub const GameServer = struct {
     player_count: usize,
     mutex: Thread.Mutex,
     server_engine: Engine.Engine,
-    listener: posix.socket_t, 
+    listener: posix.socket_t, // Store the listener socket
 
     pub const PlayerInfo = struct {
         player: Player,
         client_id: usize,
-        socket: posix.socket_t, 
+        socket: posix.socket_t, // Store client socket directly
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
@@ -251,240 +252,6 @@ pub const GameServer = struct {
         }
         try writer.writeAll("END\n");
         try writer.flush();
-    }
-};
-
-const std = @import("std");
-const net = std.net;
-const Thread = std.Thread;
-const Player = @import("Player.zig").Player;
-const WorldManager = @import("WorldManager.zig");
-const Engine = @import("Engine.zig");
-const Chunk = @import("Chunk.zig");
-
-var g_server: ?*GameServer = null;
-var g_read_buffer: [4096]u8 = undefined;
-var g_write_buffer: [4096]u8 = undefined;
-const MAX_PLAYERS = 64;
-
-pub const GameServer = struct {
-    allocator: std.mem.Allocator,
-    world_manager: WorldManager.WorldManager,
-    players: [MAX_PLAYERS]?PlayerInfo,
-    player_count: usize,
-    mutex: Thread.Mutex,
-    server_engine: Engine.Engine,
-
-    pub const PlayerInfo = struct {
-        player: Player,
-        client_id: usize,
-        connection: net.Server.Connection,
-    };
-
-    pub fn init(allocator: std.mem.Allocator) !GameServer {
-        var canvas = try Engine.Canvas.init(allocator, 80, 24);
-        const host_player = try Player.createWASDPlayer("host", allocator, 30, 15);
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &canvas, host_player);
-
-        // Generate initial chunks
-        try world_manager.updateChunks();
-        var key_iterator = world_manager.chunks.keyIterator();
-        while (key_iterator.next()) |coord| {
-            if (world_manager.chunks.getPtr(coord.*)) |chunk| {
-                chunk.generate();
-            }
-        }
-
-        const server_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 });
-
-        return GameServer{
-            .allocator = allocator,
-            .world_manager = world_manager,
-            .players = [_]?PlayerInfo{null} ** MAX_PLAYERS,
-            .player_count = 0,
-            .mutex = Thread.Mutex{},
-            .server_engine = server_engine,
-        };
-    }
-
-    pub fn deinit(self: *GameServer) void {
-        for (&self.players) |*maybe_player| {
-            if (maybe_player.*) |*player_info| {
-                player_info.player.deinit();
-                player_info.connection.stream.close();
-            }
-        }
-
-        self.world_manager.deinit();
-        self.server_engine.deinit();
-    }
-
-    pub fn startServer(self: *GameServer) !void {
-        const address = try net.Address.parseIp("127.0.0.1", 42069);
-        var server = try address.listen(.{ .reuse_address = true });
-        defer server.deinit();
-
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
-
-        // Add host player
-        self.mutex.lock();
-        self.players[self.player_count] = .{
-            .player = self.world_manager.player,
-            .client_id = self.player_count,
-            .connection = undefined,
-        };
-        self.player_count += 1;
-        self.mutex.unlock();
-
-        const server_thread = try Thread.spawn(.{}, runServerEngine, .{self});
-        defer server_thread.join();
-
-        while (true) {
-            const connection = server.accept() catch |err| {
-                std.debug.print("Failed to accept connection: {}\n", .{err});
-                continue;
-            };
-
-            const thread = try Thread.spawn(.{}, handleClient, .{ self, connection });
-            thread.detach();
-        }
-    }
-
-    fn updateCallback(canvas: *Engine.Canvas) void {
-        if (g_server) |server| {
-            server.mutex.lock();
-            defer server.mutex.unlock();
-
-            server.world_manager.draw();
-            drawServerOverview(canvas, server);
-        }
-    }
-
-    fn runServerEngine(self: *GameServer) void {
-        g_server = self;
-        self.server_engine.canvas.setUpdateFn(updateCallback);
-        self.server_engine.run() catch |err| {
-            std.debug.print("Server engine error: {}\n", .{err});
-        };
-    }
-
-    fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
-        defer connection.stream.close();
-
-        const reader = connection.stream.reader(&g_read_buffer);
-        var writer = connection.stream.writer(&g_write_buffer).interface;
-
-        self.mutex.lock();
-        var player_id: ?usize = null;
-        for (self.players, 0..) |maybe_player, i| {
-            if (maybe_player == null) {
-                player_id = i;
-                break;
-            }
-        }
-
-        if (player_id == null) {
-            try writer.writeAll("Server full\n");
-            self.mutex.unlock();
-            return;
-        }
-
-        const id = player_id.?;
-        const client_id = self.player_count;
-
-        const new_player = Player.createArrowPlayer("player", self.allocator, 30, 15) catch {
-            _ = writer.writeAll("Failed to create player\n") catch {};
-            self.mutex.unlock();
-            return;
-        };
-
-        self.players[id] = .{
-            .player = new_player,
-            .client_id = client_id,
-            .connection = connection,
-        };
-        self.player_count += 1;
-        self.mutex.unlock();
-
-        std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
-
-        try self.sendGameState(writer);
-
-        while (true) {
-            var buf_idx: usize = 0;
-            while (buf_idx < g_read_buffer.len) {
-                const byte = reader. catch |err| {
-                    if (err == error.EndOfStream) {
-                        if (buf_idx > 0) break;
-                        std.debug.print("Client {} disconnected\n", .{client_id});
-                        break;
-                    }
-                    std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
-                    break;
-                };
-
-                if (byte == '\n') break;
-                read_buf[buf_idx] = byte;
-                buf_idx += 1;
-            }
-
-            if (buf_idx == 0) break;
-            const line = read_buf[0..buf_idx];
-
-            const trimmed_input = std.mem.trim(u8, line, "\n\r");
-            if (trimmed_input.len == 0) continue;
-
-            self.mutex.lock();
-            if (self.players[id]) |*player_info| {
-                const action = player_info.player.processInput(trimmed_input[0]);
-                try self.world_manager.handlePlayerAction(action);
-            }
-            self.mutex.unlock();
-
-            try self.sendGameState(writer);
-        }
-
-        self.mutex.lock();
-        if (self.players[id]) |*player_info| {
-            player_info.player.deinit();
-        }
-        self.players[id] = null;
-        self.player_count -= 1;
-        self.mutex.unlock();
-        std.debug.print("Player {} disconnected (client_id: {})\n", .{ id, client_id });
-    }
-
-    fn sendGameState(self: *GameServer, writer: anytype) !void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-
-        const host_chunk = self.world_manager.getPlayerChunkCoord();
-        var y: i32 = host_chunk.y - self.world_manager.loaded_radius;
-        while (y <= host_chunk.y + self.world_manager.loaded_radius) : (y += 1) {
-            var x: i32 = host_chunk.x - self.world_manager.loaded_radius;
-            while (x <= host_chunk.x + self.loaded_radius) : (x += 1) {
-                const coord = Chunk.ChunkCoord{ .x = x, .y = y };
-                if (self.world_manager.chunks.get(coord)) |chunk| {
-                    for (0..@intCast(Chunk.CHUNK_SIZE)) |cy| {
-                        for (0..@intCast(Chunk.CHUNK_SIZE)) |cx| {
-                            const tile = chunk.getTile(@intCast(cx), @intCast(cy));
-                            const world_x = x * Chunk.CHUNK_SIZE + @as(i32, @intCast(cx));
-                            const world_y = y * Chunk.CHUNK_SIZE + @as(i32, @intCast(cy));
-                            try writer.print("Tile {d} {d} {d}\n", .{ world_x, world_y, @intFromEnum(tile) });
-                        }
-                    }
-                }
-            }
-        }
-
-        // Send player positions
-        for (self.players, 0..) |maybe_player, i| {
-            if (maybe_player) |player_info| {
-                const pos = player_info.player.getPosition();
-                try writer.print("Player {d} {d} {d} {s}\n", .{ i, pos.x, pos.y, if (player_info.id == 0) "true" else "false" });
-            }
-        }
-        try writer.writeAll("END\n");
     }
 };
 
