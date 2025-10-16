@@ -145,7 +145,7 @@ pub const Player = struct {
         try w.print("y: {d}\n", .{self.entity.y});
         try w.writeAll("inventory:\n");
         for (self.inventory.items.items) |it| {
-            try w.writeAll("{s}\n", .{it.name});
+            try w.print("{s}\n", .{it.name});
         }
     }
 
