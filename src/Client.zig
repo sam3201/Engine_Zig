@@ -20,7 +20,8 @@ var g_allocator: ?std.mem.Allocator = null;
 pub fn connectToServer() !void {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     g_stream = try net.tcpConnectToAddress(address);
-    connection = try g_stream.?.accept();
+    g_connection = try g_stream.?.accept();
+    g_stream_reader = g_connection.?.reader();
     g_stream_writer = g_stream.?.writer(&g_write_buff);
 
     std.debug.print("Connected to server\n", .{});
