@@ -153,7 +153,7 @@ pub const Canvas = struct {
         self.render_buffer.clearRetainingCapacity();
         var writer = self.render_buffer.writer(self.allocator);
 
-        writer.writeAll("\x1b[H");
+        try writer.writeAll("\x1b[H");
 
         var last_color: ?Color = null;
 
@@ -166,7 +166,7 @@ pub const Canvas = struct {
                 const color = self.colors[idx];
 
                 if (last_color == null or !last_color.?.eql(color)) {
-                    writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                    try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                     last_color = color;
                 }
 
@@ -179,7 +179,7 @@ pub const Canvas = struct {
 
         try writer.writeAll("\x1b[0m");
 
-        _ = try writer.writeAll(self.render_buffer.items);
+        _ = writer.writeAll(self.render_buffer.items);
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
