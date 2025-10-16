@@ -195,7 +195,7 @@ const bytes_to_write = self.render_buffer.items;
     //const flags = try std.posix.fcntl(fd, std.posix.F.GETFL, 0);
     //const O_NONBLOCK: u32 = 0x0004;
     //_ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
-    writer.print("{any}", .{bytes_to_write}) catch unreachable; // (bytes_to_write);
+    writer.print("{any}", .{bytes_to_write}) catch {}; // (bytes_to_write);
 
 }
     
