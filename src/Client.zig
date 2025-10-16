@@ -134,7 +134,7 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
-    g_reader = g_stream.?.reader(&g_read_buf); 
+    g_reader = g_stream.?.reader(&g_read_buf);
 
     defer disconnectFromServer(&stream);
 
