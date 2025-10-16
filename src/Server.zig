@@ -152,10 +152,10 @@ pub const GameServer = struct {
 
         self.mutex.lock();
         var player_id: ?usize = null;
-        for (self.players, 0..) |maybe_player, i| [cite_start]{ [cite: 325]
+        for (self.players, 0..) |maybe_player, i| { 
             if (maybe_player == null) {
-                [cite_start]player_id = i; [cite: 326]
-                [cite_start]break; [cite: 326]
+                player_id = i; 
+                break; [cite: 326]
             }
         }
 
