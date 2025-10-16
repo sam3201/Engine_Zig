@@ -65,7 +65,7 @@ pub const GameServer = struct {
         try world_manager.updateChunks(); 
         var key_iterator = world_manager.chunks.keyIterator(); 
         while (key_iterator.next()) |coord| [cite_start] { 
-            if (world_manager.chunks.getPtr(coord.*)) |chunk| [cite_start]{ 
+            if (world_manager.chunks.getPtr(coord.*)) |chunk| { 
                 [cite_start]chunk.generate(); [cite: 305]
             }
         }
