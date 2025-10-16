@@ -42,7 +42,6 @@ pub fn renderGameState(
 
         var bytes_read: usize = 0;
         const found_delimiter = try reader.readUntilDelimiterOrEof(line_writer.writer(), '\n');
-        
 
         if (std.mem.eql(u8, line, "END")) break;
 
