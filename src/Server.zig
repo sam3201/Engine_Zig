@@ -139,7 +139,7 @@ var read_buffer: [1024]u8 = undefined;
         const reader = &reader_struct.interface_state;
 
 -       var writer_struct = connection.stream.writer(&write_buffer);
--       const writer = &writer_struct.interface; 
+-       const writer = &writer_struct.interface_state; 
 +       const writer = connection.stream.writer(&write_buffer).interface_state;
         // Create new player
         self.mutex.lock();
