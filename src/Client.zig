@@ -135,8 +135,8 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
-    g_reader = stream.reader();
-
+var reader_struct = stream.reader(&g_read_buf); 
+    g_reader = &reader_struct;
     defer disconnectFromServer(&stream);
 
     engine.canvas.setUpdateFn(update);
