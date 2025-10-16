@@ -133,9 +133,9 @@ pub const GameServer = struct {
         defer connection.stream.close();
 
         var buffer: [1024]u8 = undefined;
-+       var write_buffer: [1024]u8 = undefined; // FIX 3: Need an explicit buffer for the writer as well
-        var writer_struct = std.io.BufferedWriter.init(connection.stream.writer());
-        var writer = writer_struct.writer();
+var write_buffer: [1024]u8 = undefined; 
+
+var reader = connection.stream.reader(&buffer);
 
         // Create new player
         self.mutex.lock();
