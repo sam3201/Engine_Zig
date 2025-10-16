@@ -274,7 +274,6 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
         engine.fillColor(@intCast(i + 5), 5, white);
     }
 
-    // Active players count
     const instance_text = std.fmt.allocPrint(std.heap.page_allocator, "Active Players: {d}", .{server.player_count}) catch return;
     defer std.heap.page_allocator.free(instance_text);
 
