@@ -131,9 +131,8 @@ pub const GameServer = struct {
 
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
-        var buffer: [1024]u8 = undefined;
-        var reader_buffer = std.io.bufferedReader(connection.stream.reader(), &buffer);
-        var reader = reader_buffer.reader();
+
+        var reader = std.io.bufferedReader(connection.stream.reader(), &buffer).reader();
 
         // I/O FIX 1: Use a buffered writer for efficiency
         var writer_buffer = std.io.bufferedWriter(connection.stream.writer());
