@@ -76,7 +76,7 @@ pub const Player = struct {
         return p;
     }
 
-    pub fn createArrowPlayer(allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
+    pub fn createArrowPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
         var inv = try Inventory.Inventory.init(allocator);
 
         const arrow_item = Inventory.Item.init(.Ammo, '>', 10, allocator);
