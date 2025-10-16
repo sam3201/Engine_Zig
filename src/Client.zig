@@ -13,16 +13,7 @@ var g_allocator: ?std.mem.Allocator = null;
 var g_reader: ?std.io.Reader = null;
 
 fn readLineAlloc(allocator: std.mem.Allocator, reader: std.io.Reader, max_len: usize) ![]u8 {
-    var line_writer = std.io.Writer.Allocating.init(allocator);
-    defer line_writer.deinit();
-
-    _ = try reader.streamDelimiter(&line_writer.writer, '\n');
-
-    const line = line_writer.written();
-    if (line.len > max_len) return error.StreamTooLong;
-
-    return try allocator.dupe(u8, line);
-}
++    return reader.readUntilDelimiterOrEofAlloc(allocator, '\n', max_len);}
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
