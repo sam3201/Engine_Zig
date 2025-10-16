@@ -30,7 +30,7 @@ pub fn disconnectFromServer() void {
 }
 
 pub fn sendInput(input_data: []const u8) !void {
-        _ = try posix.write(g_socket.?, input_data, input_data);
+        _ = try posix.write(g_socket.?, input_data);
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
