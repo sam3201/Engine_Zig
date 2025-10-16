@@ -13,7 +13,7 @@ var g_allocator: ?std.mem.Allocator = null;
 var g_reader: ?std.io.Reader = null;
 
 fn readLineAlloc(allocator: std.mem.Allocator, reader: std.io.Reader, max_len: usize) ![]u8 {
-    return reader.readUntilDelimiter(allocator, '\n', max_len);
+    return reader.readAlloc(allocator, '\n', max_len);
 }
 
 pub fn connectToServer() !net.Stream {
