@@ -34,31 +34,40 @@ pub fn sendInput(input_data: []const u8) !void {
 }
 
 pub fn renderGameState(canvas: *eng.Canvas) !void {
-    const bytes_read = posix.read(g_socket, &g_read_buff) catch |err| {
-        if (err == error.WouldBlock) return; 
+    if (g_socket == null) return;
+    const socket = g_socket.?;
+
+    const bytes_read = posix.read(socket, &g_read_buff) catch |err| {
+        if (err == error.WouldBlock) return; // No new data, just return
         return err;
     };
 
-    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
+    if (bytes_read == 0) {
+        // Server closed connection
+        disconnectFromServer();
+        return;
+    }
+
+    [cite_start]canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 }); [cite: 78]
 
     var stream = std.io.fixedBufferStream(g_read_buff[0..bytes_read]);
     var reader = stream.reader();
     var line_buffer: [256]u8 = undefined;
 
-while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
-        var it = std.mem.splitScalar(u8, line, ' '); 
-        const label = it.next() orelse continue; 
+    while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
+        [cite_start]var it = std.mem.splitScalar(u8, line, ' '); [cite: 79]
+        [cite_start]const label = it.next() orelse continue; [cite: 79]
 
-        if (std.mem.eql(u8, label, "END")) break; 
-        if (std.mem.eql(u8, label, "Tile")) { 
-            const x_str = it.next() orelse continue; 
-            const y_str = it.next() orelse continue; 
-            const tile_type_str = it.next() orelse continue; 
+        [cite_start]if (std.mem.eql(u8, label, "END")) break; [cite: 80]
+        [cite_start]if (std.mem.eql(u8, label, "Tile")) { [cite: 80]
+            [cite_start]const x_str = it.next() orelse continue; [cite: 81]
+            [cite_start]const y_str = it.next() orelse continue; [cite: 81]
+            [cite_start]const tile_type_str = it.next() orelse continue; [cite: 81]
 
-            const x = try std.fmt.parseInt(i32, x_str, 10); 
-            const y = try std.fmt.parseInt(i32, y_str, 10); 
-            const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10); 
-            const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int)); 
+            [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 82]
+            [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 82]
+            [cite_start]const tile_type_int = try std.fmt.parseInt(usize, tile_type_str, 10); [cite: 83]
+            [cite_start]const tile_type = @as(Chunk.TileType, @enumFromInt(tile_type_int)); [cite: 83]
 
             const player_x = 40; // Assuming player is centered for now
             const player_y = 12;
@@ -69,17 +78,17 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
                 screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
             {
-                canvas.put(screen_x, screen_y, tile_type.getChar()); 
-                canvas.fillColor(screen_x, screen_y, tile_type.getColor()); 
+                [cite_start]canvas.put(screen_x, screen_y, tile_type.getChar()); [cite: 86]
+                [cite_start]canvas.fillColor(screen_x, screen_y, tile_type.getColor()); [cite: 86]
             }
-        else if (std.mem.eql(u8, label, "Player")) {
-            const x_str = it.next() orelse continue; 
-            const y_str = it.next() orelse continue;
-            const is_host_str = it.next() orelse continue; 
+        [cite_start]} else if (std.mem.eql(u8, label, "Player")) { [cite: 87]
+            [cite_start]const x_str = it.next() orelse continue; [cite: 87]
+            [cite_start]const y_str = it.next() orelse continue; [cite: 87]
+            [cite_start]const is_host_str = it.next() orelse continue; [cite: 87]
 
-            const x = try std.fmt.parseInt(i32, x_str, 10); 
-            const y = try std.fmt.parseInt(i32, y_str, 10); 
-            const is_host = std.mem.eql(u8, is_host_str, "true"); 
+            [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 88]
+            [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 88]
+            [cite_start]const is_host = std.mem.eql(u8, is_host_str, "true"); [cite: 89]
 
             const player_x = 40;
             const player_y = 12;
@@ -90,18 +99,17 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
                 screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
             {
-                canvas.put(screen_x, screen_y, if (is_host) '@' else '#'); 
+                [cite_start]canvas.put(screen_x, screen_y, if (is_host) '@' else '#'); [cite: 92]
                 canvas.fillColor(screen_x, screen_y, if (is_host)
                     eng.Color{ .r = 255, .g = 255, .b = 0 }
                 else
-                    eng.Color{ .r = 0, .g = 255, .b = 255 }); 
+                    [cite_start]eng.Color{ .r = 0, .g = 255, .b = 255 }); [cite: 93]
             }
         }
     } else |err| {
-        if (err != error.EndOfStream) return err; 
+        [cite_start]if (err != error.EndOfStream) return err; [cite: 95]
     }
 }
-
 pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
