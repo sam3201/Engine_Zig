@@ -153,7 +153,7 @@ pub const Canvas = struct {
         self.render_buffer.clearRetainingCapacity();
         var writer = self.render_buffer.writer(self.allocator);
 
-        try writer.writeAll("\x1b[H");
+        writer.writeAll("\x1b[H");
 
         var last_color: ?Color = null;
 
