@@ -12,6 +12,7 @@ var g_read_buf: [read_buff_max]u8 = undefined;
 const write_buff_max = 1024;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
+var g_reader: ?std.io.Reader = null;
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
@@ -38,17 +39,28 @@ pub fn renderGameState(
 
     while (true) {
         var line_writer = std.io.Writer.Allocating.init(allocator);
-        defer line_writer.deinit();
+        // Ensure memory is released or freed
+        defer {
+            if (line_writer.slice.len > 0) line_writer.deinit();
+        }
 
         var bytes_read: usize = 0;
-        const found_delimiter = try reader.readUntilDelimiter('\n', line_writer.writer, &bytes_read);
+        
+        // FIX 2: The correct 0.15.1 function name is readUntilDelimiterOrEof.
+        const found_delimiter = try reader.readUntilDelimiterOrEof('\n', line_writer.writer, &bytes_read);
+
+        // If no bytes were read, we hit EOF or stream closure.
+        if (bytes_read == 0) {
+            if (!found_delimiter) break; // End of stream
+        }
+
+        // Get the full line slice (including the delimiter if found)
         const line = line_writer.written();
-        if (bytes_read == 0) break;
+
+        // Release the memory ownership from the writer, which we must now free ourselves.
         const effective_line = if (found_delimiter) line[0 .. line.len - 1] else line;
 
-        if (std.mem.eql(u8, effective_line, "END")) break;
-
-        var it = std.mem.splitScalar(u8, effective_line, ' ');
+        var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
 
         if (std.mem.eql(u8, label, "Tile")) {
