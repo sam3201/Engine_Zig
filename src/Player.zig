@@ -56,6 +56,7 @@ pub const Player = struct {
             .health = health,
             .max_health = max_health,
             .level = level,
+            .name = name,
             .inventory = inv,
         };
     }
