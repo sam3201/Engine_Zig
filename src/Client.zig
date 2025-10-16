@@ -12,7 +12,7 @@ var g_read_buf: [read_buff_max]u8 = undefined;
 const write_buff_max = 1024;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
-//var g_reader: ?std.io.Reader = null;
+var g_reader: ?std.io.Reader = null;
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
@@ -32,18 +32,14 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
 
 pub fn renderGameState(
     allocator: std.mem.Allocator,
-    // reader: std.io.Reader,
-    stream: *net.Stream,
+    reader: std.io.Reader,
     canvas: *eng.Canvas,
 ) !void {
-    _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    var read_buf: [read_buff_max]u8 = undefined;
-    const reader = stream.reader(&read_buf);
-
     while (true) {
-        const line = try reader.readUntilDelimiterOrEof(&g_read_buf, '\n');
+        try reader.readAlloc(allocator, &g_read_buf);
+        const bytes_read = reader.context.bytes_read;
 
         var line_writer = std.io.fixedBufferStream(&g_read_buf);
         var line_reader = line_writer.reader();
@@ -135,7 +131,7 @@ pub fn main() !void {
     var stream = try connectToServer();
     g_stream = &stream;
     g_allocator = allocator;
-    // Remove this line: g_reader = stream.reader(&g_read_buf);
+    g_reader = stream.reader(&g_read_buf);
 
     defer disconnectFromServer(&stream);
 
