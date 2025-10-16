@@ -6,14 +6,14 @@ const Entity = @import("Entity.zig").Entity;
 
 pub const InputAction = enum {
     None,
-    Up,
-    Down,
-    Left,
-    Right,
-    Interact,
-    Attack,
-    UseItem,
-    OpenInventory,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    INTERACT,
+    ATTACK,
+    USEITEM,
+    OPENINVENTORY,
 
     pub fn fromKey(key: u8) InputAction {
         return switch (key) {
