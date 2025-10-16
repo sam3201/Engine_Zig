@@ -200,7 +200,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
         // If write returns error.WouldBlock, we treat it as if 0 bytes were written (meaning, retry).
         const written = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
             error.WouldBlock => {
-                std.time.sleep(100); 
+                std.Thread.sleep(100); 
                 0; 
             },
             else => return err, 
