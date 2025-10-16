@@ -152,7 +152,7 @@ pub const Player = struct {
     pub fn load(name: []const u8) !void {
         const fs = std.fs.cwd();
         var file = try fs.openFile(name, .{}) catch |err| {
-            std.log.err("{err}: Player Doesn't Exist on Computer: {s}", .{ err, name });
+            std.log.err("{err}: Player Doesn't Exist on Computer: {s}", {err, name });
         };
         defer file.close();
     }
