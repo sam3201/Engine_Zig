@@ -7,8 +7,9 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-var g_socket: ?posix.socket_t = null; // Store the socket descriptor
-var g_read_buff: [8192]u8 = undefined; // Increased buffer for game state
+var g_socket: ?posix.socket_t = null; 
+var g_read_buff: [8192]u8 = undefined; 
+
 pub fn connectToServer() !void {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     g_stream = try net.tcpConnectToAddress(address);
