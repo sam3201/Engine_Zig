@@ -48,21 +48,21 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
         return;
     }
 
-    [cite_start]canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 }); [cite: 78]
+    canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 }); 
 
     var stream = std.io.fixedBufferStream(g_read_buff[0..bytes_read]);
     var reader = stream.reader();
     var line_buffer: [256]u8 = undefined;
 
     while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
-        [cite_start]var it = std.mem.splitScalar(u8, line, ' '); [cite: 79]
-        [cite_start]const label = it.next() orelse continue; [cite: 79]
+        var it = std.mem.splitScalar(u8, line, ' '); 
+        const label = it.next() orelse continue; 
 
-        [cite_start]if (std.mem.eql(u8, label, "END")) break; [cite: 80]
-        [cite_start]if (std.mem.eql(u8, label, "Tile")) { [cite: 80]
-            [cite_start]const x_str = it.next() orelse continue; [cite: 81]
-            [cite_start]const y_str = it.next() orelse continue; [cite: 81]
-            [cite_start]const tile_type_str = it.next() orelse continue; [cite: 81]
+        if (std.mem.eql(u8, label, "END")) break; 
+        if (std.mem.eql(u8, label, "Tile")) { 
+            const x_str = it.next() orelse continue; 
+            const y_str = it.next() orelse continue; 
+            const tile_type_str = it.next() orelse continue; 
 
             [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 82]
             [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 82]
@@ -107,9 +107,10 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
             }
         }
     } else |err| {
-        [cite_start]if (err != error.EndOfStream) return err; [cite: 95]
+        if (err != error.EndOfStream) return err; 
     }
 }
+
 pub fn update(canvas: *eng.Canvas) void {
     const input = eng.readKey() catch null;
 
