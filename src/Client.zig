@@ -9,6 +9,7 @@ const Chunk = @import("Chunk.zig");
 var g_stream: ?*net.Stream = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
+const reader = stream.reader(&g_read_buff);
 const write_buff_max = 4096;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
@@ -37,7 +38,6 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    const reader = stream.reader(&g_read_buff);
 
     while (true) {
         const read = try reader.net_stream.reader(&g_read_buff);
