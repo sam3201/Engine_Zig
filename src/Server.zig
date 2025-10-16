@@ -166,6 +166,7 @@ pub const GameServer = struct {
         self.players[id] = .{
             .player = new_player,
             .client_id = client_id,
+            .connection = connection,
             .is_host = false,
         };
         self.player_count += 1;
