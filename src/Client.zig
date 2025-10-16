@@ -6,7 +6,7 @@ const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
 const g_stream: ?net.Stream = null;
-var g_connection: ?net.Server.Connection = null;
+const g_connection: ?net.Server.Connection = null;
 var g_stream_reader: ?net.Stream.Reader = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
@@ -20,6 +20,7 @@ var g_allocator: ?std.mem.Allocator = null;
 pub fn connectToServer() !void {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     g_stream = try net.tcpConnectToAddress(address);
+    
 
     g_stream_writer = g_stream.?.writer(&g_write_buff);
 
