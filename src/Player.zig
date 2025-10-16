@@ -138,12 +138,12 @@ pub const Player = struct {
         var write_buf: [1024]u8 = undefined;
         var w = file.writer(write_buf[0..]).interface;
         try w.writeAll("player\n");
-        try w.writeAll("health: {d}\n", .{self.health});
-        try w.writeAll("max_health: {d}\n", .{self.max_health});
-        try w.writeAll("level: {d}\n", .{self.level});
-        try w.writeAll("x: {d}\n", .{self.entity.x});
-        try w.writeAll("y: {d}\n", .{self.entity.y});
-        try w.writeAll("inventory:\n");
+        try w.write("health: {d}\n", .{self.health});
+        try w.write("max_health: {d}\n", .{self.max_health});
+        try w.write("level: {d}\n", .{self.level});
+        try w.write("x: {d}\n", .{self.entity.x});
+        try w.write("y: {d}\n", .{self.entity.y});
+        try w.write("inventory:\n");
         for (self.inventory.items.items) |it| {
             try it.saveToFile(w);
         }
