@@ -150,14 +150,11 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-        // Ensure our buffer is clear before we start building the new frame.
         self.render_buffer.clearRetainingCapacity();
         var writer = self.render_buffer.writer(self.allocator);
 
-        // Move cursor to top-left corner
         try writer.writeAll("\x1b[H");
 
-        // Cache the last color to avoid writing redundant ANSI color codes.
         var last_color: ?Color = null;
 
         var y: usize = 0;
@@ -168,16 +165,13 @@ pub fn flushToTerminal(self: *Canvas) !void {
                 const ch = self.buf[idx];
                 const color = self.colors[idx];
 
-                // Only change the terminal color if the current cell's color is different.
                 if (last_color == null or !last_color.?.eql(color)) {
                     try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                     last_color = color;
                 }
 
-                // Write the character for the cell.
                 try writer.writeByte(ch);
             }
-            // At the end of a row, move to the next line.
             if (y < self.height - 1) {
                 try writer.writeAll("\n");
             }
