@@ -336,6 +336,7 @@ pub const TerminalGuard = struct {
 
         const nonblock_bits: usize = 0x0004;
 _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
+
         _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
 
         return tg;
