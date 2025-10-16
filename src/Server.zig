@@ -135,7 +135,11 @@ pub const GameServer = struct {
         var write_buffer: [1024]u8 = undefined;
 
         const reader = connection.stream.reader(&read_buffer);
-        @compileError(std.debug.print("reader type: {}\n", .{@typeInfo(@TypeOf(reader))}));
+        //figure out what type of reader is being used during building and before the new errors happen
+        _ = reader.readUntilDelimiter(&write_buffer, '\n') catch |err| {
+            std.debug.print("Failed to read from client: {}\n", .{err});
+            return;
+        };
 
         const writer = connection.stream.writer(&write_buffer);
 
