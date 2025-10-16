@@ -40,6 +40,9 @@ pub fn renderGameState(
     while (true) {
         try reader.readAlloc(allocator, &g_read_buf);
 
+        var line_writer = std.io.fixedBufferStream(&g_read_buf);
+        var line_reader = line_writer.reader();
+
         // Get the full line slice (including the delimiter if found)
         const line = line_writer.written();
 
