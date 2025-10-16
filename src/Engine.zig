@@ -149,33 +149,46 @@ pub const Canvas = struct {
         }
     }
 
-    pub fn flushToTerminal(self: *Canvas) void {
-        var stdout_buffer: [4096]u8 = undefined;
-        var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
-        const stdout = &stdout_writer.interface;
+pub fn flushToTerminal(self: *Canvas) !void {
+        // Ensure our buffer is clear before we start building the new frame.
+        self.render_buffer.clearRetainingCapacity();
+        var writer = self.render_buffer.writer(self.allocator);
 
-        _ = stdout.print("{s}", .{"\x1b[H"}) catch {};
+        // Move cursor to top-left corner
+        try writer.writeAll("\x1b[H");
+
+        // Cache the last color to avoid writing redundant ANSI color codes.
+        var last_color: ?Color = null;
 
         var y: usize = 0;
         while (y < self.height) : (y += 1) {
             var x: usize = 0;
             while (x < self.width) : (x += 1) {
                 const idx = y * self.width + x;
-                const col = self.colors[idx];
                 const ch = self.buf[idx];
+                const color = self.colors[idx];
 
-                _ = stdout.print("\x1b[38;2;{d};{d};{d}m", .{ col.r, col.g, col.b }) catch {};
+                // Only change the terminal color if the current cell's color is different.
+                if (last_color == null or !last_color.?.eql(color)) {
+                    try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                    last_color = color;
+                }
 
-                _ = stdout.print("{c}", .{ch}) catch {};
+                // Write the character for the cell.
+                try writer.writeByte(ch);
             }
-
-            _ = stdout.print("\n", .{}) catch {};
+            // At the end of a row, move to the next line.
+            if (y < self.height - 1) {
+                try writer.writeAll("\n");
+            }
         }
 
-        _ = stdout.print("\x1b[0m", .{}) catch {};
-        _ = stdout.flush() catch {};
-    }
+        // Reset terminal color at the very end.
+        try writer.writeAll("\x1b[0m");
 
+        // Write the entire completed buffer to stdout in a single operation.
+        _ = try std.io.getStdOut().writeAll(self.render_buffer.items);
+    }
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
