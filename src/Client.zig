@@ -11,7 +11,7 @@ var g_socket: ?posix.socket_t = null;
 var g_read_buff: [8192]u8 = undefined; 
 
 pub fn connectToServer() !void {
-    [cite_start]const address = try net.Address.parseIp("127.0.0.1", 42069); [cite: 74]
+    const address = try net.Address.parseIp("127.0.0.1", 42069); 
 
     const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
     try posix.connect(socket, &address.any, address.getOsSockLen());
@@ -20,6 +20,7 @@ pub fn connectToServer() !void {
 
     [cite_start]std.debug.print("Connected to server\n", .{}); [cite: 75]
 }
+
 pub fn disconnectFromServer() void {
     if (g_stream) |*stream| {
         stream.close();
