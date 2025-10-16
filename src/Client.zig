@@ -24,7 +24,7 @@ pub fn connectToServer() !net.Stream {
     return stream;
 }
 
-pub fn disconnectFromServer(stream: *net.Stream) void {
+pub fn disconnectFromServer() void {
     if (stream)  {
         stream.close();
         stream = null;
