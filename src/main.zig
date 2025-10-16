@@ -47,7 +47,7 @@ pub fn main() !void {
         engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         title_menu.draw(&engine.canvas);
         engine.canvas.render();
-        engine.canvas.flushToTerminal();
+        try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
 
