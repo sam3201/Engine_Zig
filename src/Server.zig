@@ -135,7 +135,9 @@ pub const GameServer = struct {
         var buffer: [1024]u8 = undefined;
         var reader_struct = std.io.BufferedReader.init(connection.stream.reader(), &buffer);
         var reader = reader_struct.reader();
-        var writer = std.io.bufferedWriter(connection.stream.writer()).writer();
+
++        var writer_struct = std.io.BufferedWriter.init(connection.stream.writer());
+var writer = writer_struct.writer();
 
         // Create new player
         self.mutex.lock();
