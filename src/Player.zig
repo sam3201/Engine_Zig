@@ -96,6 +96,7 @@ pub const Player = struct {
 
     pub fn processInput(self: *Player, input: u8) u8 {
         _ = self;
+
         return InputAction.fromKey(input);
     }
 
