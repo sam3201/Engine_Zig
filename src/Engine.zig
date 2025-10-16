@@ -197,10 +197,9 @@ const bytes_to_write = self.render_buffer.items;
         const chunk = bytes_to_write[total_written..];
         
     const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |err| switch (err) {
-    // This case executes side effects (sleep) and returns a usize (0)
     error.WouldBlock => {
-        std.Thread.sleep(100), // Execution of the void function
-        0 // FINAL VALUE of the block (usize)
+        std.Thread.sleep(100), 0;
+        continue; 
     },
     // This case exits the parent function (flushToTerminal),
     // throwing an error, so it doesn't need to return a usize.
