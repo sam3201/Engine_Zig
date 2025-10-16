@@ -123,17 +123,17 @@ pub const GameServer = struct {
     }
 
     fn runServerEngine(self: *GameServer) void {
-        [cite_start]g_server = self; [cite: 322]
-        [cite_start]self.server_engine.canvas.setUpdateFn(updateCallback); [cite: 322]
+        g_server = self; [cite: 322]
+        self.server_engine.canvas.setUpdateFn(updateCallback); 
         self.server_engine.run() catch |err| {
-            [cite_start]std.debug.print("Server engine error: {}\n", .{err}); [cite: 323]
+            std.debug.print("Server engine error: {}\n", .{err}); 
         };
     }
 
     fn updateCallback(canvas: *Engine.Canvas) void {
-        if (g_server) |server| [cite_start]{ [cite: 320]
-            [cite_start]server.mutex.lock(); [cite: 321]
-            [cite_start]defer server.mutex.unlock(); [cite: 321]
+        if (g_server) |server| { 
+            server.mutex.lock(); 
+            defer server.mutex.unlock(); 
 
             [cite_start]server.world_manager.draw(); [cite: 321]
             [cite_start]drawServerOverview(canvas, server); [cite: 321]
