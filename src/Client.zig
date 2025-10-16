@@ -12,6 +12,7 @@ var g_read_buff: [read_buff_max]u8 = undefined;
 var g_stream_reader: ?net.Stream.Reader = null;
 const write_buff_max = 4096;
 var g_write_buf: [write_buff_max]u8 = undefined;
+var g_stream_writer: ?net.Stream.Writer = null;
 var g_allocator: ?std.mem.Allocator = null;
 
 pub fn connectToServer() !net.Stream {
