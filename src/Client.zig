@@ -47,7 +47,9 @@ pub fn renderGameState(
         var line = try line_reader.readUntilDelimiterAlloc(allocator, '\n', bytes_read);
         defer allocator.free(line);
 
-        // Release the memory ownership from the writer, which we must now free ourselves.
+        if (line.len == 0) {
+            break;
+        }
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
