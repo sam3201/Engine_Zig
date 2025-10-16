@@ -25,10 +25,8 @@ pub fn connectToServer() !net.Stream {
 }
 
 pub fn disconnectFromServer(stream: *net.Stream) void {
-if (g_stream) |*stream| {
-        stream.close();
-        g_stream = null;
-        std.debug.print("Disconnected from server\n", .{});
+    if (stream) |*s| {
+        s.close();
     }
 }
 
