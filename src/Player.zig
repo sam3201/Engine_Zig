@@ -154,5 +154,6 @@ pub const Player = struct {
         var file = try fs.openFile(name, .{}) catch |err| {
             std.log.err("Player Doesn't Exist on Computer: {s}", .{name});
         };
+        defer file.close();
     }
 };
