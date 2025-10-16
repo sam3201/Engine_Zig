@@ -118,7 +118,7 @@ pub const GameServer = struct {
         defer connection.stream.close();
 
         const reader = connection.stream.reader(&g_read_buffer);
-        const writer = connection.stream.writer();
+        const writer = connection.stream.writer(&g_write_buffer).interface;
 
         self.mutex.lock();
         var player_id: ?usize = null;
