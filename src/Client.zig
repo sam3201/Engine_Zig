@@ -42,7 +42,7 @@ pub fn sendInput(stream: *net.Stream, input_data: []const u8) !void {
 
 pub fn renderGameState(
     allocator: std.mem.Allocator,
-    reader: std.io.Reader,
+    reader: net.Stream.Reader,
     canvas: *eng.Canvas,
 ) !void {
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
@@ -118,7 +118,7 @@ pub fn update(canvas: *eng.Canvas) void {
     if (g_stream) |s| {
         if (g_allocator) |alloc| {
             const reader = s.reader(&g_read_buf);
-            _ = renderGameState(alloc, reader, canvas) catch {};
+            _ = renderGameState(alloc, reader, canvas);
         }
     }
 }
