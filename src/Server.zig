@@ -10,7 +10,7 @@ const Chunk = @import("Chunk.zig");
 const Client = @import("Client.zig");
 
 var g_server: ?*GameServer = null;
-var g_connection = null;
+var g_connection: net.Server.Connection = undefined;
 var g_read_buffer: [1024]u8 = undefined;
 var g_write_buffer: [1024]u8 = undefined;
 var g_reader = ?g_connection.reader();
