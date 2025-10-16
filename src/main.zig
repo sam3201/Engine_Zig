@@ -186,7 +186,6 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 if (bytes_read == 0) return;
                 const name = buf_arr[0..bytes_read];
                 player.*.name = try allocator.dupe(u8, name);
-                // persist player to file (player.json in current dir)
                 try player.save("player.json");
             },
 
