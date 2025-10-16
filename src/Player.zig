@@ -148,4 +148,10 @@ pub const Player = struct {
             try it.saveToFile(w);
         }
     }
+
+    pub fn load(self: *Player, path: []const u8) !void {
+        const fs = std.fs.cwd();
+        var file = try fs.openFile(path, .{});
+        defer file.close();
+    }
 };
