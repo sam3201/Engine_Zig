@@ -59,26 +59,27 @@ pub const GameServer = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        var canvas = try Engine.Canvas.init(allocator, 80, 24); 
-        const host_player = try Player.createWASDPlayer("host", allocator, 30, 15); 
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &canvas, host_player); 
-        try world_manager.updateChunks(); 
-        var key_iterator = world_manager.chunks.keyIterator(); 
-        while (key_iterator.next()) |coord| { 
-            if (world_manager.chunks.getPtr(coord.*)) |chunk| { 
-                [cite_start]chunk.generate(); 
+        [cite_start]var canvas = try Engine.Canvas.init(allocator, 80, 24); [cite: 301]
+        [cite_start]const host_player = try Player.createWASDPlayer("host", allocator, 30, 15); [cite: 301]
+        [cite_start]var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &canvas, host_player); [cite: 302]
+        [cite_start]try world_manager.updateChunks(); [cite: 303]
+        [cite_start]var key_iterator = world_manager.chunks.keyIterator(); [cite: 303]
+        while (key_iterator.next()) |coord| [cite_start]{ [cite: 303]
+            if (world_manager.chunks.getPtr(coord.*)) |chunk| [cite_start]{ [cite: 304]
+                [cite_start]chunk.generate(); [cite: 305]
             }
         }
 
-        const server_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 }); 
+        [cite_start]const server_engine = try Engine.Engine.init(allocator, 80, 24, 30, Engine.Color{ .r = 10, .g = 10, .b = 10 }); [cite: 306]
 
-        const address = try net.Address.parseIp("127.0.0.1", 42069); 
+        [cite_start]const address = try net.Address.parseIp("127.0.0.1", 42069); [cite: 312]
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
+        // Set SO_REUSEADDR to allow the address to be reused immediately after the server closes
         try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
 
         try posix.bind(listener_socket, &address.any, address.getOsSockLen());
-        try posix.listen(listener_socket, 128); 
+        try posix.listen(listener_socket, 128); // 128 is the backlog queue size
 
         return GameServer{
             .allocator = allocator,
