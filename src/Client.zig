@@ -38,7 +38,7 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        try reader.readUntilDelimiter(line_writer.writer(), '\n');
+        try reader.readAlloc(allocator, &g_read_buf, 1);
 
         // Get the full line slice (including the delimiter if found)
         const line = line_writer.written();
