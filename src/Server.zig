@@ -133,9 +133,7 @@ pub const GameServer = struct {
         defer connection.stream.close();
 
         var buffer: [1024]u8 = undefined;
-        var reader_struct = std.io.BufferedReader.init(connection.stream.reader(), &buffer);
-        var reader = reader_struct.reader();
-
++       var write_buffer: [1024]u8 = undefined; // FIX 3: Need an explicit buffer for the writer as well
         var writer_struct = std.io.BufferedWriter.init(connection.stream.writer());
         var writer = writer_struct.writer();
 
