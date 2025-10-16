@@ -72,10 +72,10 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
                 canvas.put(screen_x, screen_y, tile_type.getChar()); 
                 canvas.fillColor(screen_x, screen_y, tile_type.getColor()); 
             }
-        [cite_start]} else if (std.mem.eql(u8, label, "Player")) { [cite: 87]
-            [cite_start]const x_str = it.next() orelse continue; [cite: 87]
-            [cite_start]const y_str = it.next() orelse continue; [cite: 87]
-            [cite_start]const is_host_str = it.next() orelse continue; [cite: 87]
+        else if (std.mem.eql(u8, label, "Player")) {
+            const x_str = it.next() orelse continue; 
+            const y_str = it.next() orelse continue;
+            const is_host_str = it.next() orelse continue; 
 
             const x = try std.fmt.parseInt(i32, x_str, 10); 
             const y = try std.fmt.parseInt(i32, y_str, 10); 
