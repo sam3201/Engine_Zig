@@ -117,7 +117,7 @@ pub const GameServer = struct {
     fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
         defer connection.stream.close();
 
-        const reader = connection.stream.reader();
+        const reader = connection.stream.reader(&g_read_buffer);
         const writer = connection.stream.writer();
 
         self.mutex.lock();
