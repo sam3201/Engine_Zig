@@ -79,8 +79,7 @@ pub const GameServer = struct {
         self.players[host_id] = .{
             .player = self.world_manager.player,
             .client_id = host_id,
-            .connection = undefined, // Host doesn't need a connection
-            .is_host = true,
+            .connection = undefined, 
         };
         self.player_count += 1;
         self.mutex.unlock();
