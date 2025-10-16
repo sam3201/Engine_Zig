@@ -14,7 +14,7 @@ var g_connection: ?net.Server.Connection = null;
 var g_read_buffer: [1024]u8 = undefined;
 var g_write_buffer: [1024]u8 = undefined;
 var g_reader = ?std.io.Reader(&g_read_buffer);
-var g_writer = ?std.io.Writer(&g_write_buffer).writer();
+var g_writer = ?std.io.Writer(&g_write_buffer).*.writer();
 
 const MAX_PLAYERS = 64;
 
