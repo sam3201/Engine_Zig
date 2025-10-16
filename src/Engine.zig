@@ -202,7 +202,7 @@ const written: usize = std.posix.write(std.posix.STDOUT_FILENO, chunk) catch |er
                 // FIX: Use the comma operator to combine the void sleep call
                 // with the final usize return value (0).
                 std.Thread.sleep(100), 
-                0 // This '0' is now the final expression's result.
+                return 0 // This '0' is now the final expression's result.
             },
             else => return err, // Propagate all other errors
         };
