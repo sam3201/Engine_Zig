@@ -90,7 +90,7 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             if (screen_x >= 0 and screen_x < @as(i32, @intCast(canvas.width)) and
                 screen_y >= 0 and screen_y < @as(i32, @intCast(canvas.height)))
             {
-                [cite_start]canvas.put(screen_x, screen_y, if (is_host) '@' else '#'); [cite: 92]
+                canvas.put(screen_x, screen_y, if (is_host) '@' else '#'); 
                 canvas.fillColor(screen_x, screen_y, if (is_host)
                     eng.Color{ .r = 255, .g = 255, .b = 0 }
                 else
