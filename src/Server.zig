@@ -15,6 +15,7 @@ pub const GameServer = struct {
     allocator: std.mem.Allocator,
     world_manager: WorldManager.WorldManager,
     players: [MAX_PLAYERS]?PlayerInfo,
+    player_count: usize,
     mutex: Thread.Mutex,
     server_engine: Engine.Engine,
 
