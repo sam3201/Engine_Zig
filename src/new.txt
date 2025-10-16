@@ -643,12 +643,11 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-    var stdout_buffer = [_]u8{0} ** 4096;
+    self.render_buffer.clearRetainingCapacity();
     
-    var stdout_writer_struct = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout_writer = &stdout_writer_struct.interface;
+    var writer = self.render_buffer.writer(self.allocator); 
 
-    try stdout_writer.writeAll("\x1b[H");
+    try writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
 
@@ -661,24 +660,26 @@ pub fn flushToTerminal(self: *Canvas) !void {
             const color = self.colors[idx];
 
             if (last_color == null or !last_color.?.eql(color)) {
-                try stdout_writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                 last_color = color;
             }
 
-            try stdout_writer.writeByte(ch);
+            try writer.writeByte(ch);
         }
         if (y < self.height - 1) {
-            try stdout_writer.writeAll("\n");
+            try writer.writeAll("\n");
         }
     }
 
-    try stdout_writer.writeAll("\x1b[0m");
+    try writer.writeAll("\x1b[0m");
 
+    const bytes_to_write = self.render_buffer.items;
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
+}
+    
+    
 
-    try stdout_writer.flush();
-
-    }
-    pub fn addRenderable(self: *Canvas, r: Renderable) !void {
+pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
 
@@ -823,11 +824,11 @@ pub const TerminalGuard = struct {
 
         try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
 
-        const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
-        tg.orig_flags = flags;
+    const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
+    tg.orig_flags = flags;
 
         const nonblock_bits: usize = 0x0004;
-        _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
+_ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
 
         _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
 
@@ -1075,7 +1076,7 @@ const Menu = @import("Menu.zig").Menu;
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    const WIDTH = 50;
+    const WIDTH = 80;
     const HEIGHT = 24;
     const FPS = 60; 
 
