@@ -150,12 +150,14 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-    // In 0.15.1, you get a writer for stdout by first creating a
-    // buffer instance, then creating a writer instance that uses it.
-    var stdout_buffer = [_]u8{0} ** 4096; // Example 4KB stack buffer
+    // 1. Declare a sufficiently large, stack-allocated buffer.
+    var stdout_buffer = [_]u8{0} ** 4096;
+    
+    // 2. Create the buffered writer. The writer struct owns the interface.
     var stdout_writer_struct = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout_writer = &stdout_writer_struct.interface;
 
+    // Use stdout_writer directly to build the frame output
     try stdout_writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
@@ -169,12 +171,10 @@ pub fn flushToTerminal(self: *Canvas) !void {
             const color = self.colors[idx];
 
             if (last_color == null or !last_color.?.eql(color)) {
-                // Use stdout_writer.print() directly.
                 try stdout_writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                 last_color = color;
             }
 
-            // Use stdout_writer.writeByte() directly.
             try stdout_writer.writeByte(ch);
         }
         if (y < self.height - 1) {
@@ -184,9 +184,8 @@ pub fn flushToTerminal(self: *Canvas) !void {
 
     try stdout_writer.writeAll("\x1b[0m");
 
-    // Flush the buffered standard output to the terminal.
-    // This is the only necessary flush.
-    try stdout_writer.flush(); 
+    // 3. Flush the buffered data to the terminal.
+    try stdout_writer.flush();
 }
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
