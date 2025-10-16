@@ -165,7 +165,7 @@ pub const WorldManager = struct {
             .USEITEM => self.playerUseItem(),
             .DROPITEM => self.playerDropItem(),
             .OPENINVENTORY => self.playerOpenInventory(),
-            .None => {},
+            .NONE => {},
         }
 
         const new_pos = self.player.getPosition();
