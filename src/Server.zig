@@ -176,12 +176,9 @@ pub const GameServer = struct {
 
         std.debug.print("Player {} connected (client_id: {})\n", .{ id, client_id });
 
-        // DEADLOCK FIX: Send the initial game state immediately upon connection
-        // so the client can render and send input.
         try self.sendGameState(writer);
 
         while (true) {
-            // I/O FIX 2: Correctly read a line of input from the client
             const line = reader.readUntilDelimiterOrEof('\n') catch |err|
                 {
                     std.debug.print("Failed to read from client {}: {}\n", .{ client_id, err });
