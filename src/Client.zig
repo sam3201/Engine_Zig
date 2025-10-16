@@ -46,14 +46,14 @@ pub fn renderGameState(canvas: *eng.Canvas) !void {
     var line_buffer: [256]u8 = undefined;
 
 while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
-        [cite_start]var it = std.mem.splitScalar(u8, line, ' '); [cite: 79]
-        [cite_start]const label = it.next() orelse continue; [cite: 79]
+        var it = std.mem.splitScalar(u8, line, ' '); 
+        const label = it.next() orelse continue; 
 
-        [cite_start]if (std.mem.eql(u8, label, "END")) break; [cite: 80]
-        [cite_start]if (std.mem.eql(u8, label, "Tile")) { [cite: 80]
-            [cite_start]const x_str = it.next() orelse continue; [cite: 81]
-            [cite_start]const y_str = it.next() orelse continue; [cite: 81]
-            [cite_start]const tile_type_str = it.next() orelse continue; [cite: 81]
+        if (std.mem.eql(u8, label, "END")) break; 
+        if (std.mem.eql(u8, label, "Tile")) { 
+            const x_str = it.next() orelse continue; 
+            const y_str = it.next() orelse continue; 
+            const tile_type_str = it.next() orelse continue; 
 
             [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 82]
             [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 82]
@@ -77,9 +77,9 @@ while (reader.readUntilDelimiter(&line_buffer, '\n')) |line| {
             [cite_start]const y_str = it.next() orelse continue; [cite: 87]
             [cite_start]const is_host_str = it.next() orelse continue; [cite: 87]
 
-            [cite_start]const x = try std.fmt.parseInt(i32, x_str, 10); [cite: 88]
-            [cite_start]const y = try std.fmt.parseInt(i32, y_str, 10); [cite: 88]
-            [cite_start]const is_host = std.mem.eql(u8, is_host_str, "true"); [cite: 89]
+            const x = try std.fmt.parseInt(i32, x_str, 10); 
+            const y = try std.fmt.parseInt(i32, y_str, 10); 
+            const is_host = std.mem.eql(u8, is_host_str, "true"); 
 
             const player_x = 40;
             const player_y = 12;
