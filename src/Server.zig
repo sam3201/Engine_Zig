@@ -136,7 +136,7 @@ pub const GameServer = struct {
 
         const reader = connection.stream.reader(&read_buffer);
         //print typeof(reader) during debug
-        std.debug.print("reader type: {}\n", .{@typeInfo(@TypeOf(reader))});
+        @compileError(std.debug.print("reader type: {}\n", .{@typeInfo(@TypeOf(reader))});
 
         const writer = connection.stream.writer(&write_buffer);
 
