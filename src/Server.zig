@@ -140,7 +140,7 @@ pub const GameServer = struct {
         var read_buffer: [1024]u8 = undefined;
         var write_buffer: [1024]u8 = undefined;
 
-        var reader = g_connection.stream.reader(&read_buffer);
+        reader = g_connection.stream.reader(&read_buffer);
         var writer = g_connection.stream.writer(&write_buffer).interface;
 
         // Create new player
