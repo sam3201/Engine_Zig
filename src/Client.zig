@@ -58,7 +58,7 @@ pub fn renderGameState(
         }
 
         if (buf_idx == 0) break;
-        const line = read_buf[0..buf_idx];
+        const line = g_read_buf[0..buf_idx];
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
