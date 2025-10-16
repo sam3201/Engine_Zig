@@ -200,7 +200,8 @@ pub fn flushToTerminal(self: *Canvas) !void {
         const written = try std.posix.write(std.posix.STDOUT_FILENO, chunk);
         total_written += written;
     }
-}    pub fn addRenderable(self: *Canvas, r: Renderable) !void {
+}    
+pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
 
