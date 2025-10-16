@@ -150,13 +150,10 @@ pub const Canvas = struct {
     }
 
 pub fn flushToTerminal(self: *Canvas) !void {
-    // 1. Clear the internal dynamic buffer for the new frame.
     self.render_buffer.clearRetainingCapacity();
     
-    // 2. Create a writer that targets the internal buffer (self.render_buffer).
-    var writer = self.render_buffer.writer(self.allocator); // Note: No allocator needed for ArrayList writer in modern Zig
+    var writer = self.render_buffer.writer(self.allocator); 
 
-    // Move cursor to top-left corner
     try writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
@@ -169,9 +166,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
             const ch = self.buf[idx];
             const color = self.colors[idx];
 
-            // Only write a new color escape sequence if the color has changed.
             if (last_color == null or !last_color.?.eql(color)) {
-                // Write 24-bit ANSI color code (\x1b[38;2;R;G;Bm)
                 try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
                 last_color = color;
             }
@@ -179,17 +174,12 @@ pub fn flushToTerminal(self: *Canvas) !void {
             try writer.writeByte(ch);
         }
         if (y < self.height - 1) {
-            // Write a newline to move to the next row
             try writer.writeAll("\n");
         }
     }
 
-    // Reset all terminal attributes (color, bold, etc.)
     try writer.writeAll("\x1b[0m");
 
-    // 3. Output the entire frame using unbuffered POSIX write.
-    // This avoids the 'error: WriteFailed' caused by the buffered writer 
-    // when the terminal is in a non-blocking state (set by TerminalGuard).
     const bytes_to_write = self.render_buffer.items;
     try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
 }
