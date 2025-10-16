@@ -23,7 +23,7 @@ pub const InputAction = enum {
             'd', 'D' => .RIGHT,
             'e', 'E' => .INTRACT,
             ' ' => .ATTACK,
-            'i', 'I' => .OPENINVENTORY, 
+            'i', 'I' => .OPENINVENTORY,
             else => .NONE,
         };
     }
