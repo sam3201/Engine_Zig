@@ -271,7 +271,7 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
         if (y_offset >= 20) break;
         if (maybe_player) |player_info| {
             const pos = player_info.player.getPosition();
-            const status_text = std.fmt.allocPrint(std.heap.page_allocator, "Player {d}: ({d}, {d}) {s}", .{ player_info.client_id, pos.x, pos.y, if (player_info.is_host) "(Host)" else "" }) catch continue;
+            const status_text = std.fmt.allocPrint(std.heap.page_allocator, "Player {d}: ({d}, {d}) {s}", .{ player_info.client_id, pos.x, pos.y, if (player_info.client_id == 0) "(Host)" else "" }) catch continue;
             defer std.heap.page_allocator.free(status_text);
 
             for (status_text, 0..) |char, j| {
