@@ -37,7 +37,7 @@ pub fn renderGameState(
 
     while (true) {
         const buff_len = try reader.readSliceAll(&g_read_buf);
-        const line = try allocator.alloc(u8, buff_len);
+        const line_num = try allocator.alloc(u8, buff_len);
         std.mem.copy(u8, line, g_read_buf[0..buff_len]);
         const read = try reader.readAlloc(
             &g_reader,
