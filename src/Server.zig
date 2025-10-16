@@ -129,14 +129,14 @@ pub const GameServer = struct {
         };
     }
 
-    fn handleClient(self: *GameServer, connection: net.Server.Connection) !void {
+    fn handleClient(self: *GameServer) !void {
         defer connection.stream.close();
 
         var read_buffer: [1024]u8 = undefined;
         var write_buffer: [1024]u8 = undefined;
 
-        var reader = connection.stream.reader(&read_buffer);
-        var writer = connection.stream.writer(&write_buffer).interface;
+        var reader = g_connection.stream.reader(&read_buffer);
+        var writer = g_connection.stream.writer(&write_buffer).interface;
 
         // Create new player
         self.mutex.lock();
