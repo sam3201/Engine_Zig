@@ -180,7 +180,9 @@ pub const Canvas = struct {
         try writer.writeAll("\x1b[0m");
 
         try writer.writeAll(self.render_buffer.items);
-
+var stdout_writer = std.io.getStdOut().writer();
+try stdout_writer.writeAll(self.render_buffer.items);
+try stdout_writer.flush(); // This is the crucial missing step!
     }
 
     pub fn addRenderable(self: *Canvas, r: Renderable) !void {
