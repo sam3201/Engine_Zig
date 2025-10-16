@@ -118,7 +118,7 @@ pub fn update(canvas: *eng.Canvas) void {
         _ = sendInput(&buf) catch {};
     }
 
-        _ = renderGameState(canvas) catch {};
+    _ = renderGameState(canvas) catch {};
 }
 
 pub fn main() !void {
