@@ -136,7 +136,7 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const client_id = self.next_client_id;
+        const client_id = self.player_count;
         self.next_client_id += 1;
 
         const new_player = Player.createArrowPlayer("player", self.allocator, 30, 15) catch {
