@@ -172,7 +172,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
         engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         menu.draw(&engine.canvas);
         engine.canvas.render();
-        engine.canvas.flushToTerminal();
+        try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
 
