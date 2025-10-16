@@ -130,7 +130,7 @@ pub const Player = struct {
         return self.inventory.getItem(idx);
     }
 
-    pub fn saveToFile(self: *Player, path: []const u8) !void {
+    pub fn save(self: *Player, path: []const u8) !void {
         const fs = std.fs.cwd();
         var file = try fs.createFile(path, .{ .truncate = true });
         defer file.close();
