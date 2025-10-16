@@ -82,7 +82,6 @@ pub fn main() !void {
         if (Engine.readKey() catch null) |key| {
             try world.processPlayerInput(key);
 
-            // Open in-game menu (not pausing server, just overlay)
             if (key == 'm' or key == 'M') {
                 try ingameMenu(allocator, &game_engine, &player);
             }
