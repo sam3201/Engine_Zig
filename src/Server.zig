@@ -256,8 +256,6 @@ pub const GameServer = struct {
     }
 };
 
-// drawServerOverview and main functions remain the same.
-// ...
 const std = @import("std");
 const net = std.net;
 const Thread = std.Thread;
