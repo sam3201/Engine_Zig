@@ -40,6 +40,7 @@ pub const Player = struct {
     level: i32,
     name: []const u8,
     inventory: Inventory.Inventory,
+
     pub fn init(
         allocator: std.mem.Allocator,
         entity: Entity,
