@@ -133,8 +133,8 @@ pub const GameServer = struct {
         defer connection.stream.close();
 
         var buffer: [1024]u8 = undefined;
-        var reader = std.io.bufferedReader(connection.stream.reader(), &buffer).reader();
-
++        var reader_struct = std.io.BufferedReader.init(connection.stream.reader(), &buffer);
++        var reader = reader_struct.reader();
         var writer = std.io.bufferedWriter(connection.stream.writer()).writer();
 
         // Create new player
