@@ -37,7 +37,7 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        var line_writer = std.io.Writer.Allocating.init(allocator, &g_write_buf);
+        var line_writer = std.io.Writer.Allocating.init(allocator);
         const line = line_it.next() orelse continue;
 
         if (std.mem.eql(u8, line, "END")) break;
