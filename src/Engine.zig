@@ -191,6 +191,25 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // This avoids the 'error: WriteFailed' caused by the buffered writer 
     // when the terminal is in a non-blocking state (set by TerminalGuard).
 const bytes_to_write = self.render_buffer.items;
+const bytes_to_write = self.render_buffer.items;
+    
+    // **CRITICAL FIX 1:** Ensure STDOUT_FILENO is in BLOCKING mode.
+    // If TerminalGuard set STDIN to O_NONBLOCK and it affected STDOUT,
+    // this explicitly resets STDOUT to BLOCKING mode.
+    const fd = std.posix.STDOUT_FILENO;
+    const flags = try std.posix.fcntl(fd, std.posix.F.GETFL, 0);
+    const O_NONBLOCK: u32 = 0x0004;
+    _ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
+
+    // **CRITICAL FIX 2:** Use simple std.posix.write.
+    // Since we forced blocking mode, we should not see error.WouldBlock,
+    // so we can use a direct, single write call, which is the fastest.
+    _ = try std.posix.write(fd, bytes_to_write);
+    
+    // Note: We don't need a loop (while (total_written < bytes_to_write.len))
+    // because TTY writes typically write the full buffer in one call.
+}
+    
     
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
