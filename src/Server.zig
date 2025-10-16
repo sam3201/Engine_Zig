@@ -96,7 +96,7 @@ pub const GameServer = struct {
                 continue;
             };
 
-            const thread = try Thread.spawn(.{}, handleClient, .{ self, connection });
+            const thread = try Thread.spawn(.{}, handleClient, .{ self, g_connection });
             thread.detach();
         }
     }
