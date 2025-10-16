@@ -135,6 +135,8 @@ pub const GameServer = struct {
         var write_buffer: [1024]u8 = undefined;
 
         const reader = connection.stream.reader(&read_buffer);
+        //print typeof(reader);
+        std.debug.print("Reader: {}\n", .{reader});
         const writer = connection.stream.writer(&write_buffer);
 
         // Create new player
