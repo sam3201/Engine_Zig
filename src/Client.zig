@@ -28,7 +28,7 @@ pub fn disconnectFromServer(stream: *net.Stream) void {
     if (stream) |*s| {
         s.close();
         s = null;
-        std.debug.print("Disconnected {} from server\n", .{});
+        std.debug.print("Disconnected from server\n", .{});
     }
 }
 
