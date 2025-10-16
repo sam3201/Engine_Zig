@@ -135,7 +135,7 @@ pub const GameServer = struct {
     }
 
     fn handleClient(self: *GameServer) !void {
-        defer g_connection.stream.close();
+        defer Client.g_connection.stream.close();
 
         var read_buffer: [1024]u8 = undefined;
         var write_buffer: [1024]u8 = undefined;
