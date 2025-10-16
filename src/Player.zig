@@ -38,6 +38,7 @@ pub const Player = struct {
     health: i32,
     max_health: i32,
     level: i32,
+    name: []const u8,
     inventory: Inventory.Inventory,
 
     pub fn init(
