@@ -38,8 +38,7 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        var line_writer = std.io.fixedBufferStream(&g_write_buf);
-        try reader.readUntilDelimiterOrEof(line_writer.writer(), '\n');
+        try reader.readUntilDelimiter(line_writer.writer(), '\n');
 
         // Get the full line slice (including the delimiter if found)
         const line = line_writer.written();
