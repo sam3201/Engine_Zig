@@ -191,7 +191,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // This avoids the 'error: WriteFailed' caused by the buffered writer 
     // when the terminal is in a non-blocking state (set by TerminalGuard).
 const bytes_to_write = self.render_buffer.items;
-const bytes_to_write = self.render_buffer.items;
     
     // **CRITICAL FIX 1:** Ensure STDOUT_FILENO is in BLOCKING mode.
     // If TerminalGuard set STDIN to O_NONBLOCK and it affected STDOUT,
