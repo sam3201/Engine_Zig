@@ -37,13 +37,6 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const read = try reader.readAlloc(
-            &g_reader,
-            &allocator,
-            std.math.maxInt(u32),
-            std.math.maxInt(u32),
-            .{ .seekable = false },
-        );
 
         var line_it = std.mem.splitScalar(u8, read, '\n');
         const line = line_it.next() orelse continue;
