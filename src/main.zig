@@ -106,7 +106,7 @@ pub fn main() !void {
         world.draw();
 
         game_engine.canvas.render();
-        game_engine.canvas.flushToTerminal();
+        try game_engine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
     }
 
