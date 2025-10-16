@@ -192,7 +192,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
     // when the terminal is in a non-blocking state (set by TerminalGuard).
     const bytes_to_write = self.render_buffer.items;
     
-}   var total_written: usize = 0;
+   var total_written: usize = 0;
     while (total_written < bytes_to_write.len) {
         const chunk = bytes_to_write[total_written..];
         
