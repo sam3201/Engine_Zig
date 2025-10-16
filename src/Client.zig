@@ -36,7 +36,10 @@ pub fn renderGameState(
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
     while (true) {
-        const read = try reader.readAlloc(&g_reader, &allocator, );
+        const read = try reader.readAlloc(
+            &g_reader,
+            &allocator,
+        );
 
         defer allocator.free(line);
 
