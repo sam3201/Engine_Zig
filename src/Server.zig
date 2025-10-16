@@ -84,7 +84,6 @@ pub const GameServer = struct {
         self.player_count += 1;
         self.mutex.unlock();
 
-        // Start server rendering
         const server_thread = try Thread.spawn(.{}, runServerEngine, .{self});
         defer server_thread.join();
 
