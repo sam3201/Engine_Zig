@@ -45,7 +45,6 @@ pub fn renderGameState(
     allocator: std.mem.Allocator,
     reader: std.io.Reader,
     canvas: *eng.Canvas,
-
 ) !void {
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
