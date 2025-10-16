@@ -203,7 +203,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
                 std.time.sleep(100); 
                 0; 
             },
-            else => return err, // Propagate all other errors
+            else => return err, 
         };
         
         total_written += written;
