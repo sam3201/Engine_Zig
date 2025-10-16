@@ -201,7 +201,7 @@ const bytes_to_write = self.render_buffer.items;
             error.WouldBlock => {
                 // Cannot write now, so we yield control and retry.
                 std.Thread.sleep(100); 
-                break : blk 0; // FIX: Use 'break :blk 0' to explicitly return 0 (usize) from the switch block
+                break : 0; // FIX: Use 'break :blk 0' to explicitly return 0 (usize) from the switch block
             },
             else => return err, // Propagate all other errors
         };
