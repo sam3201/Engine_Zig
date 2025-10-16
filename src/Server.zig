@@ -265,7 +265,6 @@ fn drawServerOverview(engine: *Engine.Canvas, server: *GameServer) void {
         engine.fillColor(@intCast(title_start + i), 2, green);
     }
 
-    // CPU info
     const cpu_count = Thread.getCpuCount() catch 1;
     const cpu_text = std.fmt.allocPrint(std.heap.page_allocator, "Available CPU Cores: {d}", .{cpu_count}) catch return;
     defer std.heap.page_allocator.free(cpu_text);
