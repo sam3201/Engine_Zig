@@ -11,8 +11,6 @@ pub fn main() !void {
 
     const WIDTH = 84;
     const HEIGHT = 24;
-    Chunk.CHUNK_WIDTH = WIDTH;
-    Chunk.CHUNK_HEIGHT = HEIGHT;
     
     const FPS = 60; 
 
