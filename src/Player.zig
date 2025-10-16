@@ -77,6 +77,8 @@ pub const Player = struct {
     }
 
     pub fn createArrowPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
+        const inv = try Inventory.Inventory.init(allocator);
+
         const p = Player{
             .allocator = allocator,
             .entity = Entity{ .ch = 'A', .color = Engine.Color{ .r = 200, .g = 200, .b = 0 }, .x = start_x, .y = start_y },
@@ -84,7 +86,7 @@ pub const Player = struct {
             .max_health = 80,
             .level = 1,
             .name = name,
-            .inventory = Inventory.Inventory.init(allocator),
+            .inventory = inv, 
         };
         return p;
     }
