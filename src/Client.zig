@@ -120,7 +120,7 @@ pub fn update(canvas: *eng.Canvas) void {
         }
     }
 
-    if (g_stream and g_allocator) |s, alloc| {
+    if (g_stream and g_allocator) {
             _ = renderGameState(alloc, s, canvas) catch {};
     }
 }
