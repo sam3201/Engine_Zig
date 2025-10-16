@@ -11,7 +11,7 @@ pub fn main() !void {
 
     const WIDTH = 50;
     const HEIGHT = 24;
-    const FPS = 30; 
+    const FPS = 60; 
 
     var engine = try Engine.Engine.init(
         allocator,
