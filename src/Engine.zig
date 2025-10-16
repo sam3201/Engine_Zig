@@ -195,10 +195,6 @@ const bytes_to_write = self.render_buffer.items;
     const flags = try std.posix.fcntl(fd, std.posix.F.GETFL, 0);
     const O_NONBLOCK: u32 = 0x0004;
     _ = try std.posix.fcntl(fd, std.posix.F.SETFL, flags & ~O_NONBLOCK);
-
-    // **CRITICAL FIX 2:** Use simple std.posix.write.
-    // Since we forced blocking mode, we should not see error.WouldBlock,
-    // so we can use a direct, single write call, which is the fastest.
     _ = try std.posix.write(fd, bytes_to_write);
     
     // Note: We don't need a loop (while (total_written < bytes_to_write.len))
