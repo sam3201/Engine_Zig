@@ -38,7 +38,7 @@ pub fn renderGameState(
     _ = allocator;
     canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
 
-    if (g_reader)  {
+    if (g_reader) {
         g_reader = g_reader.interface;
     }
 
