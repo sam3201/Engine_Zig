@@ -43,18 +43,29 @@ pub fn renderGameState(
     const reader = &stream.reader(&read_buf);
 
     while (true) {
-        try reader.readAlloc(allocator, &g_read_buf);
-        const bytes_read = reader.context.bytes_read;
-
-        var line_writer = std.io.fixedBufferStream(&g_read_buf);
-        var line_reader = line_writer.reader();
-
-        const line = try line_reader.readUntilDelimiterAlloc(allocator, '\n', bytes_read);
-        defer allocator.free(line);
-
-        if (line.len == 0) {
-            break;
+        var buf_idx: usize = 0;
+        while (buf_idx < read_buf.len) {
+            const byte = reader.readByte() catch |err| {
+                if (err == error.EndOfStream) {
+                    if (buf_idx > 0) break;
+                    return;
+                }
+                return err;
+            };
+            
+            if (byte == '\n') break;
+            read_buf[buf_idx] = byte;
+            buf_idx += 1;
         }
+
+        if (buf_idx == 0) break;
+        const line = read_buf[0..buf_idx];
+
+        var it = std.mem.splitScalar(u8, line, ' ');
+        const label = it.next() orelse continue;
+
+        if (std.mem.eql(u8, label, "END")) break;
+
 
         var it = std.mem.splitScalar(u8, line, ' ');
         const label = it.next() orelse continue;
