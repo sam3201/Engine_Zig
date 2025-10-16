@@ -155,7 +155,7 @@ pub const GameServer = struct {
         for (self.players, 0..) |maybe_player, i| { 
             if (maybe_player == null) {
                 player_id = i; 
-                break; [cite: 326]
+                break; 
             }
         }
 
