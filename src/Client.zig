@@ -12,7 +12,7 @@ var g_read_buf: [read_buff_max]u8 = undefined;
 const write_buff_max = 1024;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
-var g_reader: ?std.io.Reader = null;
+//var g_reader: ?std.io.Reader = null;
 
 pub fn connectToServer() !net.Stream {
     const address = try net.Address.parseIp("127.0.0.1", 42069);
