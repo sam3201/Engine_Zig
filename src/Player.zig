@@ -17,14 +17,14 @@ pub const InputAction = enum {
 
     pub fn fromKey(key: u8) InputAction {
         return switch (key) {
-            'w', 'W' => .Up,
-            's', 'S' => .Down,
-            'a', 'A' => .Left,
-            'd', 'D' => .Right,
-            'e', 'E' => .Interact,
-            ' ' => .Attack,
-            'i', 'I' => .OpenInventory,
-            else => .None,
+            'w', 'W' => .UP,
+            's', 'S' => .DOWN,
+            'a', 'A' => .LEFT,
+            'd', 'D' => .RIGHT,
+            'e', 'E' => .INTRACT,
+            ' ' => .ATTACK,
+            'i', 'I' => .OPENINVENTORY, 
+            else => .NONE,
         };
     }
 };
