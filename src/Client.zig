@@ -10,7 +10,7 @@ var g_stream: ?*net.Stream = null;
 const read_buff_max = 4096;
 var g_read_buff: [read_buff_max]u8 = undefined;
 var g_stream_reader: ?net.Stream.Reader = undefined;
-const g_reader: std.io.Reader(*net.Stream, net.Stream.Error, *net.Stream, read_buff_max) = .{ .context = g_stream, .readFn = net.Stream.read }; 
+const g_reader: *std.io.Reader = &stream_reader.interface;
 const write_buff_max = 4096;
 var g_write_buf: [write_buff_max]u8 = undefined;
 var g_allocator: ?std.mem.Allocator = null;
