@@ -10,7 +10,7 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     const WIDTH = 159;
-    const HEIGHT = 50;
+    const HEIGHT = 44;
     
     const FPS = 60; 
 
