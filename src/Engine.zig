@@ -357,6 +357,10 @@ pub const Engine = struct {
             if (err != error.WouldBlock) return err;
         };
     }
+
+    pub fn stop(self: *Engine) void {
+        self.running = false;
+    }
 };
 
 pub const TerminalGuard = struct {
