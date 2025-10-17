@@ -68,8 +68,8 @@ pub const WorldManager = struct {
 
     pub fn worldToChunkCoord(world_x: i32, world_y: i32) Chunk.ChunkCoord {
         return Chunk.ChunkCoord{
-            .x = @divFloor(world_x, Chunk.CHUNK_SIZE),
-            .y = @divFloor(world_y, Chunk.CHUNK_SIZE),
+            .x = @divFloor(world_x, Chunk.CHUNK_WIDTH),
+            .y = @divFloor(world_y, Chunk.CHUNK_HEIGHT),
         };
     }
 
