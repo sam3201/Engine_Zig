@@ -161,6 +161,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
     var y: usize = 0;
     while (y < self.height) : (y += 1) {
         var x: usize = 0;
+        try writer.print("\x1b[{d};1H", .{y + 1});
         while (x < self.width) : (x += 1) {
             const idx = y * self.width + x;
             const ch = self.buf[idx];
