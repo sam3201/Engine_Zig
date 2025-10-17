@@ -64,7 +64,7 @@ pub fn main() !void {
     // ───────────── Game Start ─────────────
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
 
-    const camera = Engine.Camera.init(0, 0, WIDTH, HEIGHT);
+    const camera = Engine.Camera.init(WIDTH, HEIGHT);
 
     var game_engine = try Engine.Engine.init(
         allocator,
