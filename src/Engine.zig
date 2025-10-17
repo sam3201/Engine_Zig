@@ -174,9 +174,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
 
             try writer.writeByte(ch);
         }
-        if (y < self.height - 1) {
-            try writer.writeAll("\n");
-        }
     }
 
     try writer.writeAll("\x1b[0m");
