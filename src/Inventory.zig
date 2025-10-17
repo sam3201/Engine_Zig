@@ -108,6 +108,7 @@ pub const Inventory = struct {
         return Inventory{
             .allocator = allocator,
             .items = try std.ArrayList(Item).initCapacity(allocator, 8),
+            .Selected_Slot = 0,
         };
     }
 
