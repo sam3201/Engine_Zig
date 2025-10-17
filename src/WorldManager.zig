@@ -176,7 +176,7 @@ pub const WorldManager = struct {
         }
     }
 
-    fn tryMovePlayer(self: *WorldManager, dx: i32, dy: i32) void {
+    fn MovePlayer(self: *WorldManager, dx: i32, dy: i32) void {
         const pos = self.player.getPosition();
         const new_x = pos.x + dx;
         const new_y = pos.y + dy;
