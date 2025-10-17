@@ -282,6 +282,7 @@ pub const WorldManager = struct {
         }
 
         self.drawHUD();
+        self.drawHotbar();
     }
 
     fn drawHotbar(self: *WorldManager) void {
