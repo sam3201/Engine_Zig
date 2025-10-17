@@ -256,8 +256,8 @@ pub const WorldManager = struct {
     }
 
     fn playerSelectInventorySlot(self: *WorldManager, slot: u8) void {
-        if (self.player.inventory.getItem(slot))  {
-            self.player.inventory.Selected_Slot = slot;
+        if (self.player.inventory.getItem(slot))  |item| {
+            self.player.Selected_Slot = slot;
         }
         
     }
