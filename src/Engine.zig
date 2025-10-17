@@ -112,10 +112,8 @@ pub const Canvas = struct {
     }
 
 pub fn clear(self: *Canvas, ch: u8, color: Color) void {
-    // Fill the character buffer:
-    std.mem.set(u8, self.buf, ch);
+    std.mem.et(u8, self.buf, ch);
 
-    // Fill the color buffer:
     const total: usize = self.width * self.height;
     var i: usize = 0;
     while (i < total) : (i += 1) {
