@@ -128,6 +128,9 @@ pub const Player = struct {
         _ = self;
 
         action = InputAction.fromKey(input);
+        if (action != .NONE) {
+            return action;
+        }
         
     }
 
