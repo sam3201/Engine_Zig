@@ -65,7 +65,8 @@ const title_y = start_y;
         for (self.title, 0..) |ch, i| {
             const title_item_i32: i32 = @intCast(title_start + i);
         canvas.put(@intCast(title_x + i), title_y, ch);
-+            canvas.fillColor(@intCast(title_x + i), title_y, white);}
+            canvas.fillColor(@intCast(title_x + i), title_y, white);
+        }
 
         // Menu items
         for (self.items, 0..) |item, i| {
