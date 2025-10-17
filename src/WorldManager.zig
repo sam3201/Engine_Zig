@@ -1,7 +1,7 @@
 // src/WorldManager.zig
 
 const std = @import("std");
-const eng = @import("Engine.zig");
+const Engine = @import("Engine.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
