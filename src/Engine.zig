@@ -176,8 +176,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
         }
     }
 
-    try writer.writeAll("\x1b[0m");
-
     const bytes_to_write = self.render_buffer.items;
     _ = try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
 }
