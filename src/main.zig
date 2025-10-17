@@ -63,7 +63,8 @@ pub fn main() !void {
 
     // ───────────── Game Start ─────────────
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
-    const camera = Engine.Camera.init(WIDTH, HEIGHT);
+
+    const camera = Engine.Camera.init(0, 0, WIDTH, HEIGHT);
 
     var game_engine = try Engine.Engine.init(
         allocator,
@@ -85,7 +86,7 @@ pub fn main() !void {
         if (Engine.readKey() catch null) |key| {
             try world.processPlayerInput(key);
 
-            if (key == 'q' or key == 27) { 
+            if (key == 'q' or key == 27) { // 27 is the escape key code
                 game_engine.running = false;
                 continue;
             }
@@ -165,10 +166,9 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
             }
         }
 
-        camera.centerOn(self.player.entity.x, self.player.entity.y, world_width, world_height);
-engine.canvas.clear(' ', background_color);
+        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         menu.draw(&engine.canvas);
-engine.canvas.renderWithCamera(&camera);
+        engine.canvas.render();
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
