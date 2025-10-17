@@ -185,7 +185,7 @@ pub const WorldManager = struct {
              try self.updateChunks();
          }
 
-        self.updateCamera();
+        //self.updateCamera();
     }
 
     fn updateCamera(self: *WorldManager) void {
