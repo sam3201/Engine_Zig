@@ -74,9 +74,8 @@ const title_y = start_y;
             const color = if (i == self.selected) green else white;
 
             for (item, 0..) |ch, j| {
-                canvas.put(@intCast(start + j), y, ch);
-                canvas.fillColor(@intCast(start + j), y, color);
-            }
++                canvas.put(@intCast(item_x + j), item_y, ch);
++                canvas.fillColor(@intCast(item_x + j), item_y, color);            }
         }
     }
 };
