@@ -311,7 +311,7 @@ pub const WorldManager = struct {
         const slot_width: i32 = 3; 
 
         for (0..self.canvas_width) |sx| {
-            canvas.put(width - self.canvas_width - sx, bottom_y - 0, ' ');
+            canvas.put(width - (self.canvas_width - sx), bottom_y - 0, ' ');
             canvas.fillColor(sx, bottom_y - 0, Engine.Color{ .r = 10, .g = 10, .b = 10 });
         }
 
