@@ -75,8 +75,8 @@ pub const WorldManager = struct {
 
     pub fn worldToLocalCoord(world_x: i32, world_y: i32) struct { x: i32, y: i32 } {
         return .{
-            .x = @mod(world_x, Chunk.CHUNK_SIZE),
-            .y = @mod(world_y, Chunk.CHUNK_SIZE),
+            .x = @mod(world_x, Chunk.CHUNK_WIDTH),
+            .y = @mod(world_y, Chunk.CHUNK_HEIGHT),
         };
     }
 
