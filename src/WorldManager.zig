@@ -249,6 +249,11 @@ pub const WorldManager = struct {
         _ = self;
     }
 
+    fn updateChunks(self: *WorldManager) !void {
+        try self.updateChunks();
+        self.updateCamera();
+    }
+
     pub fn draw(self: *WorldManager) void {
         for (0..@intCast(self.canvas_height)) |screen_y| {
             for (0..@intCast(self.canvas_width)) |screen_x| {
