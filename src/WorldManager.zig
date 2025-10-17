@@ -288,7 +288,7 @@ pub const WorldManager = struct {
     const canvas = self.canvas;
     const bottom_y: i32 = @intCast(self.canvas_height) - 1;
     const slot_count: usize = 10;
-    const slot_width: i32 = 3; // adjust spacing if you want
+    const slot_width: i32 = 3; 
 
     for (0..@intCast(self.canvas_width)) |sx| {
         canvas.put(sx, bottom_y - 0, ' ');
