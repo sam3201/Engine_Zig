@@ -14,6 +14,15 @@ pub const InputAction = enum {
     USEITEM,
     DROPITEM,
     OPENINVENTORY,
+    SLOT1,
+    SLOT2,
+    SLOT3,
+    SLOT4,
+    SLOT5,
+    SLOT6,
+    SLOT7,
+    SLOT8,
+    SLOT9,
     NONE,
 
     pub fn fromKey(key: u8) InputAction {
