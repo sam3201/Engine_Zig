@@ -169,8 +169,8 @@ pub fn flushToTerminal(self: *Canvas) !void {
             const color = self.colors[idx];
 
             if (last_color == null or !last_color.?.eql(color)) {
-            try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
-last_color = color;
+                try writer.print("\x1b[38;2;{d};{d};{d}m", .{ color.r, color.g, color.b });
+                last_color = color;
             }
 
             try writer.writeByte(ch);
