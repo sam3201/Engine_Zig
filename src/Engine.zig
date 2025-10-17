@@ -111,13 +111,17 @@ pub const Canvas = struct {
         self.render_buffer.deinit(self.allocator);
     }
 
-    pub fn clear(self: *Canvas, ch: u8, color: Color) void {
-        @memset(self.buf, ch);
-        for (self.colors, 0..) |_, i| {
-            self.colors[i] = color;
-        }
-    }
+pub fn clear(self: *Canvas, ch: u8, color: Color) void {
+    // Fill the character buffer:
+    std.mem.set(u8, self.buf, ch);
 
+    // Fill the color buffer:
+    const total: usize = self.width * self.height;
+    var i: usize = 0;
+    while (i < total) : (i += 1) {
+        self.colors[i] = color;
+    }
+}
     pub fn put(self: *Canvas, x: i32, y: i32, ch: u8) void {
         if (x < 0 or y < 0) return;
         const ux: usize = @intCast(x);
