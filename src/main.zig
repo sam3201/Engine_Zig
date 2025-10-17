@@ -62,6 +62,7 @@ pub fn main() !void {
     }
 
     // ───────────── Game Start ─────────────
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
     var game_engine = try Engine.Engine.init(
         allocator,
         WIDTH,
