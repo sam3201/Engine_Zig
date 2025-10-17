@@ -55,12 +55,12 @@ pub const Menu = struct {
         const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
 
          const items_height = self.items.len * 2 - 1;
-const total_height = 1 + 2 + items_height; 
-const start_y: i32 = @intCast((canvas.height - total_height) / 2);
+            const total_height = 1 + 2 + items_height; 
+            const start_y: i32 = @intCast((canvas.height - total_height) / 2);
 
-        // Title
-const title_x = (canvas.width - self.title.len) / 2;
-const title_y = start_y;
+                    // Title
+            const title_x = (canvas.width - self.title.len) / 2;
+            const title_y = start_y;
 
         for (self.title, 0..) |ch, i| {
         canvas.put(@intCast(title_x + i), title_y, ch);
@@ -74,8 +74,8 @@ const title_y = start_y;
             const color = if (i == self.selected) green else white;
 
             for (item, 0..) |ch, j| {
-canvas.put(@intCast(item_x + j), item_y, ch);
-canvas.fillColor(@intCast(item_x + j), item_y, color);            }
+                canvas.put(@intCast(item_x + j), item_y, ch);
+                canvas.fillColor(@intCast(item_x + j), item_y, color);            }
         }
     }
 };
