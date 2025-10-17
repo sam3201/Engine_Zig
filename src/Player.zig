@@ -14,6 +14,7 @@ pub const InputAction = enum {
     USEITEM,
     DROPITEM,
     OPENINVENTORY,
+    SLOT0,
     SLOT1,
     SLOT2,
     SLOT3,
