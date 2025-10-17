@@ -8,7 +8,7 @@ const Inventory = @import("Inventory.zig");
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
-    canvas: *eng.Canvas,
+    canvas: *Engine.Canvas,
     player: Player.Player,
     chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
     loaded_radius: i32 = 2,
@@ -29,7 +29,7 @@ pub const WorldManager = struct {
         }
     };
 
-    pub fn init(coord: Chunk.ChunkCoord, difficulty: i32, allocator: std.mem.Allocator, canvas: *eng.Canvas, player: Player.Player) !WorldManager {
+    pub fn init(coord: Chunk.ChunkCoord, difficulty: i32, allocator: std.mem.Allocator, canvas: *Engine.Canvas, player: Player.Player) !WorldManager {
         var world = WorldManager{
             .allocator = allocator,
             .canvas = canvas,
@@ -338,11 +338,11 @@ pub const WorldManager = struct {
         const half_health = @divTrunc(self.player.max_health, 2);
 
         const health_color = if (self.player.health < quarter_health)
-            eng.Color{ .r = 255, .g = 0, .b = 0 }
+            Engine.Color{ .r = 255, .g = 0, .b = 0 }
         else if (self.player.health < half_health)
-            eng.Color{ .r = 255, .g = 255, .b = 0 }
+            Engine.Color{ .r = 255, .g = 255, .b = 0 }
         else
-            eng.Color{ .r = 0, .g = 255, .b = 0 };
+            Engine.Color{ .r = 0, .g = 255, .b = 0 };
 
         const inv_str = std.fmt.allocPrint(self.allocator, "Inventory: ", .{}) catch return;
         defer self.allocator.free(inv_str);
@@ -351,7 +351,7 @@ pub const WorldManager = struct {
             const y: i32 = 2;
             if (i < self.canvas.width) {
                 self.canvas.put(@intCast(i), y, ch);
-                self.canvas.fillColor(@intCast(i), y, eng.Color{ .r = 200, .g = 200, .b = 200 });
+                self.canvas.fillColor(@intCast(i), y, Engine.Color{ .r = 200, .g = 200, .b = 200 });
             }
         }
 
@@ -365,7 +365,7 @@ pub const WorldManager = struct {
                 const x: usize = offset + j;
                 if (x < self.canvas.width) {
                     self.canvas.put(@intCast(x), y, ch);
-                    self.canvas.fillColor(@intCast(x), y, eng.Color{ .r = 180, .g = 180, .b = 0 });
+                    self.canvas.fillColor(@intCast(x), y, Engine.Color{ .r = 180, .g = 180, .b = 0 });
                 }
             }
             offset += entry.len;
@@ -374,7 +374,7 @@ pub const WorldManager = struct {
         for (0..info_text.len) |i| {
             if (i < self.canvas.width) {
                 self.canvas.put(@intCast(i), 0, ' ');
-                self.canvas.fillColor(@intCast(i), 0, eng.Color{ .r = 0, .g = 0, .b = 64 });
+                self.canvas.fillColor(@intCast(i), 0, Engine.Color{ .r = 0, .g = 0, .b = 64 });
             }
         }
 
@@ -391,12 +391,12 @@ pub const WorldManager = struct {
             defer self.allocator.free(biome_text);
 
             const biome_color = switch (chunk.biome) {
-                .Plains => eng.Color{ .r = 100, .g = 255, .b = 100 },
-                .Forest => eng.Color{ .r = 0, .g = 150, .b = 0 },
-                .Mountains => eng.Color{ .r = 150, .g = 150, .b = 150 },
-                .Desert => eng.Color{ .r = 255, .g = 200, .b = 100 },
-                .Tundra => eng.Color{ .r = 200, .g = 200, .b = 255 },
-                .Volcanic => eng.Color{ .r = 255, .g = 100, .b = 100 },
+                .Plains => Engine.Color{ .r = 100, .g = 255, .b = 100 },
+                .Forest => Engine.Color{ .r = 0, .g = 150, .b = 0 },
+                .Mountains => Engine.Color{ .r = 150, .g = 150, .b = 150 },
+                .Desert => Engine.Color{ .r = 255, .g = 200, .b = 100 },
+                .Tundra => Engine.Color{ .r = 200, .g = 200, .b = 255 },
+                .Volcanic => Engine.Color{ .r = 255, .g = 100, .b = 100 },
             };
 
             for (biome_text, 0..) |ch, i| {
