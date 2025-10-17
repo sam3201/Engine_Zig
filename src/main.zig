@@ -100,8 +100,8 @@ pub fn main() !void {
 
             world.draw();
 
-        try game_engengine.canvas.renderWithCamera(&camera);
-ine.canvas.flushToTerminal();
+            game_engine.canvas.renderWithCamera();
+        try game_engine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
     }
 
