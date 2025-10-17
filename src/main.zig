@@ -154,7 +154,7 @@ fn optionsMenu(engine: *Engine.Engine) !void {
 fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     var menu = Menu.init(
         "In-Game Menu",
-        &[_][]const u8{ "Change Name", "View Key Bindings", "Back" },
+        &[_][]const u8{ "Change Name", "View Key Bindings", "Back", "Quit" },
         'w',
         's',
         '\n',
