@@ -37,6 +37,16 @@ pub const InputAction = enum {
             'o', 'O' => .DROPITEM,
             ' ' => .ATTACK,
             'i', 'I' => .OPENINVENTORY,
+            '0' => .SLOT0,
+            '1' => .SLOT1,
+            '2' => .SLOT2,
+            '3' => .SLOT3,
+            '4' => .SLOT4,
+            '5' => .SLOT5,
+            '6' => .SLOT6,
+            '7' => .SLOT7,
+            '8' => .SLOT8,
+            '9' => .SLOT9,
             else => .NONE,
         };
     }
