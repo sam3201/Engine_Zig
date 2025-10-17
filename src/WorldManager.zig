@@ -306,10 +306,11 @@ pub const WorldManager = struct {
     fn drawHotbar(self: *WorldManager) void {
         const canvas = self.canvas;
         const bottom_y: i32 = self.canvas_height - 1;
+        const width: i32 = self.canvas_width;
         const slot_count: usize = 10;
         const slot_width: i32 = 3; 
 
-        for (0..@intCast(self.canvas_width)) |sx| {
+        for (0..self.canvas_width) |sx| {
             canvas.put(sx, bottom_y - 0, ' ');
             canvas.fillColor(sx, bottom_y - 0, Engine.Color{ .r = 10, .g = 10, .b = 10 });
         }
