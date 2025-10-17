@@ -111,6 +111,8 @@ pub fn main() !void {
         game_engine.clock.sleepUntilNextFrame();
     }
 
+
+    game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
     std.debug.print("Exited game.\n", .{});
 
 }
