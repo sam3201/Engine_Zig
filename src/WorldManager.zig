@@ -318,7 +318,7 @@ pub const WorldManager = struct {
         var i: usize = 0;
         while (i < slot_count) : (i += 1) {
             const slot_x = x_offset;
-            const selected = (self.player.inventory.selected_slot) == i;
+            const selected = (self.player.inventory.Selected_Slot) == i;
 
             if (selected) {
                 canvas.put(slot_x, bottom_y, '[');
