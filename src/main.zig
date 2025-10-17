@@ -54,7 +54,7 @@ pub fn main() !void {
 
     if (title_menu_choice) |choice| {
         switch (choice) {
-            0 => {} 
+            0 => {}, 
             1 => try optionsMenu(&engine),
             2 => return,
             else => {},
