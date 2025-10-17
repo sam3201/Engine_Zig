@@ -57,7 +57,7 @@ pub fn main() !void {
             0 => std.debug.print("Starting game...\n", .{}),
             1 => try optionsMenu(&engine),
             2 => return,
-            3 => break,
+            3 => return,
             else => {},
         }
     }
