@@ -128,8 +128,12 @@ pub const Player = struct {
         _ = self;
 
         action = InputAction.fromKey(input);
-        if (action != .NONE) {
-            return action;
+        switch (action) {
+            .UP => self.move(0, -1),
+            .DOWN => self.move(0, 1),
+            .LEFT => self.move(-1, 0),
+            .RIGHT => self.move(1, 0),
+            else => {},
         }
         
     }
