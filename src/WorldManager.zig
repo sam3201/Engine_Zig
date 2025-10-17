@@ -165,6 +165,16 @@ pub const WorldManager = struct {
             .USEITEM => self.playerUseItem(),
             .DROPITEM => self.playerDropItem(),
             .OPENINVENTORY => self.playerOpenInventory(),
+            .SLOT0 => self.playerSelectInventorySlot(0),
+            .SLOT1 => self.playerSelectInventorySlot(1),
+            .SLOT2 => self.playerSelectInventorySlot(2),
+            .SLOT3 => self.playerSelectInventorySlot(3),
+            .SLOT4 => self.playerSelectInventorySlot(4),
+            .SLOT5 => self.playerSelectInventorySlot(5),
+            .SLOT6 => self.playerSelectInventorySlot(6),
+            .SLOT7 => self.playerSelectInventorySlot(7),
+            .SLOT8 => self.playerSelectInventorySlot(8),
+            .SLOT9 => self.playerSelectInventorySlot(9),
             .NONE => {},
         }
 
