@@ -89,17 +89,6 @@ pub fn main() !void {
 
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
-        const pos = player.getPosition();
-        const hud1 = std.fmt.allocPrint(
-        allocator,
-        "HP: {d}/{d} | Pos: ({d},{d}) | Name: {s}",
-        .{ player.health, player.max_health, pos.x, pos.y, player.name },
-        ) catch unreachable;
-        defer allocator.free(hud1);
-
-        for (hud1, 0..) |c, i| {
-        game_engine.canvas.put(@intCast(i), 0, c);
-        }
 
         world.draw();
 
