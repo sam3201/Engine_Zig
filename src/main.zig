@@ -9,8 +9,8 @@ const Menu = @import("Menu.zig").Menu;
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    const WIDTH = 80;
-    const HEIGHT = 24;
+    const WIDTH = 159;
+    const HEIGHT = 50;
     
     const FPS = 60; 
 
