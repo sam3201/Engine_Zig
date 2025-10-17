@@ -166,7 +166,6 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
         camera.centerOn(self.player.entity.x, self.player.entity.y, world_width, world_height);
 engine.canvas.clear(' ', background_color);
 engine.canvas.renderWithCamera(&camera);
-        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
         menu.draw(&engine.canvas);
         engine.canvas.render();
         try engine.canvas.flushToTerminal();
