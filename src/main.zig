@@ -95,7 +95,7 @@ pub fn main() !void {
             }
         }
 
-            camera.centerOn(game_engine.player.entity.x, self.player.entity.y, world_width, world_height);
+            camera.centerOn(world.player.entity.x, self.player.entity.y, world_width, world_height);
 engine.canvas.clear(' ', background_color);
 
         world.draw();
