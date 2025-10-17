@@ -358,9 +358,9 @@ pub const Engine = struct {
         };
     }
 
-    pub fn stop(self: *Engine) void {
-        self.running = false;
-    }
+    pub fn runWithCenteredCamera(self: *Engine, target_x: i32, target_y: i32, world_width: i32, world_height: i32) !void {
+        
+    } 
 };
 
 pub const TerminalGuard = struct {
