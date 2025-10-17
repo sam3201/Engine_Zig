@@ -290,27 +290,23 @@ pub const WorldManager = struct {
     const slot_count: usize = 10;
     const slot_width: i32 = 3; // adjust spacing if you want
 
-    // Draw a background bar (optional)
     for (0..@intCast(self.canvas_width)) |sx| {
         canvas.put(sx, bottom_y - 0, ' ');
         canvas.fillColor(sx, bottom_y - 0, Engine.Color{ .r = 10, .g = 10, .b = 10 });
     }
 
-    // Draw slots
     var x_offset: i32 = 2;
     var i: usize = 0;
     while (i < slot_count) : (i += 1) {
         const slot_x = x_offset;
         const selected = (self.player.inventory.selected_slot) == i;
 
-        // Draw slot border/selection
         if (selected) {
             canvas.put(slot_x, bottom_y, '[');
         } else {
             canvas.put(slot_x, bottom_y, '(');
         }
 
-        // Item char (or dot if empty)
         const maybe_item = self.player.inventory.getItem(i);
         if (maybe_item) |it| {
             canvas.put(slot_x + 1, bottom_y, it.variant_char);
@@ -320,14 +316,12 @@ pub const WorldManager = struct {
             canvas.fillColor(slot_x + 1, bottom_y, Engine.Color{ .r = 120, .g = 120, .b = 120 });
         }
 
-        // closing brace
         if (selected) {
             canvas.put(slot_x + 2, bottom_y, ']');
         } else {
             canvas.put(slot_x + 2, bottom_y, ')');
         }
 
-        // advance to next slot
         x_offset += slot_width;
     }
 }
