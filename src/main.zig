@@ -98,10 +98,10 @@ pub fn main() !void {
             camera.centerOn(world.player.entity.x, world.player.entity.y, WIDTH, HEIGHT);
             game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
-        world.draw();
+            world.draw();
 
-        game_engine.canvas.render();
-        try game_engine.canvas.flushToTerminal();
+        try game_engengine.canvas.renderWithCamera(&camera);
+ine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
     }
 
