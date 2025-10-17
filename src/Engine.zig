@@ -228,6 +228,30 @@ pub fn addRenderable(self: *Canvas, r: Renderable) !void {
             }
         }
     }
+
+    pub fn renderWithCamera(self: *Canvas, camera: *const Camera) void {
+    for (self.scene.items) |r| {
+        const x0 = r.x;
+        const y0 = r.y;
+        const x1 = r.x + r.width - 1;
+        const y1 = r.y + r.height - 1;
+
+        var yy = y0;
+        while (yy <= y1) : (yy += 1) {
+            var xx = x0;
+            while (xx <= x1) : (xx += 1) {
+                if (xx >= camera.x and xx < camera.x + @as(i32, @intCast(camera.width)) and
+                    yy >= camera.y and yy < camera.y + @as(i32, @intCast(camera.height)))
+                {
+                    const screen_x = xx - camera.x;
+                    const screen_y = yy - camera.y;
+                    self.put(screen_x, screen_y, r.ch);
+                    self.fillColor(screen_x, screen_y, r.color);
+                }
+            }
+        }
+    }
+}
 };
 
 pub const Camera = struct {
