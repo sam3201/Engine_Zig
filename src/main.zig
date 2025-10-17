@@ -89,7 +89,6 @@ pub fn main() !void {
 
         game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
 
-
         world.draw();
 
         game_engine.canvas.render();
