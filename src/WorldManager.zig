@@ -293,7 +293,7 @@ pub const WorldManager = struct {
 
         for (0..@intCast(self.canvas_width)) |sx| {
             canvas.put(sx, bottom_y - 0, ' ');
-            canvas.fillColor(sx, bottom_y - 0, Color{ .r = 10, .g = 10, .b = 10 });
+            canvas.fillColor(sx, bottom_y - 0, Engine.Color{ .r = 10, .g = 10, .b = 10 });
         }
 
         var x_offset: i32 = 2;
