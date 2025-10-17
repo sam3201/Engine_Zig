@@ -72,7 +72,6 @@ pub fn main() !void {
     defer game_engine.deinit();
 
     var player = try Player.Player.createWASDPlayer("Player", allocator, 0, 0);
-    defer player.deinit();
 
     var world = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &game_engine.canvas, player);
     defer world.deinit();
