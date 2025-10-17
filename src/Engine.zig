@@ -358,13 +358,6 @@ pub const Engine = struct {
         };
     }
 
-    pub fn runWithCenteredCamera(self: *Engine, target_x: i32, target_y: i32, world_width: i32, world_height: i32) !void {
-        var camera = Camera.init(self.canvas.width, self.canvas.height);
-        camera.centerOn(target_x, target_y, world_width, world_height);
-        self.canvas.camera = camera;
-        try self.run();
-        
-    } 
 };
 
 pub const TerminalGuard = struct {
