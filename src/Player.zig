@@ -127,14 +127,7 @@ pub const Player = struct {
     pub fn processInput(self: *Player, input: u8) InputAction {
         _ = self;
 
-        action = InputAction.fromKey(input);
-        switch (action) {
-            .UP => self.move(0, -1),
-            .DOWN => self.move(0, 1),
-            .LEFT => self.move(-1, 0),
-            .RIGHT => self.move(1, 0),
-            else => {},
-        }
+        return InputAction.fromKey(input);
         
     }
 
