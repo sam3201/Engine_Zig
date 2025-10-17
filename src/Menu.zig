@@ -55,7 +55,13 @@ pub const Menu = struct {
         const green = Engine.Color{ .r = 0, .g = 255, .b = 0 };
 
         // Title
-        const title_start = (canvas.width - self.title.len) / 2;
+        +        // Center the entire menu block vertically
++        const items_height = self.items.len * 2 - 1;
++        const total_height = 1 + 2 + items_height; // Title height + spacing + items block height
++        const start_y: i32 = @intCast((canvas.height - total_height) / 2);
++
++        const title_x = (canvas.width - self.title.len) / 2;
++        const title_y = start_y;
         for (self.title, 0..) |ch, i| {
             const title_item_i32: i32 = @intCast(title_start + i);
             canvas.put(title_item_i32, 2, ch);
