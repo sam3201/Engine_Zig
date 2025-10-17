@@ -57,6 +57,7 @@ pub const Menu = struct {
          const items_height = self.items.len * 2 - 1;
 const total_height = 1 + 2 + items_height; 
 const start_y: i32 = @intCast((canvas.height - total_height) / 2);
+
         // Title
         for (self.title, 0..) |ch, i| {
             const title_item_i32: i32 = @intCast(title_start + i);
