@@ -85,7 +85,7 @@ pub fn main() !void {
         if (Engine.readKey() catch null) |key| {
             try world.processPlayerInput(key);
 
-            if (key == 'q' or key == 27) { // 27 is the escape key code
+            if (key == 'q' or key == 27) { 
                 game_engine.running = false;
                 continue;
             }
