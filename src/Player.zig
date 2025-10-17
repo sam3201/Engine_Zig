@@ -127,7 +127,8 @@ pub const Player = struct {
     pub fn processInput(self: *Player, input: u8) InputAction {
         _ = self;
 
-        return InputAction.fromKey(input);
+        InputAction.fromKey(input);
+        return .NONE;
     }
 
     pub fn addItem(self: *Player, item: Inventory.Item) !void {
