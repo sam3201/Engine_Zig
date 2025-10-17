@@ -128,7 +128,6 @@ pub const Player = struct {
         _ = self;
 
         InputAction.fromKey(input);
-        return .NONE;
     }
 
     pub fn addItem(self: *Player, item: Inventory.Item) !void {
