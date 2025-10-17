@@ -60,7 +60,7 @@ const start_y: i32 = @intCast((canvas.height - total_height) / 2);
 
         // Title
 const title_x = (canvas.width - self.title.len) / 2;
-+        const title_y = start_y;
+const title_y = start_y;
         for (self.title, 0..) |ch, i| {
             const title_item_i32: i32 = @intCast(title_start + i);
             canvas.put(title_item_i32, 2, ch);
