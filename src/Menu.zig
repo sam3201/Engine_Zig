@@ -69,8 +69,9 @@ const title_y = start_y;
 
         // Menu items
         for (self.items, 0..) |item, i| {
-            +            const item_y: i32 = title_y + 3 + @as(i32, @intCast(i)) * 2;
-+            const item_x = (canvas.width - item.len) / 2;const color = if (i == self.selected) green else white;
+            const item_y: i32 = title_y + 3 + @as(i32, @intCast(i)) * 2;
+            const item_x = (canvas.width - item.len) / 2;
+const color = if (i == self.selected) green else white;
 
             for (item, 0..) |ch, j| {
                 canvas.put(@intCast(start + j), y, ch);
