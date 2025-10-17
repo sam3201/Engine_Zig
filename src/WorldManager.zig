@@ -6,6 +6,38 @@ const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
 
+pub const Camera = struct {
+    x: i32,
+    y: i32,
+    width: usize,
+    height: usize,
+
+    pub fn init(width: usize, height: usize) Camera {
+        return Camera{
+            .x = 0,
+            .y = 0,
+            .width = width,
+            .height = height,
+        };
+    }
+
+    pub fn centerOn(self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
+        const half_w = @as(i32, @intCast(self.width / 2));
+        const half_h = @as(i32, @intCast(self.height / 2));
+
+        self.x = target_x - half_w;
+        self.y = target_y - half_h;
+
+        // lock to world bounds
+        if (self.x < 0) self.x = 0;
+        if (self.y < 0) self.y = 0;
+        if (self.x + @as(i32, @intCast(self.width)) > world_width)
+            self.x = world_width - @as(i32, @intCast(self.width));
+        if (self.y + @as(i32, @intCast(self.height)) > world_height)
+            self.y = world_height - @as(i32, @intCast(self.height));
+    }
+};
+
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
     canvas: *Engine.Canvas,
