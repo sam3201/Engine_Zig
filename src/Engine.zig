@@ -154,8 +154,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
 pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
     
-    var writer = self.render_buffer.writer(self.allocator); 
-
+var writer = self.render_buffer.writer(self.allocator);
     try writer.writeAll("\x1b[H");
 
     var last_color: ?Color = null;
