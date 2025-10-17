@@ -112,7 +112,7 @@ pub fn main() !void {
     }
 
 
-    game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+    std.debug.print("\x1b[2J", .{});
     std.debug.print("Exited game.\n", .{});
 
 }
