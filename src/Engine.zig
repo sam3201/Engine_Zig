@@ -269,7 +269,7 @@ pub const Camera = struct {
         };
     }
 
-    pub fn centerOn(self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
+    pub fn centerOn(const self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
         const half_w = @as(i32, @intCast(self.width / 2));
         const half_h = @as(i32, @intCast(self.height / 2));
 
