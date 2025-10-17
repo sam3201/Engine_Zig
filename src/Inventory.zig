@@ -101,7 +101,7 @@ pub const Item = struct {
 
 pub const Inventory = struct {
     allocator: std.mem.Allocator,
-    Selected_Slot: u32 = 0,
+    Selected_Slot: usize = 0,
     items: std.ArrayList(Item),
 
     pub fn init(allocator: std.mem.Allocator) !Inventory {
