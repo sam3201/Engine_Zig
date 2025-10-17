@@ -112,7 +112,7 @@ pub const Canvas = struct {
     }
 
 pub fn clear(self: *Canvas, ch: u8, color: Color) void {
-    std.mem.et(u8, self.buf, ch);
+    std.mem.set(u8, self.buf, ch);
 
     const total: usize = self.width * self.height;
     var i: usize = 0;
