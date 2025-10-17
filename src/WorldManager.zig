@@ -256,8 +256,8 @@ pub const WorldManager = struct {
     }
 
     fn playerSelectInventorySlot(self: *WorldManager, slot: u8) void {
-        // TODO:
-        _ = self;
+       const idx = slot - 1;
+        
     }
     fn playerOpenInventory(self: *WorldManager) void {
         // TODO:
