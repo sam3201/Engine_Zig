@@ -95,7 +95,8 @@ pub fn main() !void {
             }
         }
 
-        game_engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+camera.centerOn(self.player.entity.x, self.player.entity.y, world_width, world_height);
+engine.canvas.clear(' ', background_color);
 
         world.draw();
 
