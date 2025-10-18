@@ -194,15 +194,12 @@ pub fn flushToTerminal(self: *Canvas) !void {
                     .revents = 0,
                 }};
                 
-                // Wait up to 100ms for the fd to become writable
                 const poll_result = std.posix.poll(&poll_fd, 100) catch {
-                    // If poll fails, just try again with a tiny sleep
-                    std.time.sleep(1_000_000); // 1ms
+                    std.time.sleep(1_000_000); 
                     continue;
                 };
                 
                 if (poll_result == 0) {
-                    // Timeout, but continue trying
                     continue;
                 }
                 continue;
