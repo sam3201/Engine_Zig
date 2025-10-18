@@ -187,6 +187,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         if (err == error.WouldBlock) {
             std.Thread.sleep(100_000); 
         }
+        std.debug.print("Error writing to terminal: {any}\n", .{err});
     }; 
          
  
