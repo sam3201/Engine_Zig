@@ -14,8 +14,8 @@ pub fn main() !void {
     
     const FPS = 60; 
 
-    var term = try Engine.TerminalGuard.init();
-    defer term.deinit();
+    //var term = try Engine.TerminalGuard.init();
+    //defer term.deinit();
 
     var engine = try Engine.Engine.init(
         allocator,
