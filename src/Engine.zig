@@ -188,7 +188,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
                 // retries += 1;
                 // std.Thread.sleep(100_000); 
                 //continue;
-            }
+           // }
             return err;
         };
         if (n == 0) break;
