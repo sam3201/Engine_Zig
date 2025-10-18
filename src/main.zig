@@ -57,7 +57,6 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
 
 }
 
-
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
