@@ -183,7 +183,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
     //var total_written: usize = 0;
     //var retries: u32 = 0;
     //while (total_written < bytes_to_write.len) { //and retries < 10) {
-    std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) { //catch |err| {
+     std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) { //catch |err| {
             //if (err == error.WouldBlock) {
                 // retries += 1;
                 // std.Thread.sleep(100_000); 
