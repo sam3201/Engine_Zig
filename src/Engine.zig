@@ -257,32 +257,22 @@ pub fn addRenderable(self: *Canvas, r: Renderable) !void {
 pub const Camera = struct {
     x: i32,
     y: i32,
-    width: usize,
-    height: usize,
+    width: i32,
+    height: i32,
 
-    pub fn init(width: usize, height: usize) Camera {
-        return Camera{
-            .x = 0,
-            .y = 0,
-            .width = width,
-            .height = height,
-        };
+    pub fn init(width: i32, height: i32) Camera {
+        return Camera{ .x = 0, .y = 0, .width = width, .height = height };
     }
 
-    pub fn centerOn(self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
-        const half_w = @as(i32, @intCast(self.width / 2));
-        const half_h = @as(i32, @intCast(self.height / 2));
+    pub fn centerOn(self: *Camera, player_x: i32, player_y: i32, world_width: i32, world_height: i32) void {
+        self.x = player_x - self.width / 2;
+        self.y = player_y - self.height / 2;
 
-        self.x = target_x - half_w;
-        self.y = target_y - half_h;
-
-        // lock to world bounds
+        // Clamp to world borders
         if (self.x < 0) self.x = 0;
         if (self.y < 0) self.y = 0;
-        if (self.x + @as(i32, @intCast(self.width)) > world_width)
-            self.x = world_width - @as(i32, @intCast(self.width));
-        if (self.y + @as(i32, @intCast(self.height)) > world_height)
-            self.y = world_height - @as(i32, @intCast(self.height));
+        if (self.x + self.width > world_width) self.x = world_width - self.width;
+        if (self.y + self.height > world_height) self.y = world_height - self.height;
     }
 };
 
