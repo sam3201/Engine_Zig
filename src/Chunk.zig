@@ -347,7 +347,7 @@ pub const Chunk = struct {
                     .Volcanic => .Stone,   // Rare volcanic rock
                     .Desert => .Stone,     // Desert rocks/ore
                     .Tundra => .Stone,     // Ice/stone
-                    .Plains => if (random.float(f32) < 0.3) .Tree else continue,  // Occasional tree
+                    .Plains => if (random.float(f32) < 0.3) .Tree else continue,  
                 };
             }
         }
