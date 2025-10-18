@@ -151,7 +151,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         }
     }
 
- pub fn flushToTerminal(self: *Canvas) !void {
+pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
 
     var writer = self.render_buffer.writer(self.allocator);
@@ -162,7 +162,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
     var y: usize = 0;
     while (y < self.height) : (y += 1) {
         if (y > 0) {
-            try writer.writeAll("\x1b[E"); 
+            try writer.writeAll("\x1b[E"); // Move to beginning of next line
         }
         var x: usize = 0;
         while (x < self.width) : (x += 1) {
@@ -179,24 +179,45 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         }
     }
 
-        const bytes_to_write = self.render_buffer.items;
+    // Write the entire buffer, handling partial writes and WouldBlock
+    const bytes_to_write = self.render_buffer.items;
     var total_written: usize = 0;
-    var retries: u32 = 0;
+    
     while (total_written < bytes_to_write.len) {
-        const n = std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) catch |err| {
+        const remaining = bytes_to_write[total_written..];
+        const n = std.posix.write(std.posix.STDOUT_FILENO, remaining) catch |err| {
             if (err == error.WouldBlock) {
-                retries += 1;
-                std.Thread.sleep(100_000); // Sleep for 100 microseconds
+                // Use poll/select to wait until we can write
+                var poll_fd = [_]std.posix.pollfd{.{
+                    .fd = std.posix.STDOUT_FILENO,
+                    .events = std.posix.POLL.OUT,
+                    .revents = 0,
+                }};
+                
+                // Wait up to 100ms for the fd to become writable
+                const poll_result = std.posix.poll(&poll_fd, 100) catch {
+                    // If poll fails, just try again with a tiny sleep
+                    std.time.sleep(1_000_000); // 1ms
+                    continue;
+                };
+                
+                if (poll_result == 0) {
+                    // Timeout, but continue trying
+                    continue;
+                }
                 continue;
             }
             return err;
         };
-        if (n == 0) break;
+        
+        if (n == 0) {
+            // EOF or broken pipe - can't write anymore
+            return error.BrokenPipe;
+        }
+        
         total_written += n;
-        retries = 0; 
     }
 }
-
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
