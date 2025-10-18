@@ -180,7 +180,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
     }
 
     //var total_written: usize = 0;
-    //var retries: u32 = 0;
+    const retries: u32 = 0;
     //while (total_written < bytes_to_write.len) { //and retries < 10) {
     try std.posix.write(std.posix.STDOUT_FILENO, self.render_buffer.items); 
         // if (err == error.WouldBlock) {
