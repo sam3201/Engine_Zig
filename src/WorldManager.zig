@@ -306,7 +306,7 @@ pub const WorldManager = struct {
     fn drawHotbar(self: *WorldManager) void {
         const canvas = self.canvas;
         const bottom_y: i32 = self.canvas_height - 1;
-        const slot_count: usize = 5; // Reduced from 10 to 5 for cleaner UI
+        const slot_count: usize = 10; // Reduced from 10 to 5 for cleaner UI
         const slot_width: i32 = 4; 
 
         var x_offset: i32 = 2;
