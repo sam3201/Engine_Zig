@@ -181,12 +181,21 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
 
     const bytes_to_write = self.render_buffer.items;
     var total_written: usize = 0;
-    while (total_written < bytes_to_write.len) {
-        const n = try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]);
+    var retries: u32 = 0;
+    while (total_written < bytes_to_write.len and retries < 10) {
+        const n = std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) catch |err| {
+            if (err == error.WouldBlock) {
+                retries += 1;
+                std.time.sleep(100_000); // Sleep for 100 microseconds
+                continue;
+            }
+            return err;
+        };
         if (n == 0) break;
         total_written += n;
+        retries = 0; // Reset retry counter on successful write
     }
-}   
+}}   
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
