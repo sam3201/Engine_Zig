@@ -151,18 +151,20 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         }
     }
 
-pub fn flushToTerminal(self: *Canvas) !void {
+ pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
 
     var writer = self.render_buffer.writer(self.allocator);
 
-    try writer.writeAll("\x1b[0m\x1b[?25l");
+    try writer.writeAll("\x1b[0m\x1b[?25l\x1b[H");
     var last_color: ?Color = null;
 
     var y: usize = 0;
     while (y < self.height) : (y += 1) {
+        if (y > 0) {
+            try writer.writeAll("\x1b[E"); // Move to beginning of next line
+        }
         var x: usize = 0;
-        try writer.print("\x1b[{d};1H", .{y + 1});
         while (x < self.width) : (x += 1) {
             const idx = y * self.width + x;
             const ch = self.buf[idx];
@@ -178,9 +180,13 @@ pub fn flushToTerminal(self: *Canvas) !void {
     }
 
     const bytes_to_write = self.render_buffer.items;
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write);
-}
-    
+    var total_written: usize = 0;
+    while (total_written < bytes_to_write.len) {
+        const n = try std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]);
+        if (n == 0) break;
+        total_written += n;
+    }
+}   
     
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
