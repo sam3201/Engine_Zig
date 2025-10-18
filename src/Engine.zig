@@ -187,7 +187,6 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         total_written += n;
     }
 }   
-    
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
