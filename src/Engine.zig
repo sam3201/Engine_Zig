@@ -185,7 +185,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
     while (total_written < bytes_to_write.len) { //and retries < 10) {
         const n = std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) { //catch |err| {
             //if (err == error.WouldBlock) {
-                retries += 1;
+                // retries += 1;
                 std.Thread.sleep(100_000); 
                 continue;
             }
