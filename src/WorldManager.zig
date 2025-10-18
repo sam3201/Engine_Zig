@@ -336,6 +336,7 @@ pub const WorldManager = struct {
             x_offset += slot_width;
         }
     }
+
     fn drawHUD(self: *WorldManager) void {
         const pos = self.player.getPosition();
         const chunk_coord = self.getPlayerChunkCoord();
