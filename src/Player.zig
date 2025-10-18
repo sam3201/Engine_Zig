@@ -164,6 +164,7 @@ pub const Player = struct {
         for (self.inventory.items.items) |it| {
             try w.print("{s}\n", .{it.name});
         }
+        try w.writeAll("end\n");
     }
 
     pub fn load(name: []const u8) !void {
