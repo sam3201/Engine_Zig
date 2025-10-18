@@ -186,14 +186,14 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         const n = std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) catch |err| {
             if (err == error.WouldBlock) {
                 retries += 1;
-                std.time.sleep(100_000); // Sleep for 100 microseconds
+                std.time.sleep(100_000); 
                 continue;
             }
             return err;
         };
         if (n == 0) break;
         total_written += n;
-        retries = 0; // Reset retry counter on successful write
+        retries = 0; 
     }
 }   
 
