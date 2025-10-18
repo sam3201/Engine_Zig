@@ -305,7 +305,6 @@ pub const Chunk = struct {
                 }
             }
             
-            // Sometimes extend with a "river" arm
             if (random.float(f32) < 0.4) {
                 const river_length = random.intRangeAtMost(i32, 5, 12);
                 var rx = lake_x;
@@ -315,7 +314,6 @@ pub const Chunk = struct {
                 for (0..@intCast(river_length)) |_| {
                     if (rx >= 0 and rx < CHUNK_WIDTH and ry >= 0 and ry < CHUNK_HEIGHT) {
                         self.tiles[@intCast(ry * CHUNK_WIDTH + rx)] = .Water;
-                        // Maybe add adjacent water for width
                         if (random.float(f32) < 0.5) {
                             if (direction < 2 and rx + 1 < CHUNK_WIDTH) {
                                 self.tiles[@intCast(ry * CHUNK_WIDTH + rx + 1)] = .Water;
