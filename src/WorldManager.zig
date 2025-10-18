@@ -324,7 +324,6 @@ pub const WorldManager = struct {
                 canvas.put(slot_x + 1, bottom_y, ':');
                 canvas.fillColor(slot_x + 1, bottom_y, Engine.Color{ .r = 100, .g = 100, .b = 100 });
                 
-                // Show item
                 canvas.put(slot_x + 2, bottom_y, it.variant_char);
                 canvas.fillColor(slot_x + 2, bottom_y, if (selected) 
                     Engine.Color{ .r = 255, .g = 255, .b = 100 }
