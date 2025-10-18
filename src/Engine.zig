@@ -162,7 +162,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
     var y: usize = 0;
     while (y < self.height) : (y += 1) {
         if (y > 0) {
-            try writer.writeAll("\x1b[E"); // Move to beginning of next line
+            try writer.writeAll("\x1b[E"); 
         }
         var x: usize = 0;
         while (x < self.width) : (x += 1) {
