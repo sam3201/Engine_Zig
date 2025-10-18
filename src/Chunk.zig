@@ -283,19 +283,16 @@ pub const Chunk = struct {
     }
 
     fn addFeatures(self: *Chunk, random: std.Random) void {
-        // Add lakes/rivers more frequently (20% chance)
-        if (random.float(f32) < 0.20) {
+        if (random.float(f32) < 0.25) {
             const lake_x = random.intRangeAtMost(i32, 5, CHUNK_WIDTH - 6);
             const lake_y = random.intRangeAtMost(i32, 5, CHUNK_HEIGHT - 6);
             const size = random.intRangeAtMost(usize, 3, 6);
 
-            // Create a more organic looking body of water
             for (0..size) |dy| {
                 for (0..size) |dx| {
                     const x = lake_x + @as(i32, @intCast(dx));
                     const y = lake_y + @as(i32, @intCast(dy));
                     
-                    // Add some randomness to make edges more natural
                     const is_edge = (dx == 0 or dx == size - 1 or dy == 0 or dy == size - 1);
                     const should_place = if (is_edge) random.float(f32) < 0.6 else true;
                     
