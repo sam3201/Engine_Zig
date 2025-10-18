@@ -306,13 +306,8 @@ pub const WorldManager = struct {
     fn drawHotbar(self: *WorldManager) void {
         const canvas = self.canvas;
         const bottom_y: i32 = self.canvas_height - 1;
-        const slot_count: usize = 10;
-        const slot_width: i32 = 3; 
-
-        for (0..@intCast(self.canvas_width)) |sx| {
-            canvas.put(@intCast(sx), bottom_y - 0, ' ');
-            canvas.fillColor(@intCast(sx), bottom_y - 0, Engine.Color{ .r = 10, .g = 10, .b = 10 });
-        }
+        const slot_count: usize = 5; // Reduced from 10 to 5 for cleaner UI
+        const slot_width: i32 = 4; 
 
         var x_offset: i32 = 2;
         var i: usize = 0;
@@ -320,31 +315,27 @@ pub const WorldManager = struct {
             const slot_x = x_offset;
             const selected = (self.player.inventory.Selected_Slot) == i;
 
-            if (selected) {
-                canvas.put(slot_x, bottom_y, '[');
-            } else {
-                canvas.put(slot_x, bottom_y, '(');
-            }
-
             const maybe_item = self.player.inventory.getItem(i);
             if (maybe_item) |it| {
-                canvas.put(slot_x + 1, bottom_y, it.variant_char);
-                canvas.fillColor(slot_x + 1, bottom_y, Engine.Color{ .r = 220, .g = 220, .b = 120 });
-            } else {
-                canvas.put(slot_x + 1, bottom_y, '.');
-                canvas.fillColor(slot_x + 1, bottom_y, Engine.Color{ .r = 120, .g = 120, .b = 120 });
-            }
-
-            if (selected) {
-                canvas.put(slot_x + 2, bottom_y, ']');
-            } else {
-                canvas.put(slot_x + 2, bottom_y, ')');
+                // Show slot number
+                const slot_num: u8 = @intCast(i + 1);
+                canvas.put(slot_x, bottom_y, '0' + slot_num);
+                canvas.fillColor(slot_x, bottom_y, Engine.Color{ .r = 150, .g = 150, .b = 150 });
+                
+                canvas.put(slot_x + 1, bottom_y, ':');
+                canvas.fillColor(slot_x + 1, bottom_y, Engine.Color{ .r = 100, .g = 100, .b = 100 });
+                
+                // Show item
+                canvas.put(slot_x + 2, bottom_y, it.variant_char);
+                canvas.fillColor(slot_x + 2, bottom_y, if (selected) 
+                    Engine.Color{ .r = 255, .g = 255, .b = 100 }
+                else 
+                    Engine.Color{ .r = 180, .g = 180, .b = 80 });
             }
 
             x_offset += slot_width;
         }
     }
-
     fn drawHUD(self: *WorldManager) void {
         const pos = self.player.getPosition();
         const chunk_coord = self.getPlayerChunkCoord();
