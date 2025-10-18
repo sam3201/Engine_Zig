@@ -325,7 +325,6 @@ pub const Chunk = struct {
                         }
                     }
                     
-                    // Move in the chosen direction
                     switch (direction) {
                         0 => rx += 1,
                         1 => rx -= 1,
