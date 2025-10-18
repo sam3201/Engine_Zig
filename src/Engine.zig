@@ -211,13 +211,13 @@ pub fn flushToTerminal(self: *Canvas) !void {
         };
         
         if (n == 0) {
-            // EOF or broken pipe - can't write anymore
             return error.BrokenPipe;
         }
         
         total_written += n;
     }
 }
+
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
     }
