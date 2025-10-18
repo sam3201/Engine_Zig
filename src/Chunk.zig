@@ -236,6 +236,19 @@ pub const Chunk = struct {
             }
         }
 
+                for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
+            if (self.tiles[i] == .Tree or self.tiles[i] == .Mountain or self.tiles[i] == .Lava) {
+                self.tiles[i] = switch (self.biome) {
+                    .Plains => .Grass,
+                    .Forest => .Grass,
+                    .Mountains => .Empty,
+                    .Desert => .Desert,
+                    .Tundra => .Snow,
+                    .Volcanic => .Empty,
+                };
+            }
+        }
+
         self.generatePaths(random);
     }
 
