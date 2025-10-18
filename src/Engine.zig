@@ -192,7 +192,6 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
                 //continue;
            // }
             // return err;
-        };
         // if (n == 0) break;
         // total_written += n;
         // retries = 0; 
