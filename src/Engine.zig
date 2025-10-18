@@ -179,27 +179,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         }
     }
 
-    while (total_written < bytes_to_write.len) { //and retries < 10) {
     try std.posix.write(std.posix.STDOUT_FILENO, self.render_buffer.items); 
-        // if (err == error.WouldBlock) {
-        //    std.Thread.sleep(100_000); 
-        // }
-        // std.debug.print("Error writing to terminal: {any}\n", .{err});
-    // }; 
-         
- 
-            //if (err == error.WouldBlock) {
-                // retries += 1;
-                // std.Thread.sleep(100_000); 
-                //continue;
-           // }
-            // return err;
-        // if (n == 0) break;
-        // total_written += n;
-        // retries = 0; 
-
-    // try writer.writeAll("\x1b[?25h");
-    //try writer.flush();
 }
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
