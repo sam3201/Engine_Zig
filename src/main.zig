@@ -14,6 +14,9 @@ pub fn main() !void {
     
     const FPS = 60; 
 
+    var term = try Engine.TerminalGuard.init();
+    defer term.deinit();
+
     var engine = try Engine.Engine.init(
         allocator,
         WIDTH,
@@ -23,8 +26,6 @@ pub fn main() !void {
     );
     defer engine.deinit();
 
-    var term = try Engine.TerminalGuard.init();
-    defer term.deinit();
 
     // ───────────── Title Menu ─────────────
     var title_menu = Menu.init(
