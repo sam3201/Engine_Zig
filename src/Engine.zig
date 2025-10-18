@@ -179,7 +179,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         }
     }
 
-    try std.posix.write(std.posix.STDOUT_FILENO, self.render_buffer.items) catch {}; 
+    _ = std.posix.write(std.posix.STDOUT_FILENO, self.render_buffer.items) catch {}; 
 }
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
