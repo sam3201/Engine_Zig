@@ -268,7 +268,6 @@ pub const Camera = struct {
         self.x = player_x - self.width / 2;
         self.y = player_y - self.height / 2;
 
-        // Clamp to world borders
         if (self.x < 0) self.x = 0;
         if (self.y < 0) self.y = 0;
         if (self.x + self.width > world_width) self.x = world_width - self.width;
