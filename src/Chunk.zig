@@ -337,16 +337,15 @@ pub const Chunk = struct {
             }
         }
 
-        // Very sparse obstacles - these will be mineable resources
-        const obstacle_density = 0.008; // Less than 1% - very sparse!
+        const obstacle_density = 0.008; 
         for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
             if (random.float(f32) < obstacle_density) {
                 self.tiles[i] = switch (self.biome) {
-                    .Forest => .Tree,      // Trees for wood
-                    .Mountains => .Stone,  // Stone/ore nodes
-                    .Volcanic => .Stone,   // Rare volcanic rock
-                    .Desert => .Stone,     // Desert rocks/ore
-                    .Tundra => .Stone,     // Ice/stone
+                    .Forest => .Tree,     
+                    .Mountains => .Stone,  
+                    .Volcanic => .Stone,   
+                    .Desert => .Stone,     
+                    .Tundra => .Stone,     
                     .Plains => if (random.float(f32) < 0.3) .Tree else continue,  
                 };
             }
