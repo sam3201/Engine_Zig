@@ -369,7 +369,7 @@ pub const Engine = struct {
             self.clock.sleepUntilNextFrame();
         }
 
-        try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n"); 
+        try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
 }
 
 pub const TerminalGuard = struct {
