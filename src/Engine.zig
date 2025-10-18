@@ -195,7 +195,10 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         // total_written += n;
         // retries = 0; 
     }
-}   
+
+    try writer.writeAll("\x1b[?25h");
+    try writer.flush();
+}
 
 pub fn addRenderable(self: *Canvas, r: Renderable) !void {
         try self.scene.append(r);
