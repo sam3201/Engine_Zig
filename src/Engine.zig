@@ -265,8 +265,8 @@ pub const Camera = struct {
     }
 
     pub fn centerOn(self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
-        const half_w = @as(i32, @intCast(self.width / 2));
-        const half_h = @as(i32, @intCast(self.height / 2));
+        const half_w = @divTrunc(@as(i32, @intCast(self.width)), 2);
+const half_h = @as(i32, @intCast(self.height / 2));
 
         self.x = target_x - half_w;
         self.y = target_y - half_h;
