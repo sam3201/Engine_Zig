@@ -284,7 +284,7 @@ pub const Chunk = struct {
 
     fn addFeatures(self: *Chunk, random: std.Random) void {
         // occasional lake
-        if (random.float(f32) < 0.15) {
+        if (random.float(f32) < 0.25) {
             const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
             const lake_y = random.intRangeAtMost(i32, 3, CHUNK_HEIGHT - 4);
             const size = random.intRangeAtMost(usize, 2, 5);
