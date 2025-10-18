@@ -283,36 +283,76 @@ pub const Chunk = struct {
     }
 
     fn addFeatures(self: *Chunk, random: std.Random) void {
-        // occasional lake
-        if (random.float(f32) < 0.25) {
-            const lake_x = random.intRangeAtMost(i32, 3, CHUNK_WIDTH - 4);
-            const lake_y = random.intRangeAtMost(i32, 3, CHUNK_HEIGHT - 4);
-            const size = random.intRangeAtMost(usize, 2, 5);
+        // Add lakes/rivers more frequently (20% chance)
+        if (random.float(f32) < 0.20) {
+            const lake_x = random.intRangeAtMost(i32, 5, CHUNK_WIDTH - 6);
+            const lake_y = random.intRangeAtMost(i32, 5, CHUNK_HEIGHT - 6);
+            const size = random.intRangeAtMost(usize, 3, 6);
 
+            // Create a more organic looking body of water
             for (0..size) |dy| {
                 for (0..size) |dx| {
                     const x = lake_x + @as(i32, @intCast(dx));
                     const y = lake_y + @as(i32, @intCast(dy));
-                    if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
+                    
+                    // Add some randomness to make edges more natural
+                    const is_edge = (dx == 0 or dx == size - 1 or dy == 0 or dy == size - 1);
+                    const should_place = if (is_edge) random.float(f32) < 0.6 else true;
+                    
+                    if (should_place and x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
                         self.tiles[@intCast(y * CHUNK_WIDTH + x)] = .Water;
+                    }
+                }
+            }
+            
+            // Sometimes extend with a "river" arm
+            if (random.float(f32) < 0.4) {
+                const river_length = random.intRangeAtMost(i32, 5, 12);
+                var rx = lake_x;
+                var ry = lake_y;
+                const direction = random.intRangeAtMost(i32, 0, 3);
+                
+                for (0..@intCast(river_length)) |_| {
+                    if (rx >= 0 and rx < CHUNK_WIDTH and ry >= 0 and ry < CHUNK_HEIGHT) {
+                        self.tiles[@intCast(ry * CHUNK_WIDTH + rx)] = .Water;
+                        // Maybe add adjacent water for width
+                        if (random.float(f32) < 0.5) {
+                            if (direction < 2 and rx + 1 < CHUNK_WIDTH) {
+                                self.tiles[@intCast(ry * CHUNK_WIDTH + rx + 1)] = .Water;
+                            } else if (ry + 1 < CHUNK_HEIGHT) {
+                                self.tiles[@intCast((ry + 1) * CHUNK_WIDTH + rx)] = .Water;
+                            }
+                        }
+                    }
+                    
+                    // Move in the chosen direction
+                    switch (direction) {
+                        0 => rx += 1,
+                        1 => rx -= 1,
+                        2 => ry += 1,
+                        3 => ry -= 1,
+                        else => {},
                     }
                 }
             }
         }
 
-        // relaxed obstacle density
-        const obstacle_density = 0.05; // 5% max
+        // Very sparse obstacles - these will be mineable resources
+        const obstacle_density = 0.008; // Less than 1% - very sparse!
         for (0..CHUNK_WIDTH * CHUNK_HEIGHT) |i| {
             if (random.float(f32) < obstacle_density) {
                 self.tiles[i] = switch (self.biome) {
-                    .Forest => .Tree,
-                    .Mountains => .Stone,
-                    .Volcanic => .Lava,
-                    else => .Stone,
+                    .Forest => .Tree,      // Trees for wood
+                    .Mountains => .Stone,  // Stone/ore nodes
+                    .Volcanic => .Stone,   // Rare volcanic rock
+                    .Desert => .Stone,     // Desert rocks/ore
+                    .Tundra => .Stone,     // Ice/stone
+                    .Plains => if (random.float(f32) < 0.3) .Tree else continue,  // Occasional tree
                 };
             }
         }
     }
+
     pub fn getTile(self: Chunk, local_x: i32, local_y: i32) TileType {
         if (local_x < 0 or local_x >= CHUNK_WIDTH or local_y < 0 or local_y >= CHUNK_HEIGHT) {
             return .Stone; // Out of bounds
