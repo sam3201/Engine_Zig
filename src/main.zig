@@ -24,7 +24,7 @@ pub fn main() !void {
     defer engine.deinit();
 
     var term = try Engine.TerminalGuard.init();
-    //defer term.deinit();
+    defer term.deinit();
 
     // ───────────── Title Menu ─────────────
     var title_menu = Menu.init(
