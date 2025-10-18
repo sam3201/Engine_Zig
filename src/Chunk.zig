@@ -204,7 +204,9 @@ pub const Chunk = struct {
 
         // Add very sparse features
         self.addFeatures(rng.random());
-    }fn selectBiome(self: *Chunk, distance: i32, player_level: i32, random: std.Random) BiomeType {
+    }
+
+    fn selectBiome(self: *Chunk, distance: i32, player_level: i32, random: std.Random) BiomeType {
         _ = self;
 
         if (distance < 2) {
