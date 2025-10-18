@@ -317,7 +317,6 @@ pub const WorldManager = struct {
 
             const maybe_item = self.player.inventory.getItem(i);
             if (maybe_item) |it| {
-                // Show slot number
                 const slot_num: u8 = @intCast(i + 1);
                 canvas.put(slot_x, bottom_y, '0' + slot_num);
                 canvas.fillColor(slot_x, bottom_y, Engine.Color{ .r = 150, .g = 150, .b = 150 });
