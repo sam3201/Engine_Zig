@@ -43,7 +43,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 if (bytes_read == 0) return;
                 const name = buf_arr[0..bytes_read];
                 player.*.name = try allocator.dupe(u8, name);
-                try player.save("player.json");
+                try player.save("host.json");
             },
 
             1 => {
@@ -159,7 +159,7 @@ pub fn main() !void {
     std.debug.print("\x1b[2J", .{});
     std.debug.print("Exited game.\n", .{});
 
-    player.save("host.json");
+    try player.save("host.json");
 
 }
 
