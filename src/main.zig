@@ -159,7 +159,7 @@ pub fn main() !void {
     std.debug.print("\x1b[2J", .{});
     std.debug.print("Exited game.\n", .{});
 
-    try player.save("host.json");
+    //try player.save("host.json");
 
 }
 
