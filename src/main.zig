@@ -6,6 +6,58 @@ const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 
+// ───────────── In-Game Menu ─────────────
+fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
+    var menu = Menu.init(
+        "In-Game Menu",
+        &[_][]const u8{ "Change Name", "View Key Bindings", "Back", "Quit" },
+        'w',
+        's',
+        '\n',
+    );
+
+    var choice: ?usize = null;
+    while (engine.running and choice == null) {
+        engine.clock.tick();
+
+        if (Engine.readKey() catch null) |key| {
+            if (menu.update(key)) |c| {
+                choice = c;
+            }
+        }
+
+        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
+        menu.draw(&engine.canvas);
+        engine.canvas.render();
+        try engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
+    }
+
+    if (choice) |c| {
+        switch (c) {
+            0 => {
+                std.debug.print("Enter new name: ", .{});
+                var buf_arr: [1024]u8 = undefined;
+                var stdin_reader = std.fs.File.stdin().reader(&buf_arr);
+                const bytes_read = try stdin_reader.readStreaming(buf_arr[0..]);
+                if (bytes_read == 0) return;
+                const name = buf_arr[0..bytes_read];
+                player.*.name = try allocator.dupe(u8, name);
+                try player.save("player.json");
+            },
+
+            1 => {
+                std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
+            },
+            2 => return, 
+            3 => engine.running = false,
+            else => {},
+        }
+    }
+
+}
+
+
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
@@ -105,8 +157,6 @@ pub fn main() !void {
         try game_engine.canvas.flushToTerminal();
         game_engine.clock.sleepUntilNextFrame();
     }
-
-
     std.debug.print("\x1b[2J", .{});
     std.debug.print("Exited game.\n", .{});
 
@@ -148,52 +198,3 @@ fn optionsMenu(engine: *Engine.Engine) !void {
     }
 }
 
-// ───────────── In-Game Menu ─────────────
-fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
-    var menu = Menu.init(
-        "In-Game Menu",
-        &[_][]const u8{ "Change Name", "View Key Bindings", "Back", "Quit" },
-        'w',
-        's',
-        '\n',
-    );
-
-    var choice: ?usize = null;
-    while (engine.running and choice == null) {
-        engine.clock.tick();
-
-        if (Engine.readKey() catch null) |key| {
-            if (menu.update(key)) |c| {
-                choice = c;
-            }
-        }
-
-        engine.canvas.clear(' ', Engine.Color{ .r = 10, .g = 10, .b = 10 });
-        menu.draw(&engine.canvas);
-        engine.canvas.render();
-        try engine.canvas.flushToTerminal();
-        engine.clock.sleepUntilNextFrame();
-    }
-
-    if (choice) |c| {
-        switch (c) {
-            0 => {
-                std.debug.print("Enter new name: ", .{});
-                var buf_arr: [1024]u8 = undefined;
-                var stdin_reader = std.fs.File.stdin().reader(&buf_arr);
-                const bytes_read = try stdin_reader.readStreaming(buf_arr[0..]);
-                if (bytes_read == 0) return;
-                const name = buf_arr[0..bytes_read];
-                player.*.name = try allocator.dupe(u8, name);
-                try player.save("player.json");
-            },
-
-            1 => {
-                std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
-            },
-            2 => return, 
-            3 => engine.running = false,
-            else => {},
-        }
-    }
-}
