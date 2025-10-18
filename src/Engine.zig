@@ -193,7 +193,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
                 }};
                 
                 const poll_result = std.posix.poll(&poll_fd, 100) catch {
-                    std.time.sleep(1_000_000); 
+                    std.Thread.sleep(1_000_000); 
                     continue;
                 };
                 
