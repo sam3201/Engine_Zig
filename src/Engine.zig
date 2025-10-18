@@ -194,7 +194,6 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         // if (n == 0) break;
         // total_written += n;
         // retries = 0; 
-    }
 
     try writer.writeAll("\x1b[?25h");
     try writer.flush();
