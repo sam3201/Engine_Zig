@@ -179,7 +179,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
         }
     }
 
-    // Write the entire buffer, handling partial writes and WouldBlock
     const bytes_to_write = self.render_buffer.items;
     var total_written: usize = 0;
     
@@ -187,7 +186,6 @@ pub fn flushToTerminal(self: *Canvas) !void {
         const remaining = bytes_to_write[total_written..];
         const n = std.posix.write(std.posix.STDOUT_FILENO, remaining) catch |err| {
             if (err == error.WouldBlock) {
-                // Use poll/select to wait until we can write
                 var poll_fd = [_]std.posix.pollfd{.{
                     .fd = std.posix.STDOUT_FILENO,
                     .events = std.posix.POLL.OUT,
