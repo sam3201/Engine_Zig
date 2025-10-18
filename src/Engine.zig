@@ -182,7 +182,7 @@ pub fn clear(self: *Canvas, ch: u8, color: Color) void {
         const bytes_to_write = self.render_buffer.items;
     var total_written: usize = 0;
     var retries: u32 = 0;
-    while (total_written < bytes_to_write.len and retries < 10) {
+    while (total_written < bytes_to_write.len) {
         const n = std.posix.write(std.posix.STDOUT_FILENO, bytes_to_write[total_written..]) catch |err| {
             if (err == error.WouldBlock) {
                 retries += 1;
