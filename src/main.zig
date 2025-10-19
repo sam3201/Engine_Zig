@@ -20,10 +20,6 @@ pub fn main() !void {
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
         try Client.connectToServer(allocator); 
 
-        while (true) {
-            client.updateAndRender(&engine.canvas);
-            try engine.canvas.flushToTerminal();
-        }
     } else {
         std.debug.print("Usage: ./Engine server | ./Engine client\n", .{});
     }
