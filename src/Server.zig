@@ -1,7 +1,7 @@
 const std = @import("std");
 const posix = std.posix;
 const net = std.net;
-const Thread = @import("std").Thread;
+const Thread = std.Thread;
 const Player = @import("Player.zig").Player;
 const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
@@ -9,45 +9,27 @@ const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
 
-// A simple buffered writer to reduce the number of `write` syscalls.
-const BufferedWriter = struct {
-    socket: posix.socket_t,
-    buffer: [4096]u8 = undefined,
-    pos: usize = 0,
-
-    fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
-        self.pos += written.len;
-    }
-
-    fn flush(self: *BufferedWriter) !void {
-        if (self.pos == 0) return;
-        _ = try posix.write(self.socket, self.buffer[0..self.pos]);
-        self.pos = 0;
-    }
-};
-
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
-    world_manager: WorldManager.WorldManager,
+    world_manager: WorldManager,
     players: [MAX_PLAYERS]?PlayerInfo,
-    player_count: usize,
+    player_count: u32 = 0,
     mutex: Thread.Mutex,
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: *Player, 
+        player: *Player,
         socket: posix.socket_t,
+        id: u32,
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // A canvas is needed for the world manager, but it won't be drawn.
+        // The server is headless, but WorldManager needs a canvas for its logic.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
-        // createWASDPlayer returns *Player
+        // The host player is managed by the WorldManager.
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
-        
-        // WorldManager expects a pointer to the host player
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+
+        var world_manager = try WorldManager.init(Chunk.ChunkCoord.init(0, 0), 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -60,7 +42,6 @@ pub const GameServer = struct {
             .allocator = allocator,
             .world_manager = world_manager,
             .players = [_]?PlayerInfo{null} ** MAX_PLAYERS,
-            .player_count = 0,
             .mutex = Thread.Mutex{},
             .listener = listener_socket,
         };
@@ -68,13 +49,14 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
+        // Deinit all connected players
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
-                // player_info.player is *Player, so this works.
-                player_info.player.deinit(); 
+                player_info.player.deinit();
                 posix.close(player_info.socket);
             }
         }
+        // The world manager owns and deinits the host player
         self.world_manager.deinit();
     }
 
@@ -88,7 +70,7 @@ pub const GameServer = struct {
     }
 
     fn handleClient(self: *GameServer, socket: posix.socket_t) void {
-        self.handleClientError(socket) catch |err| {
+        handleClientError(self, socket) catch |err| {
             std.debug.print("Client handler error: {any}\n", .{err});
         };
         posix.close(socket);
@@ -96,10 +78,10 @@ pub const GameServer = struct {
 
     fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
         self.mutex.lock();
-        var player_id: ?usize = null;
-        for (&self.players, 0..) |*slot, i| {
-            if (slot.* == null) {
-                player_id = i;
+        var player_id: ?u32 = null;
+        for (0..MAX_PLAYERS) |i| {
+            if (self.players[i] == null) {
+                player_id = @intCast(i);
                 break;
             }
         }
@@ -111,14 +93,11 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        // FIX: Removed the explicit type annotation (*Player) and rely on inference.
-        // The `try` keyword correctly unwraps the !*Player return type from 
-        // `createWASDPlayer`, ensuring `new_player` is correctly inferred as *Player,
-        // which should resolve the persistent type checking error.
-        const new_player = try *Player.createWASDPlayer("player", self.allocator, 10, 10); 
-        self.players[id] = .{
+        const new_player = try Player.createWASDPlayer("player", self.allocator, 5, 5);
+        self.players[@intCast(id)] = .{
             .player = new_player,
             .socket = socket,
+            .id = id,
         };
         self.player_count += 1;
         self.mutex.unlock();
@@ -126,17 +105,19 @@ pub const GameServer = struct {
         std.debug.print("Player {d} connected.\n", .{id});
         defer self.disconnectPlayer(id);
 
-        var read_buf: [256]u8 = undefined;
+        var read_buf: [1]u8 = undefined;
         while (true) {
             const bytes_read = posix.read(socket, &read_buf) catch |err| {
                 if (err == error.WouldBlock) continue;
                 break;
             };
-
             if (bytes_read == 0) break;
 
-            self.mutex.lock();
             const action = Player.InputAction.fromKey(read_buf[0]);
+
+            self.mutex.lock();
+            // In a real game, you would apply the action to the specific player.
+            // For this simplified version, all inputs control the host player.
             try self.world_manager.handlePlayerAction(action);
             self.mutex.unlock();
 
@@ -144,13 +125,13 @@ pub const GameServer = struct {
         }
     }
 
-    fn disconnectPlayer(self: *GameServer, id: usize) void {
+    fn disconnectPlayer(self: *GameServer, id: u32) void {
         self.mutex.lock();
         defer self.mutex.unlock();
-        if (self.players[id]) |player_info| {
-            // player_info.player is *Player, so this works.
-            player_info.player.deinit(); 
-            self.players[id] = null;
+
+        if (self.players[@intCast(id)]) |player_info| {
+            player_info.player.deinit();
+            self.players[@intCast(id)] = null;
             self.player_count -= 1;
             std.debug.print("Player {d} disconnected.\n", .{id});
         }
@@ -160,32 +141,33 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // Use a stack-allocated buffer and a stream for better performance.
         var buffer: [4096]u8 = undefined;
         var stream = std.io.fixedBufferStream(&buffer);
         const writer = stream.writer();
 
-        // Simplified state: just player positions
-        for (self.players, 0..) |maybe_player, id| {
+        // Broadcast host player (ID 0)
+        const host_pos = self.world_manager.player.getPosition();
+        try writer.print("Player 0 {d} {d}\n", .{ host_pos.x, host_pos.y });
+
+        // Broadcast other players
+        for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
                 const p = player_info.player.getPosition();
-                try writer.print("Player {d} {d} {d}\n", .{ id, p.x, p.y });
+                try writer.print("Player {d} {d} {d}\n", .{ player_info.id, p.x, p.y });
             }
         }
         try writer.writeAll("END\n");
 
-        const message_to_send = stream.getWritten();
-
+        const message = stream.getWritten();
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
-                _ = posix.write(player_info.socket, message_to_send) catch {};
+                _ = posix.write(player_info.socket, message) catch {};
             }
         }
     }
 };
 
-pub fn main() !void {
-    // This file is intended to be used as a module and is not the actual entry point.
-    // The main entry point is expected in main.zig
-}
+// Dummy main for build system
+pub fn main() !void {}
+
 
