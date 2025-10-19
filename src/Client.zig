@@ -3,7 +3,6 @@ const std = @import("std");
 const posix = std.posix;
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
     const address = try posix.sockaddr.inet4_init(42069, try posix.inet_pton4("127.0.0.1"));
 
     const sock_fd = try posix.socket(posix.AF.INET, posix.SOCK.STREAM, 0);
