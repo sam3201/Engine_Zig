@@ -26,7 +26,7 @@ pub const GameServer = struct {
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.Player.createWASDPlayer("host", allocator, 10, 10);
 
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -47,6 +47,7 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
+        // FIX: Iterate by mutable pointer to avoid const-correctness error when calling deinit.
         for (&self.players) |*maybe_player| {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
@@ -57,7 +58,7 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
+        std.debug.print("✅ Server listening on 127.0.0.1:42069\n", .{});
         while (true) {
             const client_socket = try posix.accept(self.listener, null, null, 0);
             const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
@@ -89,7 +90,9 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
+        // FIX: Explicitly ensure we assign the pointer returned by createWASDPlayer
+        // by casting the result to the expected pointer type.
+        const new_player: *Player.Player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
         self.players[id] = .{
             .player = new_player,
             .socket = socket,
@@ -156,5 +159,4 @@ pub const GameServer = struct {
 };
 
 pub fn main() !void {}
-
 
