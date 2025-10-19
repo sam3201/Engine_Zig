@@ -47,7 +47,6 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
-        // FIX: Iterate by mutable pointer to avoid const-correctness error when calling deinit.
         for (&self.players) |*maybe_player| {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
