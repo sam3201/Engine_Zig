@@ -19,7 +19,7 @@ fn startHostServer(allocator: std.mem.Allocator) void {
     };
 }
 
-fn startClient(allocator: std.mem.Allocator) void {
+fn startClient() void {
     const Client = @import("Client.zig");
     _ = Client.main() catch |err| {
         std.debug.print("Client error: {}\n", .{err});
