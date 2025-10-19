@@ -16,7 +16,6 @@ const BufferedWriter = struct {
     pos: usize = 0,
 
     fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        const remaining_space = self.buffer.len - self.pos;
         const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
         self.pos += written.len;
     }
@@ -37,7 +36,7 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: Player,
+        player: *Player,
         socket: posix.socket_t,
     };
 
@@ -45,7 +44,7 @@ pub const GameServer = struct {
         // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
