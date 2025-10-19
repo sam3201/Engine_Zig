@@ -24,7 +24,6 @@ pub const GameServer = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // The server is headless, but WorldManager needs a canvas for its logic.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         // The host player is managed by the WorldManager.
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
