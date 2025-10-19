@@ -14,8 +14,9 @@ pub fn main() !void {
     var input: [256]u8 = undefined;
     const writer = std.io.Writer;
     const reader = std.io.Reader; 
+
     while (true) {
-        const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&input, '\n');
+        const line = try reader.readUntilDelimiterOrEof(&input, '\n'); 
         if (line == null) break;
         const msg = line.?;
 
