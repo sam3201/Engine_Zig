@@ -132,7 +132,7 @@ pub const GameServer = struct {
         var send_buffer = std.ArrayList(u8).init(self.allocator);
         defer send_buffer.deinit();
         const packet = network.GameStatePacket{ .players = player_states.items };
-        try json.stringify(packet, .{}, send_buffer.writer());
+        try json.Stringify(packet, .{}, send_buffer.writer());
         try send_buffer.append('\n'); 
 
         for (self.clients.items) |client| {
