@@ -67,7 +67,7 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         sendInput(key) catch {};
     }
 
-    const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
+    const bytes_read = posix.read(socket, &g_read_buffer) catch null; 
     if (bytes_read > 0) {
         parseState(g_read_buffer[0..bytes_read]) catch |err| {
             std.debug.print("Parse error: {any}\n", .{err});
