@@ -93,7 +93,7 @@ pub fn main() !void {
         1 => {
             const server_thread = try std.Thread.spawn(.{}, startHostServer, .{allocator});
             server_thread.detach();
-            std.time.sleep(100 * std.time.ns_per_ms);
+            std.Thread.sleep(100 * std.time.ns_per_ms);
             startClient(allocator);
         },
         2 => startClient(allocator),
