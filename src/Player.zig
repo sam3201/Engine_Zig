@@ -60,17 +60,6 @@ pub const Player = struct {
     name: []const u8,
     inventory: Inventory.Inventory,
 
-    pub fn init(allocator: std.mem.Allocator) Player {
-        return Player{
-            .allocator = allocator,
-            .entity = Entity{ .ch = '@', .color = Engine.Color{ .r = 255, .g = 255, .b = 255 }, .x = 0, .y = 0 },
-            .health = 100,
-            .max_health = 100,
-            .level = 1,
-            .name = "Player",
-            .inventory = Inventory.Inventory.init(allocator),
-        };
-    }
     pub fn createWASDPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !*Player {
         const inv = try Inventory.Inventory.init(allocator);
 
