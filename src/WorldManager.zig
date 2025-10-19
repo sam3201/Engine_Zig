@@ -185,7 +185,6 @@ pub const WorldManager = struct {
             const player = Player.Player.init(entity, 100, 100, 0, undefined);
             _ = self.Players.append(player) catch {};
         }
-    }
     };
 
     pub fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
