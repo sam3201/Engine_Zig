@@ -134,7 +134,6 @@ pub const GameServer = struct {
             }
             self.mutex.unlock();
 
-            // Broadcast new state to all players
             try self.broadcastGameState();
         }
     }
