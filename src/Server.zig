@@ -48,7 +48,7 @@ pub const GameServer = struct {
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
         
         // WorldManager expects a pointer to the host player
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -112,12 +112,13 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        // FIX: Removed the explicit type annotation (*Player) to use type inference.
-        // This is the most idiomatic fix to resolve the compiler's confusion between the
-        // Player struct and the *Player pointer returned by the allocation function.
+        // Removed the explicit type annotation for inference, but the compiler struggled
+        // when assigning it to the struct.
         const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
         self.players[id] = .{
-            .player = new_player,
+            // FIX: Explicitly cast the inferred type (which should be a pointer) 
+            // to the *Player type to resolve the mismatch in the struct assignment.
+            .player = @ptrCast(*Player, new_player), 
             .socket = socket,
         };
         self.player_count += 1;
