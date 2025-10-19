@@ -60,8 +60,6 @@ pub const Player = struct {
     name: []const u8,
     inventory: Inventory.Inventory,
 
-    // FIX: This function now correctly allocates a Player on the heap
-    // and returns a pointer (*Player), which resolves the core type mismatch.
     pub fn createWASDPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !*Player {
         const inv = try Inventory.Inventory.init(allocator);
 
