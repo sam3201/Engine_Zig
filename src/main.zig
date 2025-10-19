@@ -1,6 +1,6 @@
 const std = @import("std");
 const Server = @import("Server.zig");
-const Client = @import("Client.zig").Client;
+const Client = @import("Client.zig");
 const Engine = @import("Engine.zig").Engine;
 
 pub fn main() !void {
