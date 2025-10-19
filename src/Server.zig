@@ -142,7 +142,7 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
         if (self.players[id]) |player_info| {
-            player_info.player.deinit();
+            player_info[id].player.deinit();
             self.players[id] = null;
             self.player_count -= 1;
             std.debug.print("Player {d} disconnected.\n", .{id});
