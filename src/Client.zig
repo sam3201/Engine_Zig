@@ -73,6 +73,7 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
             std.debug.print("Parse error: {any}\n", .{err});
         };
     }
+    };
 
     // Render the current known state
     canvas.clear(' ', .{});
