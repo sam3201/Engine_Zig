@@ -106,7 +106,7 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const *player = Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
+        const player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
         self.players[id] = .{
             .player = player, 
             .socket = socket,
