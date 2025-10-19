@@ -262,7 +262,7 @@ pub const WorldManager = struct {
         if (self.player.inventory.len() == 0) return;
 
         const pos = self.player.getPosition();
-        const chunk_coord = self.worldToChunkCoord(pos.x, pos.y);
+        const chunk_coord = worldToChunkCoord(pos.x, pos.y);
 
         if (self.chunks.getPtr(chunk_coord)) |chunk| {
             const item = self.player.inventory.getItem(0).?;
