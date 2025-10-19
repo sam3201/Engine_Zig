@@ -67,7 +67,8 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         sendInput(key) catch {};
     }
 
-    const bytes_read = posix.read(socket, &g_read_buffer) catch {
+    const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
+        std.debug.print("Read error: {any}\n", .{err});
         disconnectFromServer();
         return;
     };
