@@ -6,7 +6,7 @@ const Engine = @import("Engine.zig");
 // Global state for the client
 var g_socket: ?posix.socket_t = null;
 var g_read_buffer: [8192]u8 = undefined;
-var g_player_positions: std.AutoHashMap(u32, struct { x: i32, y: i32 });
+var g_player_positions: std.AutoHashMap(u32, struct { x: i32, y: i32 }) = undefined; 
 
 pub fn connectToServer(allocator: std.mem.Allocator) !void {
     g_player_positions = std.AutoHashMap(u32, struct { x: i32, y: i32 }).init(allocator);
