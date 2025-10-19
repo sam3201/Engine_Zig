@@ -128,7 +128,7 @@ pub const GameServer = struct {
             if (bytes_read == 0) break; 
 
             self.mutex.lock();
-            if (self.players[id]) |*player_info| {
+            if (self.players[id]) |_| {
                 const action = Player.InputAction.fromKey(read_buf[0]);
                 try self.world_manager.handlePlayerAction(action);
             }
