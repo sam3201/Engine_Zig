@@ -72,7 +72,7 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         } else {
             disconnectFromServer();
         }
-        return 0;
+        0;
     };
 
     if (bytes_read > 0) {
