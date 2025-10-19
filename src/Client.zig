@@ -67,7 +67,6 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         sendInput(key) catch {};
     }
 
-    // Read new state from server
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
         if (err == error.WouldBlock) {
         } else {
