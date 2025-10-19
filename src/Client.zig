@@ -67,35 +67,28 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
     if (g_socket == null) return;
     const socket = g_socket.?;
 
-    // 1. Send input if any
+    // 1. Handle input and send to server
     if (Engine.readKey() catch null) |key| {
-        if (key == 'q' or key == 27) {
-            // A bit of a hack to signal the engine to stop from main.zig
-            // In a real app, you'd have a more robust event system.
-            return;
-        }
+        if (key == 'q' or key == 27) return;
         sendInput(key) catch {};
     }
 
-    // 2. Receive new state from server
+    // 2. Receive world state
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
-        if (err != error.WouldBlock) {
-            std.debug.print("Read error: {any}, disconnecting.\n", .{err});
-            disconnectFromServer();
-        }
+        if (err != error.WouldBlock) return;
+        disconnectFromServer();
         return;
     };
 
     if (bytes_read > 0) {
         parseState(g_read_buffer[0..bytes_read]) catch |err| {
-            std.debug.print("Parse error: {any}, disconnecting.\n", .{err});
-            disconnectFromServer();
+            std.debug.print("Parse error: {any}\n", .{err});
             return;
         };
     }
 
-    // 3. Render the mirrored state
-    canvas.clear(' ', .{ .r = 5, .g = 5, .b = 15 });
+    // 3. Render state (just mirror players)
+    canvas.clear(' ', .{ .r = 10, .g = 10, .b = 10 });
     var it = g_player_positions.iterator();
     while (it.next()) |entry| {
         const p = entry.value_ptr;
@@ -103,7 +96,6 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
         canvas.fillColor(p.x, p.y, .{ .r = 255, .g = 255, .b = 0 });
     }
 }
-
 // The main game loop for a client, called from main.zig
 pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     try connectToServer(allocator);
