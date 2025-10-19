@@ -7,7 +7,7 @@ const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Engine = @import("Engine.zig");
 
-const MAX_PLAYERS = 10;
+const MAX_PLAYERS = 64;
 
 // A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
