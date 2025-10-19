@@ -59,7 +59,7 @@ pub const WorldManager = struct {
             c.deinit();
         }
         self.chunks.deinit();
-        for (self.Players.items) |p| {
+        for (self.Players.items) |*p| {
             p.deinit();
         }
         self.Players.deinit();
