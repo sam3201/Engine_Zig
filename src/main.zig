@@ -42,7 +42,7 @@ fn standaloneGame(allocator: std.mem.Allocator) !void {
     var engine = try Engine.Engine.init(allocator, 150, 50, 60, .{});
     defer engine.deinit();
 
-    var player = try Player.Player.createWASDPlayer("Player", allocator, 0, 0);
+    const player = try Player.Player.createWASDPlayer("Player", allocator, 0, 0);
     var world = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
     defer world.deinit();
 
