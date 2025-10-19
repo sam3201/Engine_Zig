@@ -66,6 +66,10 @@ pub const WorldManager = struct {
         
     }
 
+    pub fn addPlayer(self: *WorldManager, player: Player.Player) !void {
+        try self.Players.append(player);
+    }
+
     pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
         const pos = self.player.getPosition();
         return Chunk.ChunkCoord{
