@@ -11,7 +11,7 @@ const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
-    world_manager: WorldManager,
+    world_manager: WorldManager.WorldManager,
     players: [MAX_PLAYERS]?PlayerInfo,
     player_count: u32 = 0,
     mutex: Thread.Mutex,
