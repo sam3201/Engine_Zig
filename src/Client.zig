@@ -96,6 +96,7 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
         canvas.fillColor(p.x, p.y, .{ .r = 255, .g = 255, .b = 0 });
     }
 }
+//
 // The main game loop for a client, called from main.zig
 pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     try connectToServer(allocator);
