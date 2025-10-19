@@ -9,14 +9,13 @@ const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
 
-// A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
     pos: usize = 0,
 
     fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        const remaining_space = self.buffer.len - self.pos;
+        // const remaining_space = self.buffer.len - self.pos;
         const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
         self.pos += written.len;
     }
