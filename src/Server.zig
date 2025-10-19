@@ -89,8 +89,6 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        // FIX: Removed the explicit type annotation (*Player.Player) from the variable
-        // declaration. The `try` operator extracts the pointer, and inference is safer here.
         const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
         self.players[id] = .{
             .player = new_player,
