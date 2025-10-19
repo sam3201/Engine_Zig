@@ -115,7 +115,7 @@ pub const GameServer = struct {
         // The `try` keyword correctly unwraps the !*Player return type from 
         // `createWASDPlayer`, ensuring `new_player` is correctly inferred as *Player,
         // which should resolve the persistent type checking error.
-        const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
+        const new_player = try *Player.createWASDPlayer("player", self.allocator, 10, 10); 
         self.players[id] = .{
             .player = new_player,
             .socket = socket,
