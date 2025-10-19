@@ -85,3 +85,6 @@ pub const Server = struct {
     }
 };
 
+pub fn main() !void {
+
+}
