@@ -32,7 +32,7 @@ pub fn main() !void {
     }
 }
 
-fn handleClient(fd: posix.fd_t, allocator: std.mem.Allocator) !void {
+fn handleClient(fd: posix.fd_t) !void {
     var buffer: [1024]u8 = undefined;
 
     while (true) {
