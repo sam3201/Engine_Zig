@@ -89,7 +89,6 @@ pub const GameServer = struct {
     }
 
     fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
-        const writer = BufferedWriter{ .socket = socket };
 
         self.mutex.lock();
         var player_id: ?usize = null;
@@ -107,7 +106,7 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const new_player = try Player.createWASDPlayer("player", self.allocator, 5, 5);
+        const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 5, 5);
         self.players[id] = .{
             .player = new_player,
             .socket = socket,
