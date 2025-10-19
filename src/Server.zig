@@ -2,13 +2,14 @@ const std = @import("std");
 const posix = std.posix;
 const net = std.net;
 const Thread = @import("std").Thread;
-const Player = @import("Player.zig");
+const Player = @import("Player.zig").Player;
 const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
 
+// A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
@@ -35,15 +36,19 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: *Player.Player,
+        // The player must be a mutable pointer (*Player)
+        player: *Player, 
         socket: posix.socket_t,
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
         // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
-        const host_player = try Player.Player.createWASDPlayer("host", allocator, 10, 10);
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        // createWASDPlayer returns *Player
+        const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
+        
+        // WorldManager expects a pointer to the host player
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -66,7 +71,8 @@ pub const GameServer = struct {
         posix.close(self.listener);
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
-                player_info.player.deinit();
+                // player_info.player is *Player, so this works.
+                player_info.player.deinit(); 
                 posix.close(player_info.socket);
             }
         }
@@ -74,7 +80,7 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
+        std.debug.print("✅ Server listening on 127.0.0.1:42069\n", .{});
         while (true) {
             const client_socket = try posix.accept(self.listener, null, null, 0);
             const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
@@ -106,9 +112,10 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const new_player: *Player.Player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
+        // FIX: Corrected the variable type to *Player and removed the redundant Player. prefix from the function call.
+        const new_player: *Player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
         self.players[id] = .{
-            .player = new_player, 
+            .player = new_player,
             .socket = socket,
         };
         self.player_count += 1;
@@ -139,7 +146,8 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
         if (self.players[id]) |player_info| {
-            player_info.player.deinit();
+            // player_info.player is *Player, so this works.
+            player_info.player.deinit(); 
             self.players[id] = null;
             self.player_count -= 1;
             std.debug.print("Player {d} disconnected.\n", .{id});
@@ -174,7 +182,6 @@ pub const GameServer = struct {
     }
 };
 
-// FIX 4: Add a main function so the compiler does not error when compiling this as an executable root.
 pub fn main() !void {
     // This file is intended to be used as a module and is not the actual entry point.
     // The main entry point is expected in main.zig
