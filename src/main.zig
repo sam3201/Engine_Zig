@@ -61,7 +61,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
             },
 
             1 => {
-            const client_thread = try std.Thread.spawn(.{}, startClient, );
+            const client_thread = try std.Thread.spawn(.{}, startClient);
             client_thread.detach();
             },
 
