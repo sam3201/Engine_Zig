@@ -1,90 +1,52 @@
+// src/Server.zig
 const std = @import("std");
-const net = std.net;
 const posix = std.posix;
-const WorldManager = @import("WorldManager.zig").WorldManager;
-const Player = @import("Player.zig").Player;
-
-pub const Server = struct {
-    allocator: std.mem.Allocator,
-    listener: net.StreamServer,
-    clients: std.ArrayList(net.StreamServer.Connection),
-    world_manager: WorldManager,
-    running: bool,
-
-    pub fn init(allocator: std.mem.Allocator) !Server {
-        var listener = try net.StreamServer.init(.{});
-        const address = try net.Address.parseIp4("0.0.0.0", 42069);
-        try listener.listen(address);
-
-        std.debug.print("[Server] Listening on 0.0.0.0:42069\n", .{});
-
-        return Server{
-            .allocator = allocator,
-            .listener = listener,
-            .clients = try std.ArrayList(net.StreamServer.Connection).initCapacity(allocator, 8),
-            .world_manager = try WorldManager.init(allocator),
-            .running = true,
-        };
-    }
-
-    pub fn deinit(self: *Server) void {
-        for (self.clients.items) |*c| {
-            c.stream.close();
-        }
-        self.listener.deinit();
-        self.clients.deinit();
-        self.world_manager.deinit();
-    }
-
-    fn broadcast(self: *Server, msg: []const u8) void {
-        for (self.clients.items) |*c| {
-            _ = posix.write(c.stream.handle, msg) catch {};
-        }
-    }
-
-    fn handleClient(self: *Server, conn: net.StreamServer.Connection) void {
-        var buffer: [256]u8 = undefined;
-        while (self.running) {
-            const n = posix.read(conn.stream.handle, &buffer) catch |err| switch (err) {
-                error.WouldBlock => continue,
-                else => return,
-            };
-            if (n == 0) return;
-
-            for (buffer[0..n]) |key| {
-                self.world_manager.processPlayerInput(key) catch {};
-            }
-
-            // After processing input, send updated positions
-            var state_buf: [1024]u8 = undefined;
-            const len = self.world_manager.serializeState(&state_buf) catch continue;
-            _ = posix.write(conn.stream.handle, state_buf[0..len]) catch {};
-        }
-    }
-
-    pub fn run(self: *Server) !void {
-        var poll: [1]posix.pollfd = .{posix.pollfd{
-            .fd = self.listener.socket.fd,
-            .events = posix.POLL.IN,
-            .revents = 0,
-        }};
-
-        while (self.running) {
-            const n = try posix.poll(&poll, -1);
-            if (n > 0 and (poll[0].revents & posix.POLL.IN) != 0) {
-                const conn = try self.listener.accept();
-                std.debug.print("[Server] Client connected!\n", .{});
-                try self.clients.append(conn);
-                std.Thread.spawn(.{}, Server.clientThread, .{self, conn}) catch {};
-            }
-        }
-    }
-
-    fn clientThread(self: *Server, conn: net.StreamServer.Connection) void {
-        self.handleClient(conn);
-    }
-};
 
 pub fn main() !void {
+    const allocator = std.heap.page_allocator;
 
+    const address = try posix.sockaddr.inet4_init(42069, posix.INADDR_ANY);
+    const server_fd = try posix.socket(posix.AF.INET, posix.SOCK.STREAM, 0);
+    defer posix.close(server_fd);
+
+    try posix.setsockopt(server_fd, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
+    try posix.bind(server_fd, &address);
+    try posix.listen(server_fd, 8);
+
+    std.debug.print("Server listening on port 42069...\n", .{});
+
+    while (true) {
+        var client_addr: posix.sockaddr = undefined;
+        var addr_len: posix.socklen_t = @sizeOf(posix.sockaddr);
+        const conn_fd = posix.accept(server_fd, &client_addr, &addr_len) catch {
+            std.debug.print("Failed to accept connection\n", .{});
+            continue;
+        };
+        std.debug.print("Client connected!\n", .{});
+
+        // Handle connection
+        handleClient(conn_fd, allocator) catch |err| {
+            std.debug.print("Client error: {}\n", .{err});
+        };
+        posix.close(conn_fd);
+    }
 }
+
+fn handleClient(fd: posix.fd_t, allocator: std.mem.Allocator) !void {
+    var buffer: [1024]u8 = undefined;
+
+    while (true) {
+        const bytes_read = posix.read(fd, &buffer) catch |err| switch (err) {
+            error.ConnectionResetByPeer, error.BrokenPipe => break,
+            else => return err,
+        };
+
+        if (bytes_read == 0) break;
+
+        // For now, just echo back
+        const slice = buffer[0..bytes_read];
+        _ = try posix.write(fd, slice);
+        std.debug.print("Received: {s}\n", .{slice});
+    }
+}
+
