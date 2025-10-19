@@ -174,7 +174,6 @@ pub const WorldManager = struct {
         }
         return i;
     }
-    }
 
     pub fn deserializeState(self: *WorldManager, data: []const u8) void {
         self.Players.clearRetainingCapacity();
