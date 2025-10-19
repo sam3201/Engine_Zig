@@ -2,30 +2,12 @@ const std = @import("std");
 const posix = std.posix;
 const net = std.net;
 const Thread = @import("std").Thread;
-const Player = @import("Player.zig").Player;
+const Player = @import("Player.zig");
 const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
-
-// A simple buffered writer to reduce the number of `write` syscalls.
-const BufferedWriter = struct {
-    socket: posix.socket_t,
-    buffer: [4096]u8 = undefined,
-    pos: usize = 0,
-
-    fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
-        self.pos += written.len;
-    }
-
-    fn flush(self: *BufferedWriter) !void {
-        if (self.pos == 0) return;
-        _ = try posix.write(self.socket, self.buffer[0..self.pos]);
-        self.pos = 0;
-    }
-};
 
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
@@ -36,17 +18,15 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: Player,
+        player: *Player.Player,
         socket: posix.socket_t,
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
-        const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
+        const host_player = try Player.Player.createWASDPlayer("host", allocator, 10, 10);
 
-        // FIX: The struct is nested inside the module, so the correct call is WorldManager.WorldManager.init
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -67,8 +47,9 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
-        for (self.players) |maybe_player| {
-            if (maybe_player) |player_info| {
+        // FIX: Iterate by mutable pointer to avoid const-correctness error when calling deinit.
+        for (&self.players) |*maybe_player| {
+            if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
                 posix.close(player_info.socket);
             }
@@ -109,7 +90,7 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10);
+        const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
         self.players[id] = .{
             .player = new_player,
             .socket = socket,
@@ -130,6 +111,7 @@ pub const GameServer = struct {
             if (bytes_read == 0) break;
 
             self.mutex.lock();
+            // FIX: InputAction is a member of the Player module, not the Player struct.
             const action = Player.InputAction.fromKey(read_buf[0]);
             try self.world_manager.handlePlayerAction(action);
             self.mutex.unlock();
@@ -141,7 +123,7 @@ pub const GameServer = struct {
     fn disconnectPlayer(self: *GameServer, id: usize) void {
         self.mutex.lock();
         defer self.mutex.unlock();
-        if (self.players[id]) |player_info| {
+        if (self.players[id]) |*player_info| {
             player_info.player.deinit();
             self.players[id] = null;
             self.player_count -= 1;
