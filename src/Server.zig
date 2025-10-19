@@ -9,13 +9,14 @@ const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
 
+// A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
     pos: usize = 0,
 
     fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
-        // const remaining_space = self.buffer.len - self.pos;
+        const remaining_space = self.buffer.len - self.pos;
         const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
         self.pos += written.len;
     }
@@ -41,14 +42,17 @@ pub const GameServer = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
+        // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
+        // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
-        try posix.setsockopt(listener_socket, .SOCKET, .REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
+        // FIX 2: Use posix.SOL.SOCKET and posix.SO.REUSEADDR for setsockopt
+        try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
         try posix.bind(listener_socket, &address.any, address.getOsSockLen());
         try posix.listen(listener_socket, 128);
 
@@ -150,10 +154,12 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
+        // Use a stack-allocated buffer and a stream for better performance.
         var buffer: [4096]u8 = undefined;
         var stream = std.io.fixedBufferStream(&buffer);
         const writer = stream.writer();
 
+        // Simplified state: just player positions
         for (self.players, 0..) |maybe_player, id| {
             if (maybe_player) |player_info| {
                 const p = player_info.player.getPosition();
@@ -172,4 +178,9 @@ pub const GameServer = struct {
     }
 };
 
+// FIX 3: Add a main function so the compiler does not error when compiling this as an executable root.
+pub fn main() !void {
+    // This file is intended to be used as a module and is not the actual entry point.
+    // The main entry point is expected in main.zig
+}
 
