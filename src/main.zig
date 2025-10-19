@@ -11,7 +11,7 @@ pub fn main() !void {
     defer std.process.argsFree(allocator, args);
 
     if (args.len >= 2 and std.mem.eql(u8, args[1], "server")) {
-        var server = try Server.init(allocator);
+        var server = try Server.
         defer server.deinit();
         try server.run();
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
