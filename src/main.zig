@@ -1,5 +1,5 @@
 const std = @import("std");
-const Server = @import("Server.zig").Server;
+const Server = @import("Server.zig");
 const Client = @import("Client.zig").Client;
 const Engine = @import("Engine.zig").Engine;
 
