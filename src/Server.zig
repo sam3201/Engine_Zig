@@ -125,7 +125,7 @@ pub const GameServer = struct {
                 break; // Disconnect on read error
             };
 
-            if (bytes_read == 0) break; // Client closed connection
+            if (bytes_read == 0) break; 
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
