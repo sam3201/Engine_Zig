@@ -7,7 +7,7 @@ const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Engine = @import("Engine.zig");
 
-const MAX_PLAYERS = 10;
+const MAX_PLAYERS = 64;
 
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
