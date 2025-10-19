@@ -10,7 +10,7 @@ const PlayerPosition = struct { x: i32, y: i32 };
 var g_socket: ?posix.socket_t = null;
 var g_read_buffer: [8192]u8 = undefined;
 // FIX: Use the named PlayerPosition struct here.
-var g_player_positions: std.AutoHashMap(u32, PlayerPosition);
+var g_player_positions: std.AutoHashMap(u32, PlayerPosition) = undefined;
 
 pub fn connectToServer(allocator: std.mem.Allocator) !void {
     // FIX: And use the named PlayerPosition struct here for initialization.
