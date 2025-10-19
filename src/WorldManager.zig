@@ -181,7 +181,7 @@ pub const WorldManager = struct {
         while (i + 2 <= data.len) : (i += 2) {
             const x = @as(i32, data[i]);
             const y = @as(i32, data[i + 1]);
-            const entity = Entity.Entity{ .x = x, .y = y, .width = 1, .height = 1, .id = 0, .ch = '@' };
+            const entity = Player.Entity{ .x = x, .y = y, .width = 1, .height = 1, .id = 0, .ch = '@' };
             const player = Player.Player.init(entity, 100, 100, 1, undefined);
             _ = self.Players.append(player) catch {};
         }
@@ -451,6 +451,7 @@ pub const WorldManager = struct {
                 }
             }
         }
+    }
 };
 
 pub fn randomBiome() Chunk.BiomeType {
