@@ -157,7 +157,6 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // Build the state string once
         var state_buffer = std.ArrayList(u8).init(self.allocator);
         defer state_buffer.deinit();
         var state_writer = state_buffer.writer();
