@@ -6,6 +6,26 @@ const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 
+fn startHostServer(allocator: std.mem.Allocator) void {
+    const Server = @import("Server.zig");
+    var server = Server.GameServer.init(allocator) catch |err| {
+        std.debug.print("Failed to start server: {}\n", .{err});
+        return;
+    };
+    defer server.deinit();
+    server.startServer() catch |err| {
+        std.debug.print("Server error: {}\n", .{err});
+    };
+}
+
+fn startClient(allocator: std.mem.Allocator) void {
+    const Client = @import("Client.zig");
+    _ = Client.main() catch |err| {
+        std.debug.print("Client error: {}\n", .{err});
+    };
+}
+
+
 // ───────────── In-Game Menu ─────────────
 fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     var menu = Menu.init(
