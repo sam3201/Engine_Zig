@@ -12,6 +12,8 @@ pub fn main() !void {
     std.debug.print("Connected to server!\n", .{});
 
     var input: [256]u8 = undefined;
+    const writer = std.io.Writer;
+    const reader = std.io.Reader; 
     while (true) {
         const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&input, '\n');
         if (line == null) break;
