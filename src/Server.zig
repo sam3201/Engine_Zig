@@ -170,7 +170,6 @@ pub const GameServer = struct {
         }
         try state_writer.writeAll("END\n");
 
-        // Send the same state string to every connected client
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
                 _ = posix.write(player_info.socket, state_buffer.items) catch {};
