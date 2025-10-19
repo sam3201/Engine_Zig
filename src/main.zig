@@ -40,7 +40,10 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
             server_thread.detach();
             },
 
-            1 => std.debug.print("Connect not implemented yet (menu).\n", .{}),
+            1 => {
+                
+
+                 }
 
             0 => {
                 std.debug.print("Enter new name: ", .{});
