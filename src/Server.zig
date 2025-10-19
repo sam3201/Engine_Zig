@@ -41,10 +41,9 @@ pub const GameServer = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
