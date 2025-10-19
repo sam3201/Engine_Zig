@@ -9,7 +9,6 @@ const Chunk = @import("Chunk.zig");
 
 const MAX_PLAYERS = 10;
 
-// A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
