@@ -6,6 +6,7 @@ const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 
+// ───────────── In-Game Menu ─────────────
 fn startHostServer(allocator: std.mem.Allocator) void {
     const Server = @import("Server.zig");
     var server = Server.GameServer.init(allocator) catch |err| {
