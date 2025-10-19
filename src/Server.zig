@@ -47,14 +47,12 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
-        // Deinit all connected players
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
                 player_info.player.deinit();
                 posix.close(player_info.socket);
             }
         }
-        // The world manager owns and deinits the host player
         self.world_manager.deinit();
     }
 
@@ -114,8 +112,6 @@ pub const GameServer = struct {
             const action = Player.InputAction.fromKey(read_buf[0]);
 
             self.mutex.lock();
-            // In a real game, you would apply the action to the specific player.
-            // For this simplified version, all inputs control the host player.
             try self.world_manager.handlePlayerAction(action);
             self.mutex.unlock();
 
