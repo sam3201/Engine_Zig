@@ -3,6 +3,7 @@ const std = @import("std");
 const posix = std.posix;
 
 pub fn main() !void {
+    const allocator = std.heap.page_allocator;
     const address = try posix.sockaddr.inet4_init(42069, try posix.inet_pton4("127.0.0.1"));
 
     const sock_fd = try posix.socket(posix.AF.INET, posix.SOCK.STREAM, 0);
@@ -12,11 +13,8 @@ pub fn main() !void {
     std.debug.print("Connected to server!\n", .{});
 
     var input: [256]u8 = undefined;
-    const writer = std.io.Writer;
-    const reader = std.io.Reader; 
-
     while (true) {
-        const line = try reader.readAlloc()
+        const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&input, '\n');
         if (line == null) break;
         const msg = line.?;
 
