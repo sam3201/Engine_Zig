@@ -131,7 +131,6 @@ pub const GameServer = struct {
 
             self.mutex.lock();
             if (self.players[id]) |*player_info| {
-                // For simplicity, input is a single character
                 const action = Player.InputAction.fromKey(read_buf[0]);
                 try self.world_manager.handlePlayerAction(action);
             }
