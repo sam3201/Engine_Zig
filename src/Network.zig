@@ -1,6 +1,5 @@
 const std = @import("std");
 
-/// Shared state for a single player. Sent from server to all clients.
 pub const PlayerState = struct {
     id: u32,
     x: i32,
