@@ -118,7 +118,7 @@ pub const GameServer = struct {
         // which should resolve the persistent type checking error.
         const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
         self.players[id] = .{
-            .player = new_player,
+            .player = *new_player,
             .socket = socket,
         };
         self.player_count += 1;
