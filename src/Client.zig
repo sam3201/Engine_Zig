@@ -62,3 +62,5 @@ pub const Client = struct {
     }
 };
 
+pub fn main() !void {
+}
