@@ -38,7 +38,7 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
             0 =>  { 
             const server_thread = try std.Thread.spawn(.{}, startHostServer, .{allocator});
             server_thread.detach();
-            std.debug.print("Server hosting started.\n", .{});
+            
             },
 
             1 => std.debug.print("Connect not implemented yet (menu).\n", .{}),
