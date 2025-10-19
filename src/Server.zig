@@ -1,33 +1,52 @@
 const std = @import("std");
 const posix = std.posix;
 const net = std.net;
-const Thread = std.Thread;
+const Thread = @import("std").Thread;
 const Player = @import("Player.zig").Player;
 const WorldManager = @import("WorldManager.zig");
 const Chunk = @import("Chunk.zig");
 const Engine = @import("Engine.zig");
 
-const MAX_PLAYERS = 64;
+const MAX_PLAYERS = 10;
+
+// A simple buffered writer to reduce the number of `write` syscalls.
+const BufferedWriter = struct {
+    socket: posix.socket_t,
+    buffer: [4096]u8 = undefined,
+    pos: usize = 0,
+
+    fn print(self: *BufferedWriter, comptime format: []const u8, args: anytype) !void {
+        const written = try std.fmt.bufPrint(self.buffer[self.pos..], format, args);
+        self.pos += written.len;
+    }
+
+    fn flush(self: *BufferedWriter) !void {
+        if (self.pos == 0) return;
+        _ = try posix.write(self.socket, self.buffer[0..self.pos]);
+        self.pos = 0;
+    }
+};
 
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
     world_manager: WorldManager.WorldManager,
     players: [MAX_PLAYERS]?PlayerInfo,
-    player_count: u32 = 0,
+    player_count: usize,
     mutex: Thread.Mutex,
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: *Player,
+        player: Player,
         socket: posix.socket_t,
-        id: u32,
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
+        // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
 
-        const world_manager = try WorldManager.init(Chunk.ChunkCoord.init(0, 0), 0, allocator, &dummy_canvas, host_player);
+        // FIX: The struct is nested inside the module, so the correct call is WorldManager.WorldManager.init
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -40,6 +59,7 @@ pub const GameServer = struct {
             .allocator = allocator,
             .world_manager = world_manager,
             .players = [_]?PlayerInfo{null} ** MAX_PLAYERS,
+            .player_count = 0,
             .mutex = Thread.Mutex{},
             .listener = listener_socket,
         };
@@ -57,7 +77,7 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
+        std.debug.print("✅ Server listening on 127.0.0.1:42069\n", .{});
         while (true) {
             const client_socket = try posix.accept(self.listener, null, null, 0);
             const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
@@ -66,7 +86,7 @@ pub const GameServer = struct {
     }
 
     fn handleClient(self: *GameServer, socket: posix.socket_t) void {
-        handleClientError(self, socket) catch |err| {
+        self.handleClientError(socket) catch |err| {
             std.debug.print("Client handler error: {any}\n", .{err});
         };
         posix.close(socket);
@@ -74,10 +94,10 @@ pub const GameServer = struct {
 
     fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
         self.mutex.lock();
-        var player_id: ?u32 = null;
-        for (0..MAX_PLAYERS) |i| {
-            if (self.players[i] == null) {
-                player_id = @intCast(i);
+        var player_id: ?usize = null;
+        for (&self.players, 0..) |*slot, i| {
+            if (slot.* == null) {
+                player_id = i;
                 break;
             }
         }
@@ -89,11 +109,10 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        const new_player = try Player.createWASDPlayer("player", self.allocator, 5, 5);
-        self.players[@intCast(id)] = .{
+        const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10);
+        self.players[id] = .{
             .player = new_player,
             .socket = socket,
-            .id = id,
         };
         self.player_count += 1;
         self.mutex.unlock();
@@ -101,17 +120,17 @@ pub const GameServer = struct {
         std.debug.print("Player {d} connected.\n", .{id});
         defer self.disconnectPlayer(id);
 
-        var read_buf: [1]u8 = undefined;
+        var read_buf: [256]u8 = undefined;
         while (true) {
             const bytes_read = posix.read(socket, &read_buf) catch |err| {
                 if (err == error.WouldBlock) continue;
                 break;
             };
+
             if (bytes_read == 0) break;
 
-            const action = Player.InputAction.fromKey(read_buf[0]);
-
             self.mutex.lock();
+            const action = Player.InputAction.fromKey(read_buf[0]);
             try self.world_manager.handlePlayerAction(action);
             self.mutex.unlock();
 
@@ -119,13 +138,12 @@ pub const GameServer = struct {
         }
     }
 
-    fn disconnectPlayer(self: *GameServer, id: u32) void {
+    fn disconnectPlayer(self: *GameServer, id: usize) void {
         self.mutex.lock();
         defer self.mutex.unlock();
-
-        if (self.players[@intCast(id)]) |player_info| {
+        if (self.players[id]) |player_info| {
             player_info.player.deinit();
-            self.players[@intCast(id)] = null;
+            self.players[id] = null;
             self.player_count -= 1;
             std.debug.print("Player {d} disconnected.\n", .{id});
         }
@@ -139,29 +157,24 @@ pub const GameServer = struct {
         var stream = std.io.fixedBufferStream(&buffer);
         const writer = stream.writer();
 
-        // Broadcast host player (ID 0)
-        const host_pos = self.world_manager.player.getPosition();
-        try writer.print("Player 0 {d} {d}\n", .{ host_pos.x, host_pos.y });
-
-        // Broadcast other players
-        for (self.players) |maybe_player| {
+        for (self.players, 0..) |maybe_player, id| {
             if (maybe_player) |player_info| {
                 const p = player_info.player.getPosition();
-                try writer.print("Player {d} {d} {d}\n", .{ player_info.id, p.x, p.y });
+                try writer.print("Player {d} {d} {d}\n", .{ id, p.x, p.y });
             }
         }
         try writer.writeAll("END\n");
 
-        const message = stream.getWritten();
+        const message_to_send = stream.getWritten();
+
         for (self.players) |maybe_player| {
             if (maybe_player) |player_info| {
-                _ = posix.write(player_info.socket, message) catch {};
+                _ = posix.write(player_info.socket, message_to_send) catch {};
             }
         }
     }
 };
 
-// Dummy main for build system
 pub fn main() !void {}
 
 
