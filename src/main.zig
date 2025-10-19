@@ -68,7 +68,7 @@ pub fn main() !void {
 
     var menu = Menu.init(
         "Main Menu",
-        &[_][]const u8{ "SinglePlayer", "Host", "Join Game", "Quit" },
+        &[_][]const u8{ "SinglePlayer", "Host", "Join", "Quit" },
         'w',
         's',
         '\n',
