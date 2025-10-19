@@ -46,7 +46,7 @@ pub const GameServer = struct {
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
 
         // FIX: The struct is nested inside the module, so the correct call is WorldManager.WorldManager.init
-        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
