@@ -25,7 +25,6 @@ fn startClient(allocator: std.mem.Allocator) void {
     };
 }
 
-
 // ───────────── In-Game Menu ─────────────
 fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     var menu = Menu.init(
