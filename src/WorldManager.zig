@@ -188,7 +188,6 @@ pub const WorldManager = struct {
     }
     };
 
-
     pub fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
         const old_pos = self.player.getPosition();
 
