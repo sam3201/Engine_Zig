@@ -122,7 +122,7 @@ pub const GameServer = struct {
         while (true) {
             const bytes_read = posix.read(socket, &read_buf) catch |err| {
                 if (err == error.WouldBlock) continue;
-                break; // Disconnect on read error
+                break; 
             };
 
             if (bytes_read == 0) break; 
