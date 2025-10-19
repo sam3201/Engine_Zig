@@ -127,4 +127,5 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
     }
 }
 
-
+pub fn main() !void {
+}
