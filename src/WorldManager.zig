@@ -181,7 +181,7 @@ pub const WorldManager = struct {
         while (i + 2 <= data.len) : (i += 2) {
             const x = @as(i32, data[i]);
             const y = @as(i32, data[i + 1]);
-            const entity = Player.Entity.init(x, y, 1, 1, 0, "@", Engine.Color{{.r = 255, .g = 255, .b = 255}});
+            const entity = Player.Entity.init(x, y, 1, 1, 0, "@", Engine.Color{ .r = 255, .g = 0, .b = 0 });
             const player = Player.Player.init(entity, 100, 100, 1, undefined);
             _ = self.Players.append(player) catch {};
         }
