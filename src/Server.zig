@@ -117,24 +117,6 @@ pub fn startServer(self: *GameServer) !void {
     }
 }
 
-    fn runServerEngine(self: *GameServer) void {
-        g_server = self; 
-        self.server_engine.canvas.setUpdateFn(updateCallback); 
-        self.server_engine.run() catch |err| {
-            std.debug.print("Server engine error: {}\n", .{err}); 
-        };
-    }
-
-    fn updateCallback(canvas: *Engine.Canvas) void {
-        if (g_server) |server| { 
-            server.mutex.lock(); 
-            defer server.mutex.unlock(); 
-
-            server.world_manager.draw(); 
-            drawServerOverview(canvas, server); 
-        }
-    }
-
     fn handleClient(self: *GameServer, socket: posix.socket_t) void {
         defer posix.close(socket);
         self.handleClientError(socket) catch |err| {
