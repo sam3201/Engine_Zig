@@ -98,12 +98,10 @@ fn parseAndUpdateState(data: []const u8) !void {
 pub fn updateAndRender(canvas: *eng.Canvas) void {
     if (g_socket == null) return;
 
-    // 1. Send input
     if (eng.readKey() catch null) |key| {
         sendInput(key) catch {};
     }
 
-    // 2. Read state
     var read_buffer: [4096]u8 = undefined;
     const bytes_read = posix.read(g_socket.?, &read_buffer) catch |err| {
         if (err == error.WouldBlock) {
@@ -112,7 +110,7 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
             disconnectFromServer();
             return;
         }
-        0
+        return 0;
     };
 
     if (bytes_read > 0) {
