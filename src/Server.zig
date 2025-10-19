@@ -17,7 +17,7 @@ const GameState = struct {
 
 pub const GameServer = struct {
     allocator: std.mem.Allocator,
-    listener: std.posix.fd_t,
+    listener: std.posix.fd_t.,
     clients: std.ArrayList(net.StreamServer.Connection),
     world_state: GameState,
     running: bool,
