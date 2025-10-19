@@ -89,7 +89,7 @@ pub const GameServer = struct {
     }
 
     fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
-        var writer = BufferedWriter{ .socket = socket };
+        const writer = BufferedWriter{ .socket = socket };
 
         self.mutex.lock();
         var player_id: ?usize = null;
