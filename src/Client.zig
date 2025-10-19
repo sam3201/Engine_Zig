@@ -4,7 +4,6 @@ const net = std.net;
 const eng = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-// Global state for simplicity in this example
 var g_socket: ?posix.socket_t = null;
 var g_read_buffer: [8192]u8 = undefined;
 var g_player_positions = std.AutoHashMap(u32, struct { x: i32, y: i32 }).init(std.heap.page_allocator);
@@ -13,7 +12,6 @@ pub fn connectToServer(allocator: std.mem.Allocator) !void {
     _ = allocator;
     const address = try net.Address.parseIp("127.0.0.1", 42069);
 
-    // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
     const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
     try posix.connect(socket, &address.any, address.getOsSockLen());
 
