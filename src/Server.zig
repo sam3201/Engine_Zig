@@ -110,7 +110,6 @@ pub const GameServer = struct {
             if (bytes_read == 0) break;
 
             self.mutex.lock();
-            // FIX: InputAction is a member of the Player module, not the Player struct.
             const action = Player.InputAction.fromKey(read_buf[0]);
             try self.world_manager.handlePlayerAction(action);
             self.mutex.unlock();
