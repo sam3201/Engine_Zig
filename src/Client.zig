@@ -2,44 +2,22 @@ const std = @import("std");
 const posix = std.posix;
 const net = std.net;
 const eng = @import("Engine.zig");
+const Chunk = @import("Chunk.zig");
 
-const GameState = struct {
-    players: std.StringHashMap(*const PlayerRenderInfo),
-    allocator: std.mem.Allocator,
-
-    const PlayerRenderInfo = struct {
-        x: i32,
-        y: i32,
-        ch: u8,
-    };
-
-    pub fn init(allocator: std.mem.Allocator) GameState {
-        return .{
-            .allocator = allocator,
-            .players = std.StringHashMap(*const PlayerRenderInfo).init(allocator),
-        };
-    }
-
-    pub fn deinit(self: *GameState) void {
-        var it = self.players.valueIterator();
-        while (it.next()) |player_info| {
-            self.allocator.destroy(player_info);
-        }
-        self.players.deinit();
-    }
-};
-
+// Global state for simplicity in this example
 var g_socket: ?posix.socket_t = null;
-var g_game_state: ?*GameState = null;
+var g_read_buffer: [8192]u8 = undefined;
+var g_player_positions = std.AutoHashMap(u32, struct { x: i32, y: i32 }).init(std.heap.page_allocator);
 
 pub fn connectToServer(allocator: std.mem.Allocator) !void {
+    _ = allocator;
     const address = try net.Address.parseIp("127.0.0.1", 42069);
-    const socket = try posix.socket(address.any.family, .STREAM, 0);
-    try posix.connect(socket, &address.any, address.getOsSockLen());
-    g_socket = socket;
 
-    g_game_state = try allocator.create(GameState);
-    g_game_state.?.* = GameState.init(allocator);
+    // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
+    const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
+    try posix.connect(socket, &address.any, address.getOsSockLen());
+
+    g_socket = socket;
 
     std.debug.print("Connected to server\n", .{});
 }
@@ -48,11 +26,7 @@ pub fn disconnectFromServer() void {
     if (g_socket) |socket| {
         posix.close(socket);
         g_socket = null;
-        if (g_game_state) |state| {
-            state.deinit();
-            std.heap.page_allocator.destroy(state);
-            g_game_state = null;
-        }
+        g_player_positions.deinit();
         std.debug.print("Disconnected from server\n", .{});
     }
 }
@@ -64,13 +38,10 @@ pub fn sendInput(key: u8) !void {
     }
 }
 
-fn parseAndUpdateState(data: []const u8) !void {
-    if (g_game_state == null) return;
-    const state = g_game_state.?;
-
+fn parseState(data: []const u8) !void {
     var line_iterator = std.mem.splitScalar(u8, data, '\n');
     while (line_iterator.next()) |line| {
-        if (std.mem.eql(u8, line, "END")) break;
+        if (line.len == 0 or std.mem.eql(u8, line, "END")) continue;
 
         var parts = std.mem.splitScalar(u8, line, ' ');
         const label = parts.next() orelse continue;
@@ -80,52 +51,52 @@ fn parseAndUpdateState(data: []const u8) !void {
             const x_str = parts.next() orelse continue;
             const y_str = parts.next() orelse continue;
 
+            const id = try std.fmt.parseInt(u32, id_str, 10);
             const x = try std.fmt.parseInt(i32, x_str, 10);
             const y = try std.fmt.parseInt(i32, y_str, 10);
 
-            if (state.players.get(id_str)) |player_info| {
-                player_info.x = x;
-                player_info.y = y;
-            } else {
-                const new_info = try state.allocator.create(GameState.PlayerRenderInfo);
-                new_info.* = .{ .x = x, .y = y, .ch = '@' };
-                try state.players.put(id_str, new_info);
-            }
+            try g_player_positions.put(id, .{ .x = x, .y = y });
         }
     }
 }
 
 pub fn updateAndRender(canvas: *eng.Canvas) void {
     if (g_socket == null) return;
+    const socket = g_socket.?;
 
+    // Send input if any
     if (eng.readKey() catch null) |key| {
         sendInput(key) catch {};
     }
 
-    var read_buffer: [4096]u8 = undefined;
-    const bytes_read = posix.read(g_socket.?, &read_buffer) catch |err| {
+    // Read new state from server
+    const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
         if (err == error.WouldBlock) {
-            // No new data, just render old state
+            // No new data is fine, we just won't update positions
         } else {
             disconnectFromServer();
-            return;
         }
-        return 0;
+        0
     };
 
     if (bytes_read > 0) {
-        parseAndUpdateState(read_buffer[0..bytes_read]) catch {};
+        parseState(g_read_buffer[0..bytes_read]) catch |err| {
+            std.debug.print("Parse error: {any}\n", .{err});
+        };
     }
 
+    // Render the current known state
     canvas.clear(' ', .{});
-    if (g_game_state) |state| {
-        var it = state.players.valueIterator();
-        while (it.next()) |player_info| {
-            canvas.put(player_info.x, player_info.y, player_info.ch);
-            canvas.fillColor(player_info.x, player_info.y, .{ .r = 255, .g = 255, .b = 0 });
-        }
+    var it = g_player_positions.iterator();
+    while (it.next()) |entry| {
+        canvas.put(entry.value_ptr.x, entry.value_ptr.y, '@');
+        canvas.fillColor(entry.value_ptr.x, entry.value_ptr.y, .{ .r = 255, .g = 255, .b = 0 });
     }
 }
 
+// FIX 2: Add a main function so the compiler does not error when compiling this as an executable root.
 pub fn main() !void {
+    // This file is intended to be used as a module and is not the actual entry point.
+    // The main entry point is expected in main.zig
 }
+
