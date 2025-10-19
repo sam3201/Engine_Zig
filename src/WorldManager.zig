@@ -188,7 +188,7 @@ pub const WorldManager = struct {
         self.updateCamera();
     }
 
-    fn updateCamera(self: *WorldManager) void {
+    pub fn updateCamera(self: *WorldManager) void {
         const pos = self.player.getPosition();
 
         self.camera_x = pos.x - @divTrunc(self.canvas_width, 2);
