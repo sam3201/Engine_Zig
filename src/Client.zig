@@ -20,7 +20,7 @@ pub fn connectToServer(allocator: std.mem.Allocator) !void {
 
     try posix.connect(socket, &address.any, address.getOsSockLen());
     g_socket = socket;
-    std.debug.print("✅ Connected to server\n", .{});
+    std.debug.print("Connected to server\n", .{});
 }
 
 pub fn disconnectFromServer() void {
