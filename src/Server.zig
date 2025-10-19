@@ -35,7 +35,7 @@ pub const GameServer = struct {
     mutex: Thread.Mutex,
     listener: posix.socket_t,
 
-    pub PlayerInfo = struct {
+    pub var PlayerInfo = struct {
         player: Player,
         socket: posix.socket_t,
     };
