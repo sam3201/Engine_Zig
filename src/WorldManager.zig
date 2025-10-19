@@ -450,6 +450,7 @@ pub const WorldManager = struct {
                 }
             }
         }
+    }
 }
 
 pub fn randomBiome() Chunk.BiomeType {
