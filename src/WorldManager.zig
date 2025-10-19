@@ -10,6 +10,7 @@ pub const WorldManager = struct {
     allocator: std.mem.Allocator,
     canvas: *Engine.Canvas,
     player: Player.Player,
+    Players: Player.Player,
     chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
     loaded_radius: i32 = 2,
     canvas_width: i32,
