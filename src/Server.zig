@@ -36,7 +36,6 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        // The player must be a mutable pointer (*Player)
         player: *Player, 
         socket: posix.socket_t,
     };
