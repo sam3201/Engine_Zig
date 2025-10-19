@@ -9,7 +9,6 @@ const Engine = @import("Engine.zig");
 
 const MAX_PLAYERS = 10;
 
-// A simple buffered writer to reduce the number of `write` syscalls.
 const BufferedWriter = struct {
     socket: posix.socket_t,
     buffer: [4096]u8 = undefined,
@@ -36,7 +35,7 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: Player.Player,
+        player: *Player.Player,
         socket: posix.socket_t,
     };
 
