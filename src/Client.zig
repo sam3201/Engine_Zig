@@ -33,7 +33,6 @@ pub const Client = struct {
         if (!self.connected or self.socket == null) return;
         const sock = self.socket.?;
 
-        // Read key from player
         if (Engine.readKey() catch null) |key| {
             if (key == 'q' or key == 27) {
                 self.disconnect();
@@ -42,7 +41,6 @@ pub const Client = struct {
             _ = posix.write(sock, &[1]u8{key}) catch {};
         }
 
-        // Receive state
         var buf: [1024]u8 = undefined;
         const n = posix.read(sock, &buf) catch |err| switch (err) {
             error.WouldBlock => return,
@@ -50,7 +48,6 @@ pub const Client = struct {
         };
         if (n == 0) return;
 
-        // Basic example: draw whatever positions server sent
         canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
         var i: usize = 0;
         while (i + 2 <= n) : (i += 2) {
