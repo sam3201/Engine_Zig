@@ -133,7 +133,7 @@ pub const GameServer = struct {
         defer send_buffer.deinit();
         const packet = network.GameStatePacket{ .players = player_states.items };
         try json.stringify(packet, .{}, send_buffer.writer());
-        try send_buffer.append('\n'); // Use newline as a simple packet delimiter
+        try send_buffer.append('\n'); 
 
         for (self.clients.items) |client| {
             _ = client.stream.write(send_buffer.items) catch |err| {
