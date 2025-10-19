@@ -13,7 +13,7 @@ pub fn main() !void {
     if (args.len >= 2 and std.mem.eql(u8, args[1], "server")) {
         var server = try Server.GameServer.init(allocator);
         defer server.deinit();
-        try server.run();
+
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
         var client = Client.init(allocator);
         try client.connect("127.0.0.1", 42069);
