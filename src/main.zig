@@ -56,11 +56,11 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 try player.save("host.json");
             },
 
-            1 => {
+            3 => {
                 std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
             },
-            2 => return, 
-            3 => engine.running = false,
+            4 => return, 
+            5 => engine.running = false,
             else => {},
         }
     }
