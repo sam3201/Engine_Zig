@@ -81,7 +81,7 @@ pub const GameServer = struct {
         }
     }
 
-    fn clientHandler(_self: *GameServer, conn: net.StreamServer.Connection) void {
+    fn clientHandler(conn: net.StreamServer.Connection) void {
         const fd = conn.stream.handle;
         var buf: [512]u8 = undefined;
 
