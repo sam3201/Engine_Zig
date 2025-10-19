@@ -1,6 +1,5 @@
 //src/Client.zig
 
-
 const std = @import("std");
 const posix = std.posix; 
 const net = std.net;
