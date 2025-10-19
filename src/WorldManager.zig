@@ -183,7 +183,7 @@ pub const WorldManager = struct {
             const y = @as(i32, data[i + 1]);
             const entity = Entity{ .x = x, .y = y, .width = 1, .height = 1, .id = 0, .ch = '@' };
             const player = Player.init(entity, 100, 100, 1, undefined);
-            _ = self.players.append(player) catch {};
+            _ = self.Players.append(player) catch {};
         }
     }
     };
