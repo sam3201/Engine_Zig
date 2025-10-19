@@ -91,9 +91,9 @@ pub fn main() !void {
     switch (choice orelse 3) {
         0 => try standaloneGame(allocator),
         1 => {
-            //const server_thread = try std.Thread.spawn(.{}, startHostServer, .{allocator});
-            //server_thread.detach();
-            //std.Thread.sleep(100 * std.time.ns_per_ms);
+            const server_thread = try std.Thread.spawn(.{}, startHostServer, .{allocator});
+            server_thread.detach();
+            std.Thread.sleep(100 * std.time.ns_per_ms);
             startClient(allocator);
         },
         2 => startClient(allocator),
