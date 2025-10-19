@@ -15,6 +15,9 @@ pub fn main() !void {
         try GameServer.init(allocator);
         defer GameServer.deinit();
 
+        GameServer.startServer();
+        }
+
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
         var client = Client.init(allocator);
         try client.connect("127.0.0.1", 42069);
