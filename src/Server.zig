@@ -47,10 +47,8 @@ pub const GameServer = struct {
         const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
-        // FIX 1: Use posix.SOCK.STREAM instead of raw .STREAM
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
-        // FIX 2: Use posix.SOL.SOCKET and posix.SO.REUSEADDR for setsockopt
         try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
         try posix.bind(listener_socket, &address.any, address.getOsSockLen());
         try posix.listen(listener_socket, 128);
