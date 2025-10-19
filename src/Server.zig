@@ -152,12 +152,10 @@ pub const GameServer = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // Use a stack-allocated buffer and a stream for better performance.
         var buffer: [4096]u8 = undefined;
         var stream = std.io.fixedBufferStream(&buffer);
         const writer = stream.writer();
 
-        // Simplified state: just player positions
         for (self.players, 0..) |maybe_player, id| {
             if (maybe_player) |player_info| {
                 const p = player_info.player.getPosition();
