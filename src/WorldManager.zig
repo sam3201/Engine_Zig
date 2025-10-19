@@ -62,7 +62,7 @@ pub const WorldManager = struct {
         for (self.Players.items) |*p| {
             p.deinit();
         }
-        self.Players.deinit();
+        self.Players.deinit(self.allocator);
         
     }
 
