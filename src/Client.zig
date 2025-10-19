@@ -81,7 +81,6 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         };
     }
 
-    // Render the current known state
     canvas.clear(' ', .{});
     var it = g_player_positions.iterator();
     while (it.next()) |entry| {
