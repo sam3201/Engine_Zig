@@ -14,8 +14,6 @@ pub fn main() !void {
     const GameServer = Server.GameServer;
     try GameServer.init(allocator);
     defer GameServer.deinit();
-        var server = try Server.GameServer.init(allocator);
-        defer server.deinit();
 
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
         var client = Client.init(allocator);
