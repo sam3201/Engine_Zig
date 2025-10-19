@@ -41,7 +41,6 @@ pub const GameServer = struct {
     };
 
     pub fn init(allocator: std.mem.Allocator) !GameServer {
-        // A canvas is needed for the world manager, but it won't be drawn.
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
         const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
