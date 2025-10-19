@@ -26,7 +26,7 @@ pub const GameServer = struct {
         var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
         const host_player = try Player.Player.createWASDPlayer("host", allocator, 10, 10);
 
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -90,9 +90,9 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        // FIX: Explicitly ensure we assign the pointer returned by createWASDPlayer
-        // by casting the result to the expected pointer type.
-        const new_player: *Player.Player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
+        // FIX: Removed the explicit type annotation (*Player.Player) from the variable
+        // declaration. The `try` operator extracts the pointer, and inference is safer here.
+        const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
         self.players[id] = .{
             .player = new_player,
             .socket = socket,
