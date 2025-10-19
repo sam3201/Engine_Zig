@@ -7,7 +7,7 @@ const WorldManager = @import("WorldManager.zig");
 const Engine = @import("Engine.zig");
 const Chunk = @import("Chunk.zig");
 
-const MAX_PLAYERS = 10;
+const MAX_PLAYERS = 64;
 
 const BufferedWriter = struct {
     socket: posix.socket_t,
