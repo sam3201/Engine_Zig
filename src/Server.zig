@@ -72,7 +72,7 @@ pub const Server = struct {
 
     fn acceptLoop(self: *Server) void {
         while (self.running) {
-            var conn = self.listener.accept() catch |err| {
+            const conn = self.listener.accept() catch |err| {
                 std.debug.print("Accept error: {}\n", .{err});
                 continue;
             };
