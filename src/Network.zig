@@ -8,12 +8,10 @@ pub const PlayerState = struct {
     ch: u8,
 };
 
-/// Packet sent from Server -> Client containing the state of all players.
 pub const GameStatePacket = struct {
     players: []const PlayerState,
 };
 
-/// Packet sent from Client -> Server containing a key press.
 pub const PlayerInputPacket = struct {
     key: u8,
 };
