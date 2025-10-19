@@ -67,6 +67,7 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         sendInput(key) catch {};
     }
 
+    const status: posix.pollfd = 0;
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
         if (err == error.WouldBlock) {
         } else {
