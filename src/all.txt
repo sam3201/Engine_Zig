@@ -399,7 +399,6 @@ pub const Chunk = struct {
 };
 //src/Client.zig
 
-
 const std = @import("std");
 const posix = std.posix; 
 const net = std.net;
@@ -1200,10 +1199,30 @@ const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 
 // ───────────── In-Game Menu ─────────────
+fn startHostServer(allocator: std.mem.Allocator) void {
+    const Server = @import("Server.zig");
+    var server = Server.GameServer.init(allocator) catch |err| {
+        std.debug.print("Failed to start server: {}\n", .{err});
+        return;
+    };
+    defer server.deinit();
+    server.startServer() catch |err| {
+        std.debug.print("Server error: {}\n", .{err});
+    };
+}
+
+fn startClient() void {
+    const Client = @import("Client.zig");
+    _ = Client.main() catch |err| {
+        std.debug.print("Client error: {}\n", .{err});
+    };
+}
+
+// ───────────── In-Game Menu ─────────────
 fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     var menu = Menu.init(
         "In-Game Menu",
-        &[_][]const u8{ "Change Name", "View Key Bindings", "Back", "Quit" },
+        &[_][]const u8{"Host", "Connect", "Change Name", "View Key Bindings", "Back", "Quit" },
         'w',
         's',
         '\n',
@@ -1228,7 +1247,17 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
 
     if (choice) |c| {
         switch (c) {
-            0 => {
+            0 =>  { 
+            const server_thread = try std.Thread.spawn(.{}, startHostServer, .{allocator});
+            server_thread.detach();
+            },
+
+            1 => {
+            const client_thread = try std.Thread.spawn(.{}, startClient, .{});
+            client_thread.detach();
+            },
+
+            2 => {
                 std.debug.print("Enter new name: ", .{});
                 var buf_arr: [1024]u8 = undefined;
                 var stdin_reader = std.fs.File.stdin().reader(&buf_arr);
@@ -1239,11 +1268,11 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
                 try player.save("host.json");
             },
 
-            1 => {
+            3 => {
                 std.debug.print("Bindings: W/A/S/D = Move, E = Interact, I = Inventory, Space = Attack, M = Menu\n", .{});
             },
-            2 => return, 
-            3 => engine.running = false,
+            4 => return, 
+            5 => engine.running = false,
             else => {},
         }
     }

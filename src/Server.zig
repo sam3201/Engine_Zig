@@ -101,24 +101,21 @@ pub const GameServer = struct {
         self.server_engine.deinit();
     }
 
-    pub fn startServer(self: *GameServer) !void {
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{}); 
+pub fn startServer(self: *GameServer) !void {
+    std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
 
-        const server_thread = try Thread.spawn(.{}, runServerEngine, .{self}); 
-        defer server_thread.join(); 
-
-        while (true) {
-            var client_address: net.Address = undefined;
-            var client_address_len: posix.socklen_t = @sizeOf(net.Address);
-            const client_socket = posix.accept(self.listener, &client_address.any, &client_address_len, 0) catch |err| {
-                std.debug.print("Failed to accept connection: {}\n", .{err}); 
-                continue; 
-            };
-
-            const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket }); 
-            thread.detach(); 
-        }
+    // Main accept loop
+    while (true) {
+        var client_addr: std.net.Address = undefined;
+        var len: std.posix.socklen_t = @sizeOf(std.net.Address);
+        const client_socket = posix.accept(self.listener, &client_addr.any, &len, 0) catch |err| {
+            std.debug.print("Accept failed: {}\n", .{err});
+            continue;
+        };
+        const thread = try std.Thread.spawn(.{}, handleClient, .{self, client_socket});
+        thread.detach();
     }
+}
 
     fn runServerEngine(self: *GameServer) void {
         g_server = self; 
