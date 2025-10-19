@@ -1,23 +1,21 @@
 const std = @import("std");
 const posix = std.posix;
 const net = std.net;
-const eng = @import("Engine.zig");
-const Chunk = @import("Chunk.zig");
+const Engine = @import("Engine.zig");
 
+// Global state for the client
 var g_socket: ?posix.socket_t = null;
 var g_read_buffer: [8192]u8 = undefined;
-var g_player_positions = std.AutoHashMap(u32, struct { x: i32, y: i32 }).init(std.heap.page_allocator);
+var g_player_positions: std.AutoHashMap(u32, struct { x: i32, y: i32 });
 
 pub fn connectToServer(allocator: std.mem.Allocator) !void {
-    _ = allocator;
+    g_player_positions = std.AutoHashMap(u32, struct { x: i32, y: i32 }).init(allocator);
     const address = try net.Address.parseIp("127.0.0.1", 42069);
-
     const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
+
     try posix.connect(socket, &address.any, address.getOsSockLen());
-
     g_socket = socket;
-
-    std.debug.print("Connected to server\n", .{});
+    std.debug.print("✅ Connected to server\n", .{});
 }
 
 pub fn disconnectFromServer() void {
@@ -29,7 +27,7 @@ pub fn disconnectFromServer() void {
     }
 }
 
-pub fn sendInput(key: u8) !void {
+fn sendInput(key: u8) !void {
     if (g_socket) |socket| {
         const buf = [_]u8{key};
         _ = try posix.write(socket, &buf);
@@ -39,7 +37,8 @@ pub fn sendInput(key: u8) !void {
 fn parseState(data: []const u8) !void {
     var line_iterator = std.mem.splitScalar(u8, data, '\n');
     while (line_iterator.next()) |line| {
-        if (line.len == 0 or std.mem.eql(u8, line, "END")) continue;
+        if (line.len == 0) continue;
+        if (std.mem.eql(u8, line, "END")) break;
 
         var parts = std.mem.splitScalar(u8, line, ' ');
         const label = parts.next() orelse continue;
@@ -58,37 +57,58 @@ fn parseState(data: []const u8) !void {
     }
 }
 
-pub fn updateAndRender(canvas: *eng.Canvas) void {
+// This function is set as the callback for the engine's game loop.
+pub fn updateAndRender(canvas: *Engine.Canvas) void {
     if (g_socket == null) return;
     const socket = g_socket.?;
 
-    // Send input if any
-    if (eng.readKey() catch null) |key| {
+    // 1. Send input if any
+    if (Engine.readKey() catch null) |key| {
+        if (key == 'q' or key == 27) {
+            // A bit of a hack to signal the engine to stop from main.zig
+            // In a real app, you'd have a more robust event system.
+            return;
+        }
         sendInput(key) catch {};
     }
 
+    // 2. Receive new state from server
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
-        std.debug.print("Read error: {any}\n", .{err});
-        disconnectFromServer();
+        if (err != error.WouldBlock) {
+            std.debug.print("Read error: {any}, disconnecting.\n", .{err});
+            disconnectFromServer();
+        }
         return;
     };
 
     if (bytes_read > 0) {
         parseState(g_read_buffer[0..bytes_read]) catch |err| {
-            std.debug.print("Parse error: {any}\n", .{err});
+            std.debug.print("Parse error: {any}, disconnecting.\n", .{err});
             disconnectFromServer();
             return;
         };
     }
 
-    canvas.clear(' ', .{});
+    // 3. Render the mirrored state
+    canvas.clear(' ', .{ .r = 5, .g = 5, .b = 15 });
     var it = g_player_positions.iterator();
     while (it.next()) |entry| {
-        canvas.put(entry.value_ptr.x, entry.value_ptr.y, '@');
-        canvas.fillColor(entry.value_ptr.x, entry.value_ptr.y, .{ .r = 255, .g = 255, .b = 0 });
+        const p = entry.value_ptr;
+        canvas.put(p.x, p.y, '@');
+        canvas.fillColor(p.x, p.y, .{ .r = 255, .g = 255, .b = 0 });
     }
 }
 
-pub fn main() !void {
+// The main game loop for a client, called from main.zig
+pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    try connectToServer(allocator);
+    defer disconnectFromServer();
+
+    engine.canvas.setUpdateFn(updateAndRender);
+    try engine.run();
 }
+
+// Dummy main for build system
+pub fn main() !void {}
+
 
