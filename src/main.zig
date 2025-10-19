@@ -15,6 +15,7 @@ pub fn main() !void {
         try GameServer.init(allocator) catch |err| {
             std.debug.print("Error: {s}\n", .{err});            
         };
+
         defer GameServer.deinit();
 
         GameServer.startServer();
