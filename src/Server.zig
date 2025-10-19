@@ -178,9 +178,6 @@ pub const GameServer = struct {
     }
 };
 
-// FIX 3: Add a main function so the compiler does not error when compiling this as an executable root.
 pub fn main() !void {
-    // This file is intended to be used as a module and is not the actual entry point.
-    // The main entry point is expected in main.zig
 }
 
