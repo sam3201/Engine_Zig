@@ -135,15 +135,6 @@ pub const Player = struct {
         try self.inventory.addItem(item);
     }
 
-    pub fn removeItemByName(self: *Player, name: []const u8, amount: u32) void {
-        if (self.inventory.findByName(name)) |it| {
-            const item_ptr = it;
-            const it_type = item_ptr.*.item_type;
-            const it_variant = item_ptr.*.variant_char;
-            self.inventory.removeItem(it_type, it_variant, amount);
-        }
-    }
-
     pub fn getItemByIndex(self: *Player, idx: usize) ?Inventory.Item {
         return self.inventory.getItem(idx);
     }
