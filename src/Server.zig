@@ -6,7 +6,7 @@ const Player = @import("Player.zig").Player;
 
 pub const Server = struct {
     allocator: std.mem.Allocator,
-    listener: std.posix.Socket,
+    listener: net.StreamServer,
     clients: std.ArrayList(net.StreamServer.Connection),
     world_manager: WorldManager,
     running: bool,
