@@ -35,6 +35,9 @@ fn ingameMenu(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Pla
 
     if (choice) |c| {
         switch (c) {
+            0 => std.debug.print("Host not implemented yet (menu).\n", .{}),
+            1 => std.debug.print("Connect not implemented yet (menu).\n", .{}),
+
             0 => {
                 std.debug.print("Enter new name: ", .{});
                 var buf_arr: [1024]u8 = undefined;
