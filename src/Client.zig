@@ -1,77 +1,133 @@
 const std = @import("std");
-const net = std.net;
-const json = std.json;
 const posix = std.posix;
+const net = std.net;
 const eng = @import("Engine.zig");
 
-const PlayerState = struct {
-    id: u32,
-    x: i32,
-    y: i32,
-    hp: i32,
-};
-
 const GameState = struct {
-    tick: u64,
-    players: []PlayerState,
-};
-
-pub const Client = struct {
+    players: std.StringHashMap(*const PlayerRenderInfo),
     allocator: std.mem.Allocator,
-    fd: posix.fd_t,
-    game_state: GameState,
-    connected: bool,
 
-    pub fn connect(allocator: std.mem.Allocator, host: []const u8, port: u16) !Client {
-        const address = try net.Address.parseIp4(host, port);
-        const stream = try net.tcpConnectToAddress(address);
+    const PlayerRenderInfo = struct {
+        x: i32,
+        y: i32,
+        ch: u8,
+    };
 
-        std.debug.print("Connected to {s}:{d}\n", .{ host, port });
-
+    pub fn init(allocator: std.mem.Allocator) GameState {
         return .{
             .allocator = allocator,
-            .fd = stream.handle,
-            .game_state = .{ .tick = 0, .players = &[_]PlayerState{} },
-            .connected = true,
+            .players = std.StringHashMap(*const PlayerRenderInfo).init(allocator),
         };
     }
 
-    pub fn deinit(self: *Client) void {
-        posix.close(self.fd);
-    }
-
-    pub fn send(self: *Client, msg: []const u8) void {
-        _ = posix.write(self.fd, msg) catch {};
-    }
-
-    pub fn receive(self: *Client) void {
-        var buf: [2048]u8 = undefined;
-        const len = posix.read(self.fd, &buf) catch return;
-        if (len == 0) return;
-
-        const parsed = json.parseFromSlice(GameState, self.allocator, buf[0..len], .{}) catch return;
-        defer parsed.deinit();
-        self.game_state = parsed.value;
-    }
-
-    pub fn draw(self: *Client, canvas: *eng.Canvas) void {
-        canvas.clear(' ', eng.Color{ .r = 0, .g = 0, .b = 0 });
-        for (self.game_state.players) |p| {
-            canvas.put(p.x, p.y, '@');
+    pub fn deinit(self: *GameState) void {
+        var it = self.players.valueIterator();
+        while (it.next()) |player_info| {
+            self.allocator.destroy(player_info);
         }
+        self.players.deinit();
     }
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
+var g_socket: ?posix.socket_t = null;
+var g_game_state: ?*GameState = null;
 
-    var client = try Client.connect(allocator, "127.0.0.1", 42069);
-    defer client.deinit();
+pub fn connectToServer(allocator: std.mem.Allocator) !void {
+    const address = try net.Address.parseIp("127.0.0.1", 42069);
+    const socket = try posix.socket(address.any.family, .STREAM, 0);
+    try posix.connect(socket, &address.any, address.getOsSockLen());
+    g_socket = socket;
 
-    while (true) {
-        client.receive();
-        std.time.sleep(50 * std.time.ns_per_ms);
+    g_game_state = try allocator.create(GameState);
+    g_game_state.?.* = GameState.init(allocator);
+
+    std.debug.print("Connected to server\n", .{});
+}
+
+pub fn disconnectFromServer() void {
+    if (g_socket) |socket| {
+        posix.close(socket);
+        g_socket = null;
+        if (g_game_state) |state| {
+            state.deinit();
+            std.heap.page_allocator.destroy(state);
+            g_game_state = null;
+        }
+        std.debug.print("Disconnected from server\n", .{});
     }
 }
+
+pub fn sendInput(key: u8) !void {
+    if (g_socket) |socket| {
+        const buf = [_]u8{key};
+        _ = try posix.write(socket, &buf);
+    }
+}
+
+fn parseAndUpdateState(data: []const u8) !void {
+    if (g_game_state == null) return;
+    const state = g_game_state.?;
+
+    var line_iterator = std.mem.splitScalar(u8, data, '\n');
+    while (line_iterator.next()) |line| {
+        if (std.mem.eql(u8, line, "END")) break;
+
+        var parts = std.mem.splitScalar(u8, line, ' ');
+        const label = parts.next() orelse continue;
+
+        if (std.mem.eql(u8, label, "Player")) {
+            const id_str = parts.next() orelse continue;
+            const x_str = parts.next() orelse continue;
+            const y_str = parts.next() orelse continue;
+
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+
+            if (state.players.get(id_str)) |player_info| {
+                player_info.x = x;
+                player_info.y = y;
+            } else {
+                const new_info = try state.allocator.create(GameState.PlayerRenderInfo);
+                new_info.* = .{ .x = x, .y = y, .ch = '@' };
+                try state.players.put(id_str, new_info);
+            }
+        }
+    }
+}
+
+pub fn updateAndRender(canvas: *eng.Canvas) void {
+    if (g_socket == null) return;
+
+    // 1. Send input
+    if (eng.readKey() catch null) |key| {
+        sendInput(key) catch {};
+    }
+
+    // 2. Read state
+    var read_buffer: [4096]u8 = undefined;
+    const bytes_read = posix.read(g_socket.?, &read_buffer) catch |err| {
+        if (err == error.WouldBlock) {
+            // No new data, just render old state
+        } else {
+            disconnectFromServer();
+            return;
+        }
+        0
+    };
+
+    if (bytes_read > 0) {
+        parseAndUpdateState(read_buffer[0..bytes_read]) catch {};
+    }
+
+    // 3. Render
+    canvas.clear(' ', .{});
+    if (g_game_state) |state| {
+        var it = state.players.valueIterator();
+        while (it.next()) |player_info| {
+            canvas.put(player_info.x, player_info.y, player_info.ch);
+            canvas.fillColor(player_info.x, player_info.y, .{ .r = 255, .g = 255, .b = 0 });
+        }
+    }
+}
+
 
