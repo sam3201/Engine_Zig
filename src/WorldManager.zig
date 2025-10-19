@@ -6,6 +6,8 @@ const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
 
+const MAX_PLAYERS = 64;
+
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
     canvas: *Engine.Canvas,
