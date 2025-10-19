@@ -59,7 +59,11 @@ pub const WorldManager = struct {
             c.deinit();
         }
         self.chunks.deinit();
-        self.player.deinit();
+        for (self.Players.items) |p| {
+            p.deinit();
+        }
+        self.Players.deinit();
+        
     }
 
     pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
