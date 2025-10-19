@@ -12,7 +12,9 @@ pub fn main() !void {
 
     if (args.len >= 2 and std.mem.eql(u8, args[1], "server")) {
         const GameServer = Server.GameServer;
-        GameServer.init(allocator);
+        try GameServer.init(allocator) catch |err| {
+            std.debug.print("Error: {s}\n", .{err});            
+        };
         defer GameServer.deinit();
 
         GameServer.startServer();
