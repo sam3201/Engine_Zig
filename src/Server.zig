@@ -36,7 +36,7 @@ pub const GameServer = struct {
     listener: posix.socket_t,
 
     pub const PlayerInfo = struct {
-        player: *Player,
+        player: *Player.Player,
         socket: posix.socket_t,
     };
 
