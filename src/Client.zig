@@ -117,7 +117,6 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         parseAndUpdateState(read_buffer[0..bytes_read]) catch {};
     }
 
-    // 3. Render
     canvas.clear(' ', .{});
     if (g_game_state) |state| {
         var it = state.players.valueIterator();
