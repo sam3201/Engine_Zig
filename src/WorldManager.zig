@@ -164,7 +164,7 @@ pub const WorldManager = struct {
         try self.handlePlayerAction(action);
     }
 
-        pub fn serializeState(self: *WorldManager, buffer: []u8) !usize {
+    pub fn serializeState(self: *WorldManager, buffer: []u8) !usize {
         var i: usize = 0;
         for (self.players.items) |p| {
             if (i + 2 >= buffer.len) break;
