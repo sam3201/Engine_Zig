@@ -118,7 +118,7 @@ pub const GameServer = struct {
         self.players[id] = .{
             // FIX: Explicitly cast the inferred type (which should be a pointer) 
             // to the *Player type to resolve the mismatch in the struct assignment.
-            .player = @ptrCast(new_player), 
+            .player = @ptrCast(*Player, new_player), 
             .socket = socket,
         };
         self.player_count += 1;
