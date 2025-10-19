@@ -47,7 +47,6 @@ pub const GameServer = struct {
 
     pub fn deinit(self: *GameServer) void {
         posix.close(self.listener);
-        // FIX: Iterate by mutable pointer to avoid const-correctness error when calling deinit.
         for (&self.players) |*maybe_player| {
             if (maybe_player.*) |*player_info| {
                 player_info.player.deinit();
@@ -58,7 +57,7 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        std.debug.print("✅ Server listening on 127.0.0.1:42069\n", .{});
+        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
         while (true) {
             const client_socket = try posix.accept(self.listener, null, null, 0);
             const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
