@@ -75,7 +75,7 @@ pub const GameServer = struct {
     }
 
     pub fn startServer(self: *GameServer) !void {
-        std.debug.print("✅ Server listening on 127.0.0.1:42069\n", .{});
+        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
         while (true) {
             const client_socket = try posix.accept(self.listener, null, null, 0);
             const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
@@ -93,8 +93,6 @@ pub const GameServer = struct {
     fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
         self.mutex.lock();
         var player_id: ?usize = null;
-        // FIX 3: Use '&self.players' to iterate over pointers to the array elements,
-        // allowing the use of `|*slot, i|` to get a mutable pointer to the optional slot.
         for (&self.players, 0..) |*slot, i| {
             if (slot.* == null) {
                 player_id = i;
