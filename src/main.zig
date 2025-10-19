@@ -10,7 +10,8 @@ pub fn main() !void {
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
 
-    const GameServer = Server.GameServer.init(allocator); 
+    const GameServer = Server.GameServer;
+    try GameServer.init(allocator);
     defer GameServer.deinit();
 
     if (args.len >= 2 and std.mem.eql(u8, args[1], "server")) {
