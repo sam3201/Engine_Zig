@@ -1,32 +1,119 @@
-// src/Client.zig
 const std = @import("std");
 const posix = std.posix;
+const net = std.net;
+const Engine = @import("Engine.zig");
 
-pub fn main() !void {
-    const address = try posix.sockaddr.inet4_init(42069, try posix.inet_pton4("127.0.0.1"));
+// FIX: Define a named struct for player positions to resolve the type mismatch error.
+const PlayerPosition = struct { x: i32, y: i32 };
 
-    const sock_fd = try posix.socket(posix.AF.INET, posix.SOCK.STREAM, 0);
-    defer posix.close(sock_fd);
+// Global state for the client
+var g_socket: ?posix.socket_t = null;
+var g_read_buffer: [8192]u8 = undefined;
+// FIX: Use the named PlayerPosition struct here.
+var g_player_positions: std.AutoHashMap(u32, PlayerPosition);
 
-    try posix.connect(sock_fd, &address);
-    std.debug.print("Connected to server!\n", .{});
+pub fn connectToServer(allocator: std.mem.Allocator) !void {
+    // FIX: And use the named PlayerPosition struct here for initialization.
+    g_player_positions = std.AutoHashMap(u32, PlayerPosition).init(allocator);
+    const address = try net.Address.parseIp("127.0.0.1", 42069);
+    const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
 
-    var input: [256]u8 = undefined;
-    while (true) {
-        const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&input, '\n');
-        if (line == null) break;
-        const msg = line.?;
+    try posix.connect(socket, &address.any, address.getOsSockLen());
+    g_socket = socket;
+    std.debug.print("✅ Connected to server\n", .{});
+}
 
-        if (std.mem.eql(u8, msg, "quit")) break;
-
-        _ = try posix.write(sock_fd, msg);
-        _ = try posix.write(sock_fd, "\n");
-
-        var recv_buf: [1024]u8 = undefined;
-        const n = posix.read(sock_fd, &recv_buf) catch break;
-        if (n == 0) break;
-
-        std.debug.print("Server: {s}\n", .{recv_buf[0..n]});
+pub fn disconnectFromServer() void {
+    if (g_socket) |socket| {
+        posix.close(socket);
+        g_socket = null;
+        g_player_positions.deinit();
+        std.debug.print("Disconnected from server\n", .{});
     }
 }
+
+fn sendInput(key: u8) !void {
+    if (g_socket) |socket| {
+        const buf = [_]u8{key};
+        _ = try posix.write(socket, &buf);
+    }
+}
+
+fn parseState(data: []const u8) !void {
+    var line_iterator = std.mem.splitScalar(u8, data, '\n');
+    while (line_iterator.next()) |line| {
+        if (line.len == 0) continue;
+        if (std.mem.eql(u8, line, "END")) break;
+
+        var parts = std.mem.splitScalar(u8, line, ' ');
+        const label = parts.next() orelse continue;
+
+        if (std.mem.eql(u8, label, "Player")) {
+            const id_str = parts.next() orelse continue;
+            const x_str = parts.next() orelse continue;
+            const y_str = parts.next() orelse continue;
+
+            const id = try std.fmt.parseInt(u32, id_str, 10);
+            const x = try std.fmt.parseInt(i32, x_str, 10);
+            const y = try std.fmt.parseInt(i32, y_str, 10);
+
+            try g_player_positions.put(id, .{ .x = x, .y = y });
+        }
+    }
+}
+
+// This function is set as the callback for the engine's game loop.
+pub fn updateAndRender(canvas: *Engine.Canvas) void {
+    if (g_socket == null) return;
+    const socket = g_socket.?;
+
+    // 1. Send input if any
+    if (Engine.readKey() catch null) |key| {
+        if (key == 'q' or key == 27) {
+            // A bit of a hack to signal the engine to stop from main.zig
+            // In a real app, you'd have a more robust event system.
+            return;
+        }
+        sendInput(key) catch {};
+    }
+
+    // 2. Receive new state from server
+    const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
+        if (err != error.WouldBlock) {
+            std.debug.print("Read error: {any}, disconnecting.\n", .{err});
+            disconnectFromServer();
+        }
+        return;
+    };
+
+    if (bytes_read > 0) {
+        parseState(g_read_buffer[0..bytes_read]) catch |err| {
+            std.debug.print("Parse error: {any}, disconnecting.\n", .{err});
+            disconnectFromServer();
+            return;
+        };
+    }
+
+    // 3. Render the mirrored state
+    canvas.clear(' ', .{ .r = 5, .g = 5, .b = 15 });
+    var it = g_player_positions.iterator();
+    while (it.next()) |entry| {
+        const p = entry.value_ptr;
+        canvas.put(p.x, p.y, '@');
+        canvas.fillColor(p.x, p.y, .{ .r = 255, .g = 255, .b = 0 });
+    }
+}
+
+// The main game loop for a client, called from main.zig
+pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    try connectToServer(allocator);
+    defer disconnectFromServer();
+
+    engine.canvas.setUpdateFn(updateAndRender);
+    try engine.run();
+}
+
+// Dummy main for build system
+pub fn main() !void {}
+
 
