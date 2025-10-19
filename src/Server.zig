@@ -1,162 +1,87 @@
 const std = @import("std");
-const posix = std.posix;
 const net = std.net;
-const Thread = @import("std").Thread;
-const Player = @import("Player.zig");
-const WorldManager = @import("WorldManager.zig");
-const Chunk = @import("Chunk.zig");
-const Engine = @import("Engine.zig");
+const posix = std.posix;
+const WorldManager = @import("WorldManager.zig").WorldManager;
+const Player = @import("Player.zig").Player;
 
-const MAX_PLAYERS = 64;
-
-pub const GameServer = struct {
+pub const Server = struct {
     allocator: std.mem.Allocator,
-    world_manager: WorldManager.WorldManager,
-    players: [MAX_PLAYERS]?PlayerInfo,
-    player_count: usize,
-    mutex: Thread.Mutex,
-    listener: posix.socket_t,
+    listener: net.StreamServer,
+    clients: std.ArrayList(net.StreamServer.Connection),
+    world_manager: WorldManager,
+    running: bool,
 
-    pub const PlayerInfo = struct {
-        player: Player.Player,
-        socket: posix.socket_t,
-    };
+    pub fn init(allocator: std.mem.Allocator) !Server {
+        var listener = try net.StreamServer.init(.{});
+        const address = try net.Address.parseIp4("0.0.0.0", 42069);
+        try listener.listen(address);
 
-    pub fn init(allocator: std.mem.Allocator) !GameServer {
-        var dummy_canvas = try Engine.Canvas.init(allocator, 1, 1);
-        const host_player = try Player.Player.createWASDPlayer("host", allocator, 10, 10);
+        std.debug.print("[Server] Listening on 0.0.0.0:42069\n", .{});
 
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
-
-        const address = try net.Address.parseIp("127.0.0.1", 42069);
-        const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
-
-        try posix.setsockopt(listener_socket, posix.SOL.SOCKET, posix.SO.REUSEADDR, &std.mem.toBytes(@as(c_int, 1)));
-        try posix.bind(listener_socket, &address.any, address.getOsSockLen());
-        try posix.listen(listener_socket, 128);
-
-        return GameServer{
+        return Server{
             .allocator = allocator,
-            .world_manager = world_manager,
-            .players = [_]?PlayerInfo{null} ** MAX_PLAYERS,
-            .player_count = 0,
-            .mutex = Thread.Mutex{},
-            .listener = listener_socket,
+            .listener = listener,
+            .clients = try std.ArrayList(net.StreamServer.Connection).initCapacity(allocator, 8),
+            .world_manager = try WorldManager.init(allocator),
+            .running = true,
         };
     }
 
-    pub fn deinit(self: *GameServer) void {
-        posix.close(self.listener);
-        // FIX: Iterate by mutable pointer to avoid const-correctness error when calling deinit.
-        for (&self.players) |*maybe_player| {
-            if (maybe_player.*) |*player_info| {
-                player_info.player.deinit();
-                posix.close(player_info.socket);
-            }
+    pub fn deinit(self: *Server) void {
+        for (self.clients.items) |*c| {
+            c.stream.close();
         }
+        self.listener.deinit();
+        self.clients.deinit();
         self.world_manager.deinit();
     }
 
-    pub fn startServer(self: *GameServer) !void {
-        std.debug.print("Server listening on 127.0.0.1:42069\n", .{});
-        while (true) {
-            const client_socket = try posix.accept(self.listener, null, null, 0);
-            const thread = try Thread.spawn(.{}, handleClient, .{ self, client_socket });
-            thread.detach();
+    fn broadcast(self: *Server, msg: []const u8) void {
+        for (self.clients.items) |*c| {
+            _ = posix.write(c.stream.handle, msg) catch {};
         }
     }
 
-    fn handleClient(self: *GameServer, socket: posix.socket_t) void {
-        self.handleClientError(socket) catch |err| {
-            std.debug.print("Client handler error: {any}\n", .{err});
-        };
-        posix.close(socket);
-    }
-
-    fn handleClientError(self: *GameServer, socket: posix.socket_t) !void {
-        self.mutex.lock();
-        var player_id: ?usize = null;
-        for (&self.players, 0..) |*slot, i| {
-            if (slot.* == null) {
-                player_id = i;
-                break;
-            }
-        }
-
-        if (player_id == null) {
-            self.mutex.unlock();
-            _ = posix.write(socket, "Server full\n") catch {};
-            return;
-        }
-
-        const id = player_id.?;
-        // FIX: Removed the explicit type annotation (*Player.Player) from the variable
-        // declaration. The `try` operator extracts the pointer, and inference is safer here.
-        const new_player = try Player.Player.createWASDPlayer("player", self.allocator, 10, 10);
-        self.players[id] = .{
-            .player = new_player,
-            .socket = socket,
-        };
-        self.player_count += 1;
-        self.mutex.unlock();
-
-        std.debug.print("Player {d} connected.\n", .{id});
-        defer self.disconnectPlayer(id);
-
-        var read_buf: [256]u8 = undefined;
-        while (true) {
-            const bytes_read = posix.read(socket, &read_buf) catch |err| {
-                if (err == error.WouldBlock) continue;
-                break;
+    fn handleClient(self: *Server, conn: net.StreamServer.Connection) void {
+        var buffer: [256]u8 = undefined;
+        while (self.running) {
+            const n = posix.read(conn.stream.handle, &buffer) catch |err| switch (err) {
+                error.WouldBlock => continue,
+                else => return,
             };
+            if (n == 0) return;
 
-            if (bytes_read == 0) break;
+            for (buffer[0..n]) |key| {
+                self.world_manager.processPlayerInput(key) catch {};
+            }
 
-            self.mutex.lock();
-            const action = Player.InputAction.fromKey(read_buf[0]);
-            try self.world_manager.handlePlayerAction(action);
-            self.mutex.unlock();
-
-            try self.broadcastGameState();
+            // After processing input, send updated positions
+            var state_buf: [1024]u8 = undefined;
+            const len = self.world_manager.serializeState(&state_buf) catch continue;
+            _ = posix.write(conn.stream.handle, state_buf[0..len]) catch {};
         }
     }
 
-    fn disconnectPlayer(self: *GameServer, id: usize) void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        if (self.players[id]) |*player_info| {
-            player_info.player.deinit();
-            self.players[id] = null;
-            self.player_count -= 1;
-            std.debug.print("Player {d} disconnected.\n", .{id});
+    pub fn run(self: *Server) !void {
+        var poll: [1]posix.pollfd = .{posix.pollfd{
+            .fd = self.listener.socket.fd,
+            .events = posix.POLL.IN,
+            .revents = 0,
+        }};
+
+        while (self.running) {
+            const n = try posix.poll(&poll, -1);
+            if (n > 0 and (poll[0].revents & posix.POLL.IN) != 0) {
+                const conn = try self.listener.accept();
+                std.debug.print("[Server] Client connected!\n", .{});
+                try self.clients.append(conn);
+                std.Thread.spawn(.{}, Server.clientThread, .{self, conn}) catch {};
+            }
         }
     }
 
-    fn broadcastGameState(self: *GameServer) !void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-
-        var buffer: [4096]u8 = undefined;
-        var stream = std.io.fixedBufferStream(&buffer);
-        const writer = stream.writer();
-
-        for (self.players, 0..) |maybe_player, id| {
-            if (maybe_player) |player_info| {
-                const p = player_info.player.getPosition();
-                try writer.print("Player {d} {d} {d}\n", .{ id, p.x, p.y });
-            }
-        }
-        try writer.writeAll("END\n");
-
-        const message_to_send = stream.getWritten();
-
-        for (self.players) |maybe_player| {
-            if (maybe_player) |player_info| {
-                _ = posix.write(player_info.socket, message_to_send) catch {};
-            }
-        }
+    fn clientThread(self: *Server, conn: net.StreamServer.Connection) void {
+        self.handleClient(conn);
     }
 };
-
-pub fn main() !void {}
 
