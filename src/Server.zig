@@ -48,7 +48,7 @@ pub const GameServer = struct {
         const host_player = try Player.createWASDPlayer("host", allocator, 10, 10);
         
         // WorldManager expects a pointer to the host player
-        const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
+        var world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &dummy_canvas, host_player);
 
         const address = try net.Address.parseIp("127.0.0.1", 42069);
         const listener_socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
@@ -112,12 +112,13 @@ pub const GameServer = struct {
         }
 
         const id = player_id.?;
-        // FIX: Reverting to an explicit type declaration of *Player for `new_player`. 
-        // This ensures the compiler correctly treats it as a pointer type before assignment 
-        // to the PlayerInfo struct field, resolving the persistent type error.
-        const new_player: *Player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
+        // FIX: Removed the explicit type annotation (*Player) and rely on inference.
+        // The `try` keyword correctly unwraps the !*Player return type from 
+        // `createWASDPlayer`, ensuring `new_player` is correctly inferred as *Player,
+        // which should resolve the persistent type checking error.
+        const new_player = try Player.createWASDPlayer("player", self.allocator, 10, 10); 
         self.players[id] = .{
-            .player = new_player, // No cast is needed now since the type is explicitly known.
+            .player = new_player,
             .socket = socket,
         };
         self.player_count += 1;
