@@ -175,6 +175,20 @@ pub const WorldManager = struct {
         return i;
     }
 
+        pub fn deserializeState(self: *WorldManager, data: []const u8) void {
+        self.players.clearRetainingCapacity();
+        var i: usize = 0;
+        while (i + 2 <= data.len) : (i += 2) {
+            const x = @as(i32, data[i]);
+            const y = @as(i32, data[i + 1]);
+            const entity = Entity{ .x = x, .y = y, .width = 1, .height = 1, .id = 0, .ch = '@' };
+            const player = Player.init(entity, 100, 100, 1, undefined);
+            _ = self.players.append(player) catch {};
+        }
+    }
+    };
+
+
     pub fn handlePlayerAction(self: *WorldManager, action: Player.InputAction) !void {
         const old_pos = self.player.getPosition();
 
