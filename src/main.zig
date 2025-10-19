@@ -18,8 +18,7 @@ pub fn main() !void {
         GameServer.startServer();
 
     } else if (args.len >= 2 and std.mem.eql(u8, args[1], "client")) {
-        const client = Client.Client.init(allocator); 
-        try client.connect("127.0.0.1", 42069);
+        try Client.connectToServer(allocator); 
 
         var engine = try Engine.init(allocator, 80, 40, 30, .{ .r = 0, .g = 0, .b = 0 });
         defer engine.deinit();
