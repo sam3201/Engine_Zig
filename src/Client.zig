@@ -16,7 +16,7 @@ pub fn main() !void {
     const reader = std.io.Reader; 
 
     while (true) {
-        const line = try reader.readUntilDelimiterOrEof(&input, '\n'); 
+        const line = try reader.readAlloc()
         if (line == null) break;
         const msg = line.?;
 
