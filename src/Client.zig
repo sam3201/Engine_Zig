@@ -1,63 +1,33 @@
+// src/Client.zig
 const std = @import("std");
 const posix = std.posix;
-const net = std.net;
-const Engine = @import("Engine.zig").Engine;
-const Player = @import("Player.zig").Player;
-
-pub const Client = struct {
-    allocator: std.mem.Allocator,
-    socket: ?posix.fd_t = null,
-    connected: bool = false,
-
-    pub fn init(allocator: std.mem.Allocator) Client {
-        return .{ .allocator = allocator };
-    }
-
-    pub fn connect(self: *Client, address: []const u8, port: u16) !void {
-        const addr = try net.Address.parseIp4(address, port);
-        const stream = try net.tcpConnectToAddress(addr);
-        self.socket = stream.handle;
-        self.connected = true;
-        std.debug.print("[Client] Connected to {s}:{d}\n", .{ address, port });
-    }
-
-    pub fn disconnect(self: *Client) void {
-        if (self.socket) |fd| {
-            posix.close(fd);
-            self.socket = null;
-            self.connected = false;
-        }
-    }
-
-    pub fn updateAndRender(self: *Client, canvas: *Engine.Canvas) void {
-        if (!self.connected or self.socket == null) return;
-        const sock = self.socket.?;
-
-        if (Engine.readKey() catch null) |key| {
-            if (key == 'q' or key == 27) {
-                self.disconnect();
-                return;
-            }
-            _ = posix.write(sock, &[1]u8{key}) catch {};
-        }
-
-        var buf: [1024]u8 = undefined;
-        const n = posix.read(sock, &buf) catch |err| switch (err) {
-            error.WouldBlock => return,
-            else => return,
-        };
-        if (n == 0) return;
-
-        canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        var i: usize = 0;
-        while (i + 2 <= n) : (i += 2) {
-            const x = @as(i32, buf[i]);
-            const y = @as(i32, buf[i + 1]);
-            canvas.put(x, y, '@');
-            canvas.fillColor(x, y, .{ .r = 255, .g = 255, .b = 255 });
-        }
-    }
-};
 
 pub fn main() !void {
+    const allocator = std.heap.page_allocator;
+    const address = try posix.sockaddr.inet4_init(42069, try posix.inet_pton4("127.0.0.1"));
+
+    const sock_fd = try posix.socket(posix.AF.INET, posix.SOCK.STREAM, 0);
+    defer posix.close(sock_fd);
+
+    try posix.connect(sock_fd, &address);
+    std.debug.print("Connected to server!\n", .{});
+
+    var input: [256]u8 = undefined;
+    while (true) {
+        const line = try std.io.getStdIn().reader().readUntilDelimiterOrEof(&input, '\n');
+        if (line == null) break;
+        const msg = line.?;
+
+        if (std.mem.eql(u8, msg, "quit")) break;
+
+        _ = try posix.write(sock_fd, msg);
+        _ = try posix.write(sock_fd, "\n");
+
+        var recv_buf: [1024]u8 = undefined;
+        const n = posix.read(sock_fd, &recv_buf) catch break;
+        if (n == 0) break;
+
+        std.debug.print("Server: {s}\n", .{recv_buf[0..n]});
+    }
 }
+
