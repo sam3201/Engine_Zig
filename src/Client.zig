@@ -77,7 +77,6 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
         parseState(g_read_buffer[0..bytes_read]) catch |err| {
             std.debug.print("Parse error: {any}\n", .{err});
         };
-    }
     };
 
     // Render the current known state
