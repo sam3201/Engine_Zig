@@ -166,7 +166,7 @@ pub const WorldManager = struct {
 
     pub fn serializeState(self: *WorldManager, buffer: []u8) !usize {
         var i: usize = 0;
-        for (self.players.items) |p| {
+        for (self.Players.items) |p| {
             if (i + 2 >= buffer.len) break;
             buffer[i] = @intCast(@mod(p.entity.x, 255));
             buffer[i + 1] = @intCast(@mod(p.entity.y, 255));
