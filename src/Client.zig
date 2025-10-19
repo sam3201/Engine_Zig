@@ -70,7 +70,6 @@ pub fn updateAndRender(canvas: *eng.Canvas) void {
     // Read new state from server
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
         if (err == error.WouldBlock) {
-            // No new data is fine, we just won't update positions
         } else {
             disconnectFromServer();
         }
