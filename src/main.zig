@@ -43,6 +43,8 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                     engine.running = false;
                     break;
                 }
+
+                menu.handleInput(byte);
             }
 
             engine.canvas.clear(
