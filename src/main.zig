@@ -22,7 +22,7 @@ pub fn getTerminalSize() ![]u8 {
     return try std.mem.toBytes(result);
 }
 
-pub fn drawMainMenu(engine: *Engine.Engine) !u8 {
+pub fn drawMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "SinglePlayer",
         "Host Game",
