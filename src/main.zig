@@ -23,7 +23,7 @@ pub fn getTerminalSize() ![]u8 {
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
         return std.mem.asBytes(&size); 
     } else {
-        std.debug.print("Could not get terminal size\n", .{});
+        return error.FailedToGetTerminalSize; 
     }
 }
 
