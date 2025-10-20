@@ -38,7 +38,7 @@ pub const Menu = struct {
         }
     }
 
-    pub fn update(self: *Menu, key: u8) ?usize {
+    pub fn update(self: *Menu, key: u8) usize {
         if (key == self.key_up) {
             if (self.selected > 0) self.selected -= 1;
         } else if (key == self.key_down) {
