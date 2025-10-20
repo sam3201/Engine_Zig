@@ -7,8 +7,6 @@ const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const WorldManager = @import("WorldManager.zig");
 
-const MAX_PLAYERS = 64;
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
