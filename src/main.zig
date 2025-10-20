@@ -56,7 +56,6 @@ pub fn main() !void {
         allocator,
         @intCast(size[0]),
         @intCast(size[1]),
-        44,
         30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
