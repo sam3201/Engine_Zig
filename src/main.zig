@@ -29,7 +29,7 @@ pubpub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
                 return @intCast(selected);
             }
         }
-        std.time.sleep(50 * std.time.ns_per_ms);
+        std.Thread.sleep(50 * std.time.ns_per_ms);
     }
 }
  
