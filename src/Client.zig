@@ -85,7 +85,6 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
         };
     }
 
-    // 3. Render the mirrored state
     canvas.clear(' ', .{ .r = 5, .g = 5, .b = 15 });
     var it = g_player_positions.iterator();
     while (it.next()) |entry| {
