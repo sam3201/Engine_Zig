@@ -1,6 +1,7 @@
 // src/Engine.zig
 
 const std = @import("std");
+const posix = std.posix;
 const c = @cImport({
     @cInclude("termios.h");
     @cInclude("fcntl.h");
