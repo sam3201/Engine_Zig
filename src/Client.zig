@@ -3,17 +3,13 @@ const posix = std.posix;
 const net = std.net;
 const Engine = @import("Engine.zig");
 
-// FIX: Define a named struct for player positions to resolve the type mismatch error.
 const PlayerPosition = struct { x: i32, y: i32 };
 
-// Global state for the client
 var g_socket: ?posix.socket_t = null;
 var g_read_buffer: [8192]u8 = undefined;
-// FIX: Use the named PlayerPosition struct here.
 var g_player_positions: std.AutoHashMap(u32, PlayerPosition) = undefined;
 
 pub fn connectToServer(allocator: std.mem.Allocator) !void {
-    // FIX: And use the named PlayerPosition struct here for initialization.
     g_player_positions = std.AutoHashMap(u32, PlayerPosition).init(allocator);
     const address = try net.Address.parseIp("127.0.0.1", 42069);
     const socket = try posix.socket(address.any.family, posix.SOCK.STREAM, 0);
