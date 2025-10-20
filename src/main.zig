@@ -12,12 +12,6 @@ const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
-
-const c = @cImport({
-    @cInclude("sys/ioctl.h");
-    @cInclude("unistd.h");
-});
-
 pub fn getTerminalSize() ![]u8 {
     var size = c.winsize{} orelse 0;
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
