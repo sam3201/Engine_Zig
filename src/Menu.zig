@@ -6,7 +6,7 @@ const Player = @import("Player.zig");
 pub const Menu = struct {
     title: []const u8,
     items: []const []const u8,
-    selected: usize = 0,
+    selected: u8 = 0,
     key_up: u8,
     key_down: u8,
     key_select: u8,
