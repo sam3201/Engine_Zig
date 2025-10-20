@@ -6,7 +6,7 @@ const Player = @import("Player.zig");
 pub const Menu = struct {
     title: []const u8,
     items: []const []const u8,
-    selected: u8 = 0,
+    selected: usize = 0,
     key_up: u8,
     key_down: u8,
     key_select: u8,
@@ -38,7 +38,7 @@ pub const Menu = struct {
         }
     }
 
-    pub fn update(self: *Menu, key: u8) ?u8 {
+    pub fn update(self: *Menu, key: u8) u8 {
         if (key == self.key_up) {
             if (self.selected > 0) self.selected -= 1;
         } else if (key == self.key_down) {
