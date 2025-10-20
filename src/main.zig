@@ -88,10 +88,6 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player:
     defer world_manager.deinit();
 
     while (true) {
-        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        try world_manager.render();
-        try engine.canvas.flushToTerminal();
-        std.Thread.sleep(50 * std.time.ns_per_ms);
     }
     
 }
