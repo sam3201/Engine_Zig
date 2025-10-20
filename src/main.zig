@@ -53,6 +53,7 @@ pub fn main() !void {
 
     const size: []u8 = try getTerminalSize();
     std.debug.print("Terminal size: {d}x{d}\n", .{ size[0], size[1] });
+    std.process.exit(0);
     
     var engine = try Engine.Engine.init(
         allocator,
