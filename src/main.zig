@@ -1,5 +1,9 @@
 // src/main.zig
 const std = @import("std");
+const c = @cImport({
+    @cInclude("sys/ioctl.h");
+    @cInclude("unistd.h");
+});
 const Engine = @import("Engine.zig");
 const Server = @import("Server.zig");
 const Client = @import("Client.zig");
