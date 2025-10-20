@@ -84,9 +84,9 @@ pub fn main() !void {
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("\nStarting singleplayer...\n", .{});
-    var world_manager = try WorldManager.WorldManager.init(allocator);
+    const world_manager = try WorldManager.WorldManager.init(allocator);
     defer world_manager.deinit();
-    world_manager.startGame(engine);
+    
 }
 
 fn runServerMode(allocator: std.mem.Allocator) !void {
