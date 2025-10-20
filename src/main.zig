@@ -53,14 +53,16 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const size: []u8 = try getTerminalSize();
-    std.debug.print("Terminal size: {d}x{d}\n", .{ size[0], size[1] });
-    std.process.exit(0);
+    //const size: []u8 = try getTerminalSize();
+    //std.debug.print("Terminal size: {d}x{d}\n", .{ size[0], size[1] });
+    //std.process.exit(0);
     
     var engine = try Engine.Engine.init(
         allocator,
-        @intCast(size[0]),
-        @intCast(size[1]),
+        //@intCast(size[0]),
+        //@intCast(size[1]),
+        80,
+        24,
         30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
