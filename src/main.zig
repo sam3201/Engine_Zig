@@ -17,7 +17,7 @@ pub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
         "Quit",
     };
 
-    var menu = Menu.init("Main Menu", &items, 'w', 's', 'e');
+    var menu = Menu.init("Main Menu", &items, 'w', 's', 'enter');
 
     while (true) {
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
