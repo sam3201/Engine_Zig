@@ -7,6 +7,32 @@ const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const WorldManager = @import("WorldManager.zig");
 
+pubpub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
+    const items = [_][]const u8{
+        "Singleplayer",
+        "Host Game",
+        "Join Game",
+        "View KeyBindings",
+        "Quit",
+    };
+
+    var menu = Menu.init("ASCII Engine", items[0..], 'w', 's', '\n');
+
+    while (true) {
+        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+        menu.draw(&engine.canvas);
+        try engine.canvas.flushToTerminal();
+
+        if (try Engine.readKey()) |key| {
+            if (key == 27) return 255; // escape -> quit
+            if (menu.update(key)) |selected| {
+                return @intCast(selected);
+            }
+        }
+        std.time.sleep(50 * std.time.ns_per_ms);
+    }
+}
+ 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
