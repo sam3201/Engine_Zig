@@ -20,9 +20,7 @@ pub fn getTerminalSize() ![]u8 {
         x: u16,
         y: u16,
     }{ .h = 0, .w = 0, .x = 0, .y = 0 });
-
     return try std.mem.toBytes(result);
-        
 }
 
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
