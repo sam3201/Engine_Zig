@@ -48,6 +48,7 @@ pub fn main() !void {
     defer engine.deinit();
 
     const terminal_guard = try Engine.TerminalGuard.init();
+    defer terminal_guard.deinit();
 
     const selection = try mainMenu(&engine);
 
