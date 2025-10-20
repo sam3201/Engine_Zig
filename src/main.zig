@@ -5,7 +5,7 @@ const Server = @import("Server.zig");
 const Client = @import("Client.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
-const Menu = @import("Menu.zig");
+const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
 pub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
@@ -17,7 +17,7 @@ pub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
         "Quit",
     };
 
-    var menu = Menu.init("ASCII Engine", items[0..], 'w', 's', '\n');
+    var menu = Menu.init("Main Menu", &items, 'w', 's', 'e');
 
     while (true) {
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
