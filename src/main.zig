@@ -38,7 +38,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
 
             engine.clock.tick();
 
-            if (try engine.readKey()) |byte| {
+            if (try Engine.readKey()) |byte| {
                 if (byte == 'q' or byte == 27) {
                     self.running = false;
                     break;
