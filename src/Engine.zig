@@ -430,6 +430,18 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
     }
 };
 
+pub fn enableRawMode() !void {
+    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
+    termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
+    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
+}
+
+pub fn disableRawMode() !void {
+    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
+    termios.lflag |= @as(u32, posix.ICANON | posix.ECHO);
+    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
+}
+
 pub fn readKey() !?u8 {
     var byte: [1]u8 = undefined;
     const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
