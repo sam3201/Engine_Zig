@@ -44,7 +44,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 return @intCast(selected);
             }
         }
-        engine. 
+        engine.update();
     }
 }
  
