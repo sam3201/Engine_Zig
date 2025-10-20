@@ -23,7 +23,7 @@ pub fn getTerminalSize() ![]u8 {
 
     return try std.mem.toBytes(result);
         
-    });
+    }
 }
 
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
