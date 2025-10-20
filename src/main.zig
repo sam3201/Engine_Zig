@@ -82,7 +82,7 @@ pub fn main() !void {
     }
 }
 
-fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player: Player.Player) !void {
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     std.debug.print("\nStarting singleplayer...\n", .{});
     const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
     defer world_manager.deinit();
