@@ -22,7 +22,7 @@ pub fn getTerminalSize() ![]u8 {
     return try std.mem.toBytes(result);
 }
 
-pub fn drawMenu(engine: *Engine.Engine) !u8 {
+pub fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "SinglePlayer",
         "Host Game",
@@ -34,9 +34,6 @@ pub fn drawMenu(engine: *Engine.Engine) !u8 {
     var menu = Menu.init("Menu", &items, 'w', 's', 'p'); 
 
     while (true) {
-        var term = try TerminalGuard.init();
-        defer term.deinit();
-
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
 
         while (self.running) {
