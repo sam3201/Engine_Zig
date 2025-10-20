@@ -40,7 +40,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
 
             if (try Engine.readKey()) |byte| {
                 if (byte == 'q' or byte == 27) {
-                    self.running = false;
+                    engine.running = false;
                     break;
                 }
             }
