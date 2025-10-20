@@ -44,7 +44,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 return @intCast(selected);
             }
         }
-        std.Thread.sleep(50 * std.time.ns_per_ms);
+        engine. 
     }
 }
  
