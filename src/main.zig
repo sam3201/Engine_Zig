@@ -1,5 +1,6 @@
 // src/main.zig
 const std = @import("std");
+const os = @import("os.zig");
 const c = @cImport({
     @cInclude("sys/ioctl.h");
     @cInclude("unistd.h");
