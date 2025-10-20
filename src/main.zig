@@ -87,6 +87,12 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player:
     const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
     defer world_manager.deinit();
 
+    while (true) {
+        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+        try world_manager.render();
+        try engine.canvas.flushToTerminal();
+        std.Thread.sleep(50 * std.time.ns_per_ms);
+    }
     
 }
 
