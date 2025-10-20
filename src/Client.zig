@@ -102,7 +102,6 @@ pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     try engine.run();
 }
 
-// Dummy main for build system
 pub fn main() !void {}
 
 
