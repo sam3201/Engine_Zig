@@ -45,9 +45,9 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 }
             }
 
-            self.canvas.clear(
+            engine.canvas.clear(
                 ' ',
-                self.background_color,
+                engine.background_color,
             );
 
             if (self.canvas.updateFn) |updateFn| {
