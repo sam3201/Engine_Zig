@@ -45,6 +45,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 }
 
                 menu.update(byte);
+                menu.draw(&engine.canvas);
             }
 
             engine.canvas.clear(
@@ -63,6 +64,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
             engine.canvas.render();
             try engine.canvas.flushToTerminal();
             engine.clock.sleepUntilNextFrame();
+
         }
 
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
