@@ -52,6 +52,8 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const size: []u8 = try getTerminalSize();
+    std.debug.print("Terminal size: {d}x{d}\n", .{ size[0], size[1] });
+    break;
     var engine = try Engine.Engine.init(
         allocator,
         @intCast(size[0]),
