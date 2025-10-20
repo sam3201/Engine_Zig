@@ -37,50 +37,64 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    // Clear screen and prompt user
-    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
-    std.debug.print("ASCII Engine Multiplayer Demo\n", .{});
-    std.debug.print("1. Host Game (Server)\n", .{});
-    std.debug.print("2. Join Game (Client)\n", .{});
-    std.debug.print("Choose option: ", .{});
-
-    var buf: [1]u8 = undefined;
-    const n = try std.posix.read(std.posix.STDIN_FILENO, &buf);
-    if (n == 0) return;
-
-    const choice = buf[0];
-    switch (choice) {
-        '1' => try runServerMode(allocator),
-        '2' => try runClientMode(allocator),
-        else => std.debug.print("Invalid choice.\n", .{}),
-    }
-}
-
-fn runServerMode(allocator: std.mem.Allocator) !void {
-    std.debug.print("\nStarting server...\n", .{});
-
-    // Initialize the game server
-    var server = try Server.GameServer.init(allocator);
-    defer server.deinit();
-
-    // Run the server loop
-    try server.startServer();
-}
-
-fn runClientMode(allocator: std.mem.Allocator) !void {
-    std.debug.print("\nConnecting to host...\n", .{});
-
-    // Create a new Engine for rendering the client
     var engine = try Engine.Engine.init(
         allocator,
-        160, // width
-        44,  // height
-        30,  // FPS
+        160,
+        44,
+        30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
     defer engine.deinit();
 
-    // Connect and run the client loop
-    try Client.runClient(allocator, &engine);
+    const selection = try Menu.mainMenu(allocator, &engine);
+
+    switch (selection) {
+        0 => try runSingleplayer(allocator, &engine),
+        1 => try runServerMode(allocator),
+        2 => try runClientMode(allocator, &engine),
+        3 => try showKeyBindings(&engine),
+        4, 255 => std.debug.print("Goodbye!\n", .{}),
+        else => std.debug.print("Invalid option.\n", .{}),
+    }
+}
+
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    std.debug.print("Starting singleplayer game...\n", .{});
+    // Later: start world generation or load game state
+}
+
+fn runServerMode(allocator: std.mem.Allocator) !void {
+    std.debug.print("\nHosting server...\n", .{});
+    var server = try Server.GameServer.init(allocator);
+    defer server.deinit();
+    try server.startServer();
+}
+
+fn runClientMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    std.debug.print("\nJoining host...\n", .{});
+    try Client.runClient(allocator, engine);
+}
+
+fn showKeyBindings(engine: *Engine.Engine) !void {
+    const text =
+        "WASD - Move\n" ++
+        "E - Interact\n" ++
+        "I - Inventory\n" ++
+        "Q or ESC - Quit\n";
+
+    engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+
+    var y: i32 = 5;
+    for (text) |ch| {
+        if (ch == '\n') {
+            y += 1;
+            continue;
+        }
+        engine.canvas.put(10, y, ch);
+        engine.canvas.fillColor(10, y, .{ .r = 255, .g = 255, .b = 255 });
+    }
+
+    try engine.canvas.flushToTerminal();
+    _ = try Engine.readKey();
 }
 
