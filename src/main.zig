@@ -18,7 +18,6 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
     };
 
     var menu = Menu.init("Menu", &items, 'w', 's', '\n'); 
-    menu.updateOption('w', &Player.player);
 
     while (true) {
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
