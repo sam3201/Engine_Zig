@@ -34,17 +34,41 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
     var menu = Menu.init("Menu", &items, 'w', 's', 'p'); 
 
     while (true) {
-        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        menu.draw(&engine.canvas);
-        try engine.canvas.flushToTerminal();
+        var term = try TerminalGuard.init();
+        defer term.deinit();
 
-        if (try Engine.readKey()) |key| {
-            if (key == 27) return 255; 
-            if (menu.update(key)) |selected| {
-                return @intCast(selected);
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
+
+        while (self.running) {
+            self.clock.tick();
+
+            if (try readKey()) |byte| {
+                if (byte == 'q' or byte == 27) {
+                    self.running = false;
+                    break;
+                }
             }
+
+            self.canvas.clear(
+                ' ',
+                self.background_color,
+            );
+
+            if (self.canvas.updateFn) |updateFn| {
+                updateFn(&self.canvas);
+            }
+
+            if (self.update) |updateFn| {
+                updateFn();
+            }
+
+            self.canvas.render();
+            try self.canvas.flushToTerminal();
+            self.clock.sleepUntilNextFrame();
         }
-    }
+
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
+    }   
 }
  
 pub fn main() !void {
