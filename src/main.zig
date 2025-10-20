@@ -1,6 +1,5 @@
 // src/main.zig
 const std = @import("std");
-const os = @import("os.zig");
 const c = @cImport({
     @cInclude("sys/ioctl.h");
     @cInclude("unistd.h");
@@ -14,7 +13,7 @@ const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
 pub fn getTerminalSize() ![]u8 {
-    const result = std.os.ioctl(std.os.STDOUT_FILENO, os.system.TIOCGWINSZ, struct {
+    const result = std.os.ioctl(std.os.STDOUT_FILENO, std.os.system.TIOCGWINSZ, struct {
         h: u16,
         w: u16,
         x: u16,
