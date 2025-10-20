@@ -86,6 +86,7 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("\nStarting singleplayer...\n", .{});
     const world_manager = try WorldManager.WorldManager.init(allocator);
     defer world_manager.deinit();
+
     
 }
 
