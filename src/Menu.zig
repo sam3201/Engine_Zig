@@ -29,7 +29,6 @@ pub const Menu = struct {
     }
 
     pub fn updateOption(self: *Menu, key: u8, player: *Player.Player) void {
-        // For now: if we're on "Change Name" and the user presses a letter key, update player.name
         if (std.mem.eql(u8, self.items[self.selected], "Change Name")) {
             if (key >= 'a' and key <= 'z') {
                 var buf: [32]usize = undefined;
