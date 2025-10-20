@@ -54,7 +54,8 @@ pub fn main() !void {
     const size: []u8 = try getTerminalSize();
     var engine = try Engine.Engine.init(
         allocator,
-        166,
+        @intCast(size[0]),
+        @intCast(size[1]),
         44,
         30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
