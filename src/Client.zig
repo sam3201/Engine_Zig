@@ -94,7 +94,6 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
     }
 }
 
-// The main game loop for a client, called from main.zig
 pub fn runClient(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     try connectToServer(allocator);
     defer disconnectFromServer();
