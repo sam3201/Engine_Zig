@@ -21,7 +21,7 @@ pub fn getTerminalSize() ![]u8 {
         y: u16,
     }{ .h = 0, .w = 0, .x = 0, .y = 0 });
 
-    return try std.mem.toBytesAsync(@ptrCast([2]u8, &result.w), .Little, .{
+    return try std.mem.toBytes(@ptrCast([2]u8, &result.w), .Little, .{
         
     });
 }
