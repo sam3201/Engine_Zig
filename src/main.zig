@@ -51,6 +51,7 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
+    const size = try getTerminalSize();
     var engine = try Engine.Engine.init(
         allocator,
         166,
