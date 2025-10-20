@@ -433,11 +433,11 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
 pub fn enableRawMode() !void {
     var termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     termios.lflag &= ~@as(u32, std.posix.ICANON | std.posix.ECHO);
-    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
+    try std.posix.tcsetattr(std.posix.STDIN_FILENO, std.posix.TCSANOW, termios);
 }
 
 pub fn disableRawMode() !void {
-    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
+    var termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     termios.lflag |= @as(u32, posix.ICANON | posix.ECHO);
     try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
 }
