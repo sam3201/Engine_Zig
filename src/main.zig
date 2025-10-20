@@ -50,7 +50,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 engine.background_color,
             );
 
-            if (self.canvas.updateFn) |updateFn| {
+            if (engine.canvas.updateFn) |updateFn| {
                 updateFn(&self.canvas);
             }
 
