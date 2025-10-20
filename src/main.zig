@@ -36,8 +36,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
     while (true) {
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
 
-        while (self.running) {
-            self.clock.tick();
+            engine.clock.tick();
 
             if (try readKey()) |byte| {
                 if (byte == 'q' or byte == 27) {
