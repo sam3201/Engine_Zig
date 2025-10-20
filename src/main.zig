@@ -39,7 +39,7 @@ pub fn main() !void {
 
     var engine = try Engine.Engine.init(
         allocator,
-        160,
+        150,
         44,
         30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
