@@ -69,7 +69,6 @@ pub fn updateAndRender(canvas: *Engine.Canvas) void {
         sendInput(key) catch {};
     }
 
-    // 2. Receive new state from server
     const bytes_read = posix.read(socket, &g_read_buffer) catch |err| {
         if (err != error.WouldBlock) {
             std.debug.print("Read error: {any}, disconnecting.\n", .{err});
