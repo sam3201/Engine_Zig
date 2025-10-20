@@ -14,7 +14,17 @@ const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
 pub fn getTerminalSize() ![]u8 {
-    const result = std.os.ioctl(std.os.STDOUT_FILENO, os.system.TIOCGWINSZ, &ws);
+    const result = std.os.ioctl(std.os.STDOUT_FILENO, os.system.TIOCGWINSZ, struct {
+        h: u16,
+        w: u16,
+        x: u16,
+        y: u16,
+    }{ .h = 0, .w = 0, .x = 0, .y = 0 });
+
+    return try std.mem.toBytesAsync(@ptrCast([2]u8, &result.w), .Little, .{
+        
+    })        
+    });
 }
 
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
