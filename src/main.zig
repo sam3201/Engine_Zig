@@ -54,7 +54,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                 updateFn(&self.canvas);
             }
 
-            if (self.update) |updateFn| {
+            if (engine.update) |updateFn| {
                 updateFn();
             }
 
