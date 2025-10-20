@@ -5,6 +5,7 @@ const Server = @import("Server.zig");
 const Client = @import("Client.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
+const Menu = @import("Menu.zig");
 const WorldManager = @import("WorldManager.zig");
 
 pub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
