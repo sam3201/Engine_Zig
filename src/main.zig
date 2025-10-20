@@ -10,7 +10,7 @@ const WorldManager = @import("WorldManager.zig");
 
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
-        "Singleplayer",
+        "SinglePlayer",
         "Host Game",
         "Join Game",
         "View KeyBindings",
