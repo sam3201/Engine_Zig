@@ -21,7 +21,7 @@ const c = @cImport({
 pub fn getTerminalSize() ![]u8 {
     var size = c.winsize{};
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
-        std.debug.print("Terminal size: {d} rows, {d} columns\n", .{size.ws_row, size.ws_col});
+        return std.mem.asBytes(&size); 
     } else {
         std.debug.print("Could not get terminal size\n", .{});
     }
