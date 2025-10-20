@@ -17,7 +17,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
         "Quit",
     };
 
-    var menu = Menu.init("Main Menu", &items, 'w', 's', '\n'); 
+    var menu = Menu.init("Menu", &items, 'w', 's', '\n'); 
 
     while (true) {
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
