@@ -13,7 +13,7 @@ const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
 pub fn getTerminalSize() ![]u8 {
-    const result = ioctl(std.os.STDOUT_FILENO, TIOCGWINSZ, &ws);
+    const result = std.os.ioctl(std.os.STDOUT_FILENO, TIOCGWINSZ, &ws);
 }
 
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
