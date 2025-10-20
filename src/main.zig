@@ -46,7 +46,7 @@ pub fn main() !void {
     );
     defer engine.deinit();
 
-    const selection = try mainMenu(allocator, &engine);
+    const selection = try mainMenu(&engine);
 
     switch (selection) {
         0 => try runSingleplayer(allocator, &engine),
