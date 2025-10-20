@@ -13,7 +13,7 @@ const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
 pub fn getTerminalSize() ![]u8 {
-    var size = c.winsize{} orelse 0;
+    var size = c.winsize{};
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
         return std.mem.asBytes(&size); 
     } else {
