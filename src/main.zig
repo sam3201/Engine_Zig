@@ -19,7 +19,7 @@ const c = @cImport({
 });
 
 pub fn getTerminalSize() ![]u8 {
-    var size = c.winsize{};
+    var size = c.winsize{} orelse 0;
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
         return std.mem.asBytes(&size); 
     } else {
