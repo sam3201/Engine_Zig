@@ -12,6 +12,21 @@ const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
+
+const c = @cImport({
+    @cInclude("sys/ioctl.h");
+    @cInclude("unistd.h");
+});
+
+pub fn main() !void {
+    var size = c.winsize{};
+    if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
+        std.debug.print("Terminal size: {d} rows, {d} columns\n", .{size.ws_row, size.ws_col});
+    } else {
+        std.debug.print("Could not get terminal size\n", .{});
+    }
+}
+
 pub fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "SinglePlayer",
