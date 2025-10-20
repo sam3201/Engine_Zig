@@ -8,7 +8,7 @@ const Chunk = @import("Chunk.zig");
 const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
 
-pub fn mainMenu(allocator: std.mem.Allocator, engine: *Engine.Engine) !u8 {
+pub fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "Singleplayer",
         "Host Game",
