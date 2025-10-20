@@ -58,16 +58,12 @@ fn parseState(data: []const u8) !void {
     }
 }
 
-// This function is set as the callback for the engine's game loop.
 pub fn updateAndRender(canvas: *Engine.Canvas) void {
     if (g_socket == null) return;
     const socket = g_socket.?;
 
-    // 1. Send input if any
     if (Engine.readKey() catch null) |key| {
         if (key == 'q' or key == 27) {
-            // A bit of a hack to signal the engine to stop from main.zig
-            // In a real app, you'd have a more robust event system.
             return;
         }
         sendInput(key) catch {};
