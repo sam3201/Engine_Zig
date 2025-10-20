@@ -25,7 +25,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
         try engine.canvas.flushToTerminal();
 
         if (try Engine.readKey()) |key| {
-            if (key == 27) return 255; // escape -> quit
+            if (key == 27) return 255; 
             if (menu.update(key)) |selected| {
                 return @intCast(selected);
             }
