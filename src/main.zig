@@ -44,7 +44,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                     break;
                 }
 
-                menu.handleInput(byte);
+                menu.update(byte);
             }
 
             engine.canvas.clear(
