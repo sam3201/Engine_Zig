@@ -23,7 +23,7 @@ pub fn getTerminalSize() ![]u8 {
     if (c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &size) == 0) {
         return std.mem.asBytes(&size); 
     } else {
-        return error.FailedToGetTerminalSize; 
+        return std.mem.asBytes(&size); 
     }
 }
 
