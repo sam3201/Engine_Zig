@@ -6,6 +6,7 @@ const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
+const Thread = std.Thread;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -27,7 +28,7 @@ pub fn main() !void {
 
     switch (selection) {
         0 => try runSingleplayer(allocator, &engine),
-        1 => try runServerMode(allocator),
+        1 => try runHostMode(allocator, &engine),
         2 => try runClientMode(allocator, &engine),
         3 => try showKeyBindings(&engine),
         else => std.debug.print("Goodbye!\n", .{}),
@@ -47,8 +48,9 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
     var selection: usize = 0;
 
     while (true) {
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
-        engine.clock.tick();
+        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+        menu.draw(&engine.canvas);
+        try engine.canvas.flushToTerminal();
 
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 27) break;
@@ -58,9 +60,6 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
             }
         }
 
-        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        menu.draw(&engine.canvas);
-        try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
 
@@ -68,7 +67,8 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
 }
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    var player = try Player.Player.createWASDPlayer("Hero", allocator, 10, 10);
+    std.debug.print("Starting Singleplayer...\n", .{});
+    var player = try Player.Player.createWASDPlayer(allocator, 10, 10);
     defer player.deinit();
 
     var world = try WorldManager.WorldManager.init(
@@ -79,6 +79,8 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
         player,
     );
     defer world.deinit();
+
+    engine.running = true;
 
     while (engine.running) {
         engine.clock.tick();
@@ -92,15 +94,27 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
         world.draw();
         try engine.canvas.flushToTerminal();
+
         engine.clock.sleepUntilNextFrame();
     }
 }
 
-fn runServerMode(allocator: std.mem.Allocator) !void {
-    std.debug.print("Starting game server...\n", .{});
+fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    std.debug.print("Starting Host + Server...\n", .{});
+
+    // Start server thread
     var server = try Server.GameServer.init(allocator);
-    defer server.deinit();
-    try server.startServer();
+    const server_thread = try Thread.spawn(.{}, ServerThreadMain, .{&server});
+    server_thread.detach();
+
+    // Host plays as a client too
+    try Client.runClient(allocator, engine);
+}
+
+fn ServerThreadMain(server: *Server.GameServer) void {
+    server.startServer() catch |err| {
+        std.debug.print("Server crashed: {any}\n", .{err});
+    };
 }
 
 fn runClientMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
