@@ -70,6 +70,8 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
         }
 
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
+
+        return selection[0];
 }
  
 pub fn main() !void {
