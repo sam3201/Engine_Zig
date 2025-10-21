@@ -116,6 +116,9 @@ fn runSingleplayer(allocator: std.mem.Allocator) !void {
     defer world_manager.deinit();
 
     while (true) {
+        engine.clock.tick();
+        try engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
     }
     
 }
