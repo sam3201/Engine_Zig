@@ -90,7 +90,7 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
         }
 
         engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        try world.draw();
+        world.draw();
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
