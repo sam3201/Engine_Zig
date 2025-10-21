@@ -114,7 +114,7 @@ pub fn main() !void {
 fn runSingleplayer(allocator: std.mem.Allocator) !void {
     
     std.debug.print("\nStarting singleplayer...\n", .{});
-    const host = try Server.GameServer.init(allocator);
+    var host = try Server.GameServer.init(allocator);
     defer host.deinit();
 
     try host.startServer();
