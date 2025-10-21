@@ -1,96 +1,20 @@
-// src/main.zig
 const std = @import("std");
-const c = @cImport({
-    @cInclude("sys/ioctl.h");
-    @cInclude("unistd.h");
-});
 const Engine = @import("Engine.zig");
 const Server = @import("Server.zig");
 const Client = @import("Client.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
-const Menu = @import("Menu.zig").Menu;
 const WorldManager = @import("WorldManager.zig");
+const Menu = @import("Menu.zig").Menu;
 
-pub fn getTerminalSize() ![]u8 {
-    const result = std.os.ioctl(std.os.STDOUT_FILENO, std.os.system.TIOCGWINSZ, struct {
-        h: u16,
-        w: u16,
-        x: u16,
-        y: u16,
-    }{ .h = 0, .w = 0, .x = 0, .y = 0 });
-    return try std.mem.toBytes(result);
-}
-
-pub fn mainMenu(engine: *Engine.Engine) !u8 {
-    const items = [_][]const u8{
-        "SinglePlayer",
-        "Host Game",
-        "Join Game",
-        "View KeyBindings",
-        "Quit",
-    };
-
-    var menu = Menu.init("Menu", &items, 'w', 's', 'p'); 
-
-    var selection: usize = undefined;
-
-    while (true) {
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
-
-            engine.clock.tick();
-
-            if (try Engine.readKey()) |byte| {
-                if (byte == 'q' or byte == 27) {
-                    engine.running = false;
-                    break;
-                }
-
-                if (menu.update(byte)) |selected| {
-                    selection = selected;
-                    break;
-                }
-                menu.draw(&engine.canvas);
-            }
-
-            engine.canvas.clear(
-                ' ',
-                engine.background_color,
-            );
-
-            if (engine.canvas.updateFn) |updateFn| {
-                updateFn(&engine.canvas);
-            }
-
-            if (engine.update) |updateFn| {
-                updateFn();
-            }
-
-            engine.canvas.render();
-            try engine.canvas.flushToTerminal();
-            engine.clock.sleepUntilNextFrame();
-
-        }
-
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
-
-        return @intCast(selection);
-}
- 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    //const size: []u8 = try getTerminalSize();
-    //std.debug.print("Terminal size: {d}x{d}\n", .{ size[0], size[1] });
-    //std.process.exit(0);
-    
     var engine = try Engine.Engine.init(
         allocator,
-        //@intCast(size[0]),
-        //@intCast(size[1]),
-        80,
-        24,
+        100,
+        40,
         30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
@@ -102,58 +26,107 @@ pub fn main() !void {
     const selection = try mainMenu(&engine);
 
     switch (selection) {
-        0 => try runSingleplayer(allocator),
+        0 => try runSingleplayer(allocator, &engine),
         1 => try runServerMode(allocator),
         2 => try runClientMode(allocator, &engine),
         3 => try showKeyBindings(&engine),
-        4, 255 => std.debug.print("Goodbye!\n", .{}),
-        else => std.debug.print("Invalid option.\n", .{}),
+        else => std.debug.print("Goodbye!\n", .{}),
     }
 }
 
-fn runSingleplayer(allocator: std.mem.Allocator) !void {
-    const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
-    defer world_manager.deinit();
+fn mainMenu(engine: *Engine.Engine) !u8 {
+    const items = [_][]const u8{
+        "Single Player",
+        "Host Game",
+        "Join Game",
+        "View Key Bindings",
+        "Quit",
+    };
+
+    var menu = Menu.init("Main Menu", &items, 'w', 's', 'p');
+    var selection: usize = 0;
 
     while (true) {
+        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
         engine.clock.tick();
+
+        if (try Engine.readKey()) |key| {
+            if (key == 'q' or key == 27) break;
+            if (menu.update(key)) |sel| {
+                selection = sel;
+                break;
+            }
+        }
+
+        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+        menu.draw(&engine.canvas);
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
-    
+
+    return @intCast(selection);
+}
+
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    var player = try Player.Player.createWASDPlayer("Hero", allocator, 10, 10);
+    defer player.deinit();
+
+    var world = try WorldManager.WorldManager.init(
+        Chunk.ChunkCoord{ .x = 0, .y = 0 },
+        1,
+        allocator,
+        &engine.canvas,
+        player,
+    );
+    defer world.deinit();
+
+    while (engine.running) {
+        engine.clock.tick();
+
+        if (try Engine.readKey()) |key| {
+            if (key == 'q' or key == 27) break;
+            const action = Player.InputAction.fromKey(key);
+            try world.handlePlayerAction(action);
+        }
+
+        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+        world.render();
+        try engine.canvas.flushToTerminal();
+        engine.clock.sleepUntilNextFrame();
+    }
 }
 
 fn runServerMode(allocator: std.mem.Allocator) !void {
-    std.debug.print("\nHosting server...\n", .{});
+    std.debug.print("Starting game server...\n", .{});
     var server = try Server.GameServer.init(allocator);
     defer server.deinit();
     try server.startServer();
 }
 
 fn runClientMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    std.debug.print("\nJoining host...\n", .{});
+    std.debug.print("Connecting to host...\n", .{});
     try Client.runClient(allocator, engine);
 }
 
 fn showKeyBindings(engine: *Engine.Engine) !void {
     const text =
         "WASD - Move\n" ++
-        "E - Interact\n" ++
-        "I - Inventory\n" ++
-        "Q or ESC - Quit\n";
+        "P - Select Menu Option\n" ++
+        "Q / ESC - Quit\n";
 
     engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-
+    var x: i32 = 5;
     var y: i32 = 5;
     for (text) |ch| {
         if (ch == '\n') {
             y += 1;
+            x = 5;
             continue;
         }
-        engine.canvas.put(10, y, ch);
-        engine.canvas.fillColor(10, y, .{ .r = 255, .g = 255, .b = 255 });
+        engine.canvas.put(x, y, ch);
+        engine.canvas.fillColor(x, y, .{ .r = 255, .g = 255, .b = 255 });
+        x += 1;
     }
-
     try engine.canvas.flushToTerminal();
     _ = try Engine.readKey();
 }
