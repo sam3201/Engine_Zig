@@ -68,7 +68,7 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("Starting Singleplayer...\n", .{});
-    var player = try Player.Player.createWASDPlayer(allocator, 10, 10);
+    var player = try Player.Player.createWASDPlayer("Player", allocator, 10, 10);
     defer player.deinit();
 
     var world = try WorldManager.WorldManager.init(
