@@ -33,7 +33,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
 
     var menu = Menu.init("Menu", &items, 'w', 's', 'p'); 
 
-    const selection: []u8= undefined;
+    const selection: []u8 = undefined;
 
     while (true) {
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
