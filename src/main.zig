@@ -46,7 +46,10 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                     break;
                 }
 
-                selection = menu.update(byte);
+                if (menu.update(byte)) |selected| {
+                    selection = selected;
+                    break;
+                }
                 menu.draw(&engine.canvas);
             }
 
