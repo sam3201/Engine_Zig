@@ -102,7 +102,7 @@ pub fn main() !void {
     const selection = try mainMenu(&engine);
 
     switch (selection) {
-        0 => try runSingleplayer(allocator, &engine),
+        0 => try runSingleplayer(allocator, &engine, &player),
         1 => try runServerMode(allocator),
         2 => try runClientMode(allocator, &engine),
         3 => try showKeyBindings(&engine),
