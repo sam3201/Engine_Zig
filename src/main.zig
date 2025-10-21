@@ -118,11 +118,12 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player:
 
     try host.startServer();
 
-    const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
-    defer world_manager.deinit();
+    //
+    //const world_manager = try WorldManager.WorldManager.init(Chunk.ChunkCoord{ .x = 0, .y = 0 }, 0, allocator, &engine.canvas, player);
+    //defer world_manager.deinit();
 
-    while (true) {
-    }
+    //while (true) {
+    //}
     
 }
 
