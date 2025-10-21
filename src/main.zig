@@ -1,3 +1,5 @@
+// src/main.zig
+
 const std = @import("std");
 const Engine = @import("Engine.zig");
 const Server = @import("Server.zig");
@@ -14,9 +16,7 @@ pub fn main() !void {
 
     var engine = try Engine.Engine.init(
         allocator,
-        100,
-        40,
-        30,
+        100, 40, 30,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
     defer engine.deinit();
@@ -31,9 +31,16 @@ pub fn main() !void {
         1 => try runHostMode(allocator, &engine),
         2 => try runClientMode(allocator, &engine),
         3 => try showKeyBindings(&engine),
-        else => std.debug.print("Goodbye!\n", .{}),
+        else => {
+            std.debug.print("Goodbye!\n", .{});
+            return;
+        },
     }
 }
+
+// ==============================
+// 🎮 Menu System
+// ==============================
 
 fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
@@ -66,14 +73,19 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
+// ==============================
+// 🧍 Singleplayer
+// ==============================
+
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    std.debug.print("Starting Singleplayer...\n", .{});
-    var player = try Player.Player.createWASDPlayer("Player", allocator, 10, 10);
+    std.debug.print("Starting singleplayer...\n", .{});
+
+    var player = try Player.Player.createWASDPlayer("player", allocator, 10, 10);
     defer player.deinit();
 
     var world = try WorldManager.WorldManager.init(
         Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        1,
+        0,
         allocator,
         &engine.canvas,
         player,
@@ -97,40 +109,54 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
 
         engine.clock.sleepUntilNextFrame();
     }
+
+    std.debug.print("Exited singleplayer.\n", .{});
 }
 
-fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    std.debug.print("Starting Host + Server...\n", .{});
+// ==============================
+// 🌐 Host Mode
+// ==============================
 
-    // Start server thread
+fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    std.debug.print("Hosting server and playing as host...\n", .{});
+
     var server = try Server.GameServer.init(allocator);
-    const server_thread = try Thread.spawn(.{}, ServerThreadMain, .{&server});
+    const server_thread = try Thread.spawn(.{}, runServerThread, .{&server});
     server_thread.detach();
 
-    // Host plays as a client too
+    // Host acts as local client
     try Client.runClient(allocator, engine);
 }
 
-fn ServerThreadMain(server: *Server.GameServer) void {
+fn runServerThread(server: *Server.GameServer) void {
     server.startServer() catch |err| {
-        std.debug.print("Server crashed: {any}\n", .{err});
+        std.debug.print("Server error: {any}\n", .{err});
     };
 }
 
+// ==============================
+// 💻 Client Mode
+// ==============================
+
 fn runClientMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    std.debug.print("Connecting to host...\n", .{});
+    std.debug.print("Joining game...\n", .{});
     try Client.runClient(allocator, engine);
 }
+
+// ==============================
+// ⚙️ Key Bindings Display
+// ==============================
 
 fn showKeyBindings(engine: *Engine.Engine) !void {
     const text =
         "WASD - Move\n" ++
         "P - Select Menu Option\n" ++
-        "Q / ESC - Quit\n";
+        "Q or ESC - Quit\n";
 
     engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
     var x: i32 = 5;
     var y: i32 = 5;
+
     for (text) |ch| {
         if (ch == '\n') {
             y += 1;
@@ -141,6 +167,7 @@ fn showKeyBindings(engine: *Engine.Engine) !void {
         engine.canvas.fillColor(x, y, .{ .r = 255, .g = 255, .b = 255 });
         x += 1;
     }
+
     try engine.canvas.flushToTerminal();
     _ = try Engine.readKey();
 }
