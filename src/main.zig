@@ -46,7 +46,7 @@ pub fn mainMenu(engine: *Engine.Engine) !u8 {
                     break;
                 }
 
-                selection = menu.update(byte);
+                selection = menu.update(byte.?);
                 menu.draw(&engine.canvas);
             }
 
