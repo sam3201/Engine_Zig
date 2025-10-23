@@ -488,14 +488,11 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
 
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
-    // For each column on screen
     for (0..screen_w) |sx_i| {
         const sx = @as(i32, sx_i);
 
-        // compute a world-space sample column x (we map one screen column -> one world x)
         const world_x = cam3d.x + sx;
 
-        // depth sweep forward in world y (you can rotate later; currently using +y as depth)
         var depth: i32 = 0;
         var highest_drawn_y: i32 = screen_h - 1; // draw from bottom up
 
@@ -505,23 +502,17 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
             const info = tile_to_height_and_char(tile);
             const tile_h = info.h;
 
-            // shade/fade based on depth
             const fade = if (depth < 4) 1.0 else 1.0 - ( (@as(f32, depth) / @as(f32, max_depth)) * 0.7 );
 
-            // vertical stack height for this tile
             var stack_h = tile_h * height_scale;
             if (stack_h == 0) {
-                // still put a small ground at distance 0 to suggest floor
                 stack_h = 1;
             }
 
-            // draw vertical slice: from bottom up (simulate elevation)
             var yoff: i32 = 0;
             while (yoff < stack_h and highest_drawn_y >= 0) : (yoff += 1) {
                 const sy = highest_drawn_y;
-                // choose character and color intensity
                 const ch = info.ch;
-                // apply fade to color (simple multipliers)
                 const base = info.color;
                 const r = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.r) * fade)));
                 const g = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.g) * fade)));
@@ -532,12 +523,10 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
                 highest_drawn_y -= 1;
             }
 
-            // stop early if we've filled screen column
             if (highest_drawn_y < 0) break;
         }
     }
 
-    // Draw player as a vertical marker near center if visible
     const pos = self.player.getPosition();
     const px = pos.x - cam3d.x;
     const py = pos.y - cam3d.y;
