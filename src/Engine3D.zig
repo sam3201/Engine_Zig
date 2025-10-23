@@ -52,7 +52,7 @@ pub const Renderable3D = struct {
     }
 };
 
-pub const Clock = struct {
+pub const Clock3D = struct {
     target: f64,
     last: i128,
     now: i128,
