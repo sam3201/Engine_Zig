@@ -124,7 +124,7 @@ pub const Canvas3D = struct {
         self.render_buffer.deinit(self.allocator);
     }
 
-pub fn clear(self: *Canvas, ch: u8, color: Color) void {
+pub fn clear(self: *Canvas3D, ch: u8, color: Color) void {
     @memset(self.buf, ch);
 
     const total: usize = self.width * self.height;
