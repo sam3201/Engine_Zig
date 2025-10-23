@@ -87,7 +87,7 @@ pub const Clock3D = struct {
     }
 };
 
-pub const Canvas = struct {
+pub const Canvas3D = struct {
     allocator: std.mem.Allocator,
     width: usize,
     height: usize,
