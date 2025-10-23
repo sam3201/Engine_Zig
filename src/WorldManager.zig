@@ -460,8 +460,7 @@ pub fn randomBiome() Chunk.BiomeType {
     return @enumFromInt(roll);
 }
 
-// insert near top of src/WorldManager.zig with other imports
-const Engine3D = @import("Engine3D.zig");
+//const Engine3D = @import("Engine3D.zig");
 
 // --- PROJECT 2D -> ASCII 3D projection ---
 // Simple column-based projection: for every screen column on Canvas3D
