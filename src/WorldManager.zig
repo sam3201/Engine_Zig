@@ -462,9 +462,6 @@ pub fn randomBiome() Chunk.BiomeType {
 
 const Engine3D = @import("Engine3D.zig");
 
-// --- PROJECT 2D -> ASCII 3D projection ---
-// Simple column-based projection: for every screen column on Canvas3D
-// sample N depths into world, take tile height and draw vertical slices.
 pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
     // tuning
     const max_depth: i32 = 18;        // how many steps along the "ray"
