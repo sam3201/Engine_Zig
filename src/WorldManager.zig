@@ -531,7 +531,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const px = pos.x - cam3d.x;
     const py = pos.y - cam3d.y;
     if (px >= 0 and px < screen_w and py >= 0 and py < screen_h) {
-        // draw player char at bottom of their column
         canvas3D.put(px, py, self.player.entity.ch);
         canvas3D.fillColor(px, py, Engine3D.Color3D.init(255,255,0));
     }
