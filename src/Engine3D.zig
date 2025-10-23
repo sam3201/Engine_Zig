@@ -99,7 +99,7 @@ pub const Canvas3D = struct {
 
     updateFn: ?UpdateFn = null,
 
-    pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas {
+    pub fn init(allocator: std.mem.Allocator, width: usize, height: usize) !Canvas3D {
     const render_buffer_capacity = (width * height) + (width * height * 20) + height;
 
         var canvas = Canvas{
