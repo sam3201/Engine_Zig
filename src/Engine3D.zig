@@ -325,8 +325,8 @@ pub const Engine3D = struct {
         return .{
             .allocator = allocator,
             .running = true,
-            .canvas = try Canvas.init(allocator, width, height),
-            .clock = Clock.init(fps),
+            .canvas = try Canvas3D.init(allocator, width, height),
+            .clock = Clock3D.init(fps),
             .background_color = background_color,
         };
     }
