@@ -456,5 +456,3 @@ pub fn readKey() !?u8 {
 pub fn handleInput() !?u8 {
     return try readKey();
 }
-
-
