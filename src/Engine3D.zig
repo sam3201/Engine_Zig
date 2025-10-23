@@ -36,8 +36,15 @@ pub const Renderable3D = struct {
     vz: i32 = 0,
     color: Color3D = Color3D{ .r = 0, .g = 0, .b = 0 },
 
-    pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, vx: i32, vy: i32, color: Color) Renderable {
-        return .{ .x = x, .y = y, .width = w, .height = h, .id = id, .ch = ch, .vx = vx, .vy = vy, .color = color };
+    pub fn init(x: i32, y: i32, z: i32, width: i32, height: i32, id: u32) Renderable3D {
+        return .{
+            .x = x,
+            .y = y,
+            .z = z,
+            .width = width,
+            .height = height,
+            .id = id,
+        };
     }
 
     pub fn deinit(self: *Renderable) void {
