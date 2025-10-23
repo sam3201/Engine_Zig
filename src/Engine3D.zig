@@ -302,7 +302,6 @@ pub const Camera3D = struct {
         if (self.y < 0) self.y = 0;
 
         if (self.x + self.width > target.width) self.x = target.width - self.width;
-        if (self.y + self.height > target.height) self.y = target.height - self.height;
 
     } 
 };
