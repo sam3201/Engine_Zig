@@ -79,18 +79,15 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
 // ==============================
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    std.debug.print("Starting singleplayer...\n", .{});
-    var player = try Player.Player.createWASDPlayer("player", allocator, 10, 10);
-    defer player.deinit();
+// inside runSingleplayer(...)
+    // create a 3D canvas sized to your terminal (maybe narrower/taller)
+    var canvas3d = try Engine3D.Canvas3D.init(allocator, engine.canvas.width, engine.canvas.height);
+    defer canvas3d.deinit();
 
-    var world = try WorldManager.WorldManager.init(
-        Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        0,
-        allocator,
-        &engine.canvas,
-        player,
-    );
-    defer world.deinit();
+    var cam3d = Engine3D.Camera3D.init(@intCast(i32, canvas3d.width), @intCast(i32, canvas3d.height));
+    cam3d.x = 0;
+    cam3d.y = 0;
+    cam3d.z = 2;
 
     engine.running = true;
 
@@ -103,14 +100,16 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
             try world.handlePlayerAction(action);
         }
 
-        engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
-        world.draw();
-        try engine.canvas.flushToTerminal();
+        // update 2D world camera (keeps world coordinates in sync)
+        // NOTE: WorldManager.updateCamera() already called in handler; ensure it's current
+        // Project world -> 3D canvas
+        world.projectTo3D(&canvas3d, &cam3d);
+
+        // display 3D canvas by flushing using its flushToTerminal
+        try canvas3d.flushToTerminal();
 
         engine.clock.sleepUntilNextFrame();
     }
-
-    std.debug.print("Exited singleplayer.\n", .{});
 }
 
 // ==============================
