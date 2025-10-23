@@ -460,3 +460,98 @@ pub fn randomBiome() Chunk.BiomeType {
     return @enumFromInt(roll);
 }
 
+// insert near top of src/WorldManager.zig with other imports
+const Engine3D = @import("Engine3D.zig");
+
+// --- PROJECT 2D -> ASCII 3D projection ---
+// Simple column-based projection: for every screen column on Canvas3D
+// sample N depths into world, take tile height and draw vertical slices.
+pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
+    // tuning
+    const max_depth: i32 = 18;        // how many steps along the "ray"
+    const column_width: i32 = 1;      // 1 world tile per column for now
+    const height_scale: i32 = 1;      // how tall one height unit appears (chars)
+    const eye_z: i32 = cam3d.z;       // unused for now but available
+
+    const screen_w = @intCast(i32, canvas3d.width);
+    const screen_h = @intCast(i32, canvas3d.height);
+
+    // helper: map TileType -> height, char, base color
+    inline fn tile_to_height_and_char(t: Chunk.TileType) struct { h: i32, ch: u8, color: Engine3D.Color3D } {
+        return switch (t) {
+            .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64,64,64) },
+            .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20,120,20) },
+            .Tree  => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0,100,0) },
+            .Stone => .{ .h = 2, .ch = '@', .color = Engine3D.Color3D.init(120,120,120) },
+            .Water => .{ .h = 0, .ch = '~', .color = Engine3D.Color3D.init(0,0,160) },
+            .Mountain => .{ .h = 4, .ch = '^', .color = Engine3D.Color3D.init(100,100,100) },
+            .Desert => .{ .h = 0, .ch = ':', .color = Engine3D.Color3D.init(200,180,100) },
+            .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240,240,240) },
+            .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255,80,0) },
+            .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100,60,0) },
+        };
+    }
+
+    // Clear 3D canvas
+    canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
+
+    // For each column on screen
+    for (0..screen_w) |sx_i| {
+        const sx = @as(i32, sx_i);
+
+        // compute a world-space sample column x (we map one screen column -> one world x)
+        const world_x = cam3d.x + sx;
+
+        // depth sweep forward in world y (you can rotate later; currently using +y as depth)
+        var depth: i32 = 0;
+        var highest_drawn_y: i32 = screen_h - 1; // draw from bottom up
+
+        while (depth < max_depth) : (depth += 1) {
+            const world_y = cam3d.y + depth;
+            const tile = self.getTileAtWorld(world_x, world_y);
+            const info = tile_to_height_and_char(tile);
+            const tile_h = info.h;
+
+            // shade/fade based on depth
+            const fade = if (depth < 4) 1.0 else 1.0 - ( (@as(f32, depth) / @as(f32, max_depth)) * 0.7 );
+
+            // vertical stack height for this tile
+            var stack_h = tile_h * height_scale;
+            if (stack_h == 0) {
+                // still put a small ground at distance 0 to suggest floor
+                stack_h = 1;
+            }
+
+            // draw vertical slice: from bottom up (simulate elevation)
+            var yoff: i32 = 0;
+            while (yoff < stack_h and highest_drawn_y >= 0) : (yoff += 1) {
+                const sy = highest_drawn_y;
+                // choose character and color intensity
+                const ch = info.ch;
+                // apply fade to color (simple multipliers)
+                const base = info.color;
+                const r = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.r) * fade)));
+                const g = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.g) * fade)));
+                const b = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.b) * fade)));
+                canvas3D.put(sx, sy, ch);
+                canvas3D.fillColor(sx, sy, Engine3D.Color3D.init(r,g,b));
+
+                highest_drawn_y -= 1;
+            }
+
+            // stop early if we've filled screen column
+            if (highest_drawn_y < 0) break;
+        }
+    }
+
+    // Draw player as a vertical marker near center if visible
+    const pos = self.player.getPosition();
+    const px = pos.x - cam3d.x;
+    const py = pos.y - cam3d.y;
+    if (px >= 0 and px < screen_w and py >= 0 and py < screen_h) {
+        // draw player char at bottom of their column
+        canvas3D.put(px, py, self.player.entity.ch);
+        canvas3D.fillColor(px, py, Engine3D.Color3D.init(255,255,0));
+    }
+}
+
