@@ -82,7 +82,7 @@ pub const Clock3D = struct {
         }
     }
 
-    pub fn deinit(self: *Clock) void {
+    pub fn deinit(self: *Clock3D) void {
         _ = self;
     }
 };
