@@ -471,7 +471,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const screen_w = @intCast(i32, canvas3d.width);
     const screen_h = @intCast(i32, canvas3d.height);
 
-    // helper: map TileType -> height, char, base color
     inline fn tile_to_height_and_char(t: Chunk.TileType) struct { h: i32, ch: u8, color: Engine3D.Color3D } {
         return switch (t) {
             .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64,64,64) },
