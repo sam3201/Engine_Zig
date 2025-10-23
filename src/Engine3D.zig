@@ -23,7 +23,7 @@ pub const Color3D = struct {
     }
 };
 
-pub const Renderable = struct {
+pub const Renderable3D = struct {
     x: i32,
     y: i32,
     width: i32,
