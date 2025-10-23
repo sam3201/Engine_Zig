@@ -18,7 +18,7 @@ pub const Color3D = struct {
         return .{ .r = r, .g = g, .b = b };
     }
 
-    pub fn eql(self: Color, other: Color) bool {
+    pub fn eql(self: Color3D, other: Color3D) bool {
         return self.r == other.r and self.g == other.g and self.b == other.b;
     }
 };
