@@ -57,7 +57,7 @@ pub const Clock3D = struct {
     last: i128,
     now: i128,
 
-    pub fn init(fps: f64) Clock {
+    pub fn init(fps: f64) Clock3D {
         return .{
             .target = std.time.ns_per_s / fps,
             .last = std.time.nanoTimestamp(),
