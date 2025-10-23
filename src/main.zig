@@ -100,12 +100,8 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
             try world.handlePlayerAction(action);
         }
 
-        // update 2D world camera (keeps world coordinates in sync)
-        // NOTE: WorldManager.updateCamera() already called in handler; ensure it's current
-        // Project world -> 3D canvas
         world.projectTo3D(&canvas3d, &cam3d);
 
-        // display 3D canvas by flushing using its flushToTerminal
         try canvas3d.flushToTerminal();
 
         engine.clock.sleepUntilNextFrame();
