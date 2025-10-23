@@ -306,12 +306,12 @@ pub const Camera3D = struct {
     } 
 };
 
-pub const Engine = struct {
+pub const Engine3D = struct {
     allocator: std.mem.Allocator,
     running: bool,
-    canvas: Canvas,
-    clock: Clock,
-    background_color: Color,
+    canvas: Canvas3D,
+    clock: Clock3D,
+    background_color: Color3D,
 
     update: ?*const fn () void = null,
 
