@@ -486,7 +486,6 @@ const tile_to_height_and_char = fn (t: Chunk.TileType) struct {
         .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255,80,0) },
         .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100,60,0) },
     };
-};
 
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
