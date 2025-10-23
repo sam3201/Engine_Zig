@@ -112,7 +112,7 @@ pub const Canvas3D = struct {
             .updateFn = null,
             .render_buffer = try std.ArrayList(u8).initCapacity(allocator, render_buffer_capacity),
         };
-        canvas.updateFn = Canvas.update;
+        canvas.updateFn = Canvas3D.update;
         return canvas;
     }
 
