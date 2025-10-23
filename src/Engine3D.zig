@@ -320,8 +320,8 @@ pub const Engine3D = struct {
         width: usize,
         height: usize,
         fps: f64,
-        background_color: Color,
-    ) !Engine {
+        background_color: Color3D,
+    ) !Engine3D {
         return .{
             .allocator = allocator,
             .running = true,
