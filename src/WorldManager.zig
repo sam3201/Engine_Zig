@@ -2,6 +2,7 @@
 
 const std = @import("std");
 const Engine = @import("Engine.zig");
+const Engine3D = @import("Engine3D.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
