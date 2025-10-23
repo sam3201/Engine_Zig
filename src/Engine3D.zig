@@ -331,15 +331,15 @@ pub const Engine3D = struct {
         };
     }
 
-    pub fn deinit(self: *Engine) void {
+    pub fn deinit(self: *Engine3D) void {
         self.canvas.deinit();
     }
 
-    pub fn setUpdateFn(self: *Engine, func: *const fn () void) void {
+    pub fn setUpdateFn(self: *Engine3D, func: *const fn () void) void {
         self.update = func;
     }
 
-    pub fn run(self: *Engine) !void {
+    pub fn run(self: *Engine3D) !void {
         var term = try TerminalGuard.init();
         defer term.deinit();
 
