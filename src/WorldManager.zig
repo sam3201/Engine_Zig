@@ -468,8 +468,8 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const height_scale: i32 = 1;      
     const eye_z: i32 = cam3d.z;      
 
-    const screen_w: i32 = @intCast(canvas3d.width);
-    const screen_h: i32 = @intCast(canvas3d.height);
+    const screen_w: i32 = @intCast(canvas3D.width);
+    const screen_h: i32 = @intCast(canvas3D.height);
 
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
