@@ -116,7 +116,7 @@ pub const Canvas3D = struct {
         return canvas;
     }
 
-    pub fn deinit(self: *Canvas) void {
+    pub fn deinit(self: *Canvas3D) void {
         for (self.scene.items) |*r| r.deinit();
         self.scene.deinit(self.allocator);
         self.allocator.free(self.colors);
