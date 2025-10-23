@@ -47,7 +47,7 @@ pub const Renderable3D = struct {
         };
     }
 
-    pub fn deinit(self: *Renderable) void {
+    pub fn deinit(self: *Renderable3D) void {
         _ = self;
     }
 };
