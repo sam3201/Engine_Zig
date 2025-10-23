@@ -257,7 +257,7 @@ pub fn addRenderable(self: *Canvas3D, r: Renderable3D) !void {
         }
     }
 
-    pub fn renderWithCamera(self: *Canvas3D, camera: *const Camera) void {
+    pub fn renderWithCamera(self: *Canvas3D, camera: *const Camera3D) void {
         for (self.scene.items) |r| {
             const x0 = r.x;
             const y0 = r.y;
