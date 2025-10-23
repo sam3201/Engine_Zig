@@ -7,7 +7,7 @@ const c = @cImport({
     @cInclude("fcntl.h");
 });
 
-const UpdateFn = *const fn (*Canvas3D) void;
+const UpdateFn3D = *const fn (*Canvas3D) void;
 
 pub const Color3D = struct {
     r: u8 = 0,
