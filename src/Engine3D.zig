@@ -26,12 +26,15 @@ pub const Color3D = struct {
 pub const Renderable3D = struct {
     x: i32,
     y: i32,
+    z: i32,
     width: i32,
     height: i32,
     id: u32,
     ch: u8 = ' ',
     vx: i32 = 0,
     vy: i32 = 0,
+    vz: i32 = 0,
+    color: Color3D = Color3D{ .r = 0, .g = 0, .b = 0 },
     color: Color = Color{ .r = 0, .g = 0, .b = 0 },
 
     pub fn init(x: i32, y: i32, w: i32, h: i32, id: u32, ch: u8, vx: i32, vy: i32, color: Color) Renderable {
