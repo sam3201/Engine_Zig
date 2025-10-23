@@ -65,7 +65,7 @@ pub const Clock3D = struct {
         };
     }
 
-    pub fn setFps(self: *Clock, fps: f64) void {
+    pub fn setFps(self: *Clock3D, fps: f64) void {
         self.target = std.time.ns_per_s / fps;
     }
 
