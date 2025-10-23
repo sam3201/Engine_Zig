@@ -211,7 +211,7 @@ pub fn flushToTerminal(self: *Canvas3D) !void {
     }
 }
 
-pub fn addRenderable(self: *Canvas, r: Renderable) !void {
+pub fn addRenderable(self: *Canvas3D, r: Renderable) !void {
         try self.scene.append(r);
     }
 
