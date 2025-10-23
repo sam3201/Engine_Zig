@@ -486,7 +486,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         };
     }
 
-    // Clear 3D canvas
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
     // For each column on screen
