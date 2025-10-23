@@ -69,12 +69,12 @@ pub const Clock3D = struct {
         self.target = std.time.ns_per_s / fps;
     }
 
-    pub fn tick(self: *Clock) void {
+    pub fn tick(self: *Clock3D) void {
         self.last = self.now;
         self.now = std.time.nanoTimestamp();
     }
 
-    pub fn sleepUntilNextFrame(self: *Clock) void {
+    pub fn sleepUntilNextFrame(self: *Clock3D) void {
         const target_ns: i128 = @intFromFloat(self.target);
         const sleep_ns: u64 = @intCast(@max(0, target_ns - (self.now - self.last)));
         if (sleep_ns > 0) {
