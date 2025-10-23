@@ -277,9 +277,9 @@ pub fn addRenderable(self: *Canvas3D, r: Renderable3D) !void {
                         self.fillColor(screen_x, screen_y, r.color);
                     }
                 }
-
             }
         }
+    }
 };
 
 pub const Camera3D = struct {
