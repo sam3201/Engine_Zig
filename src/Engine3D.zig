@@ -108,7 +108,7 @@ pub const Canvas3D = struct {
             .height = height,
             .colors = try allocator.alloc(Color3D, width * height),
             .buf = try allocator.alloc(u8, width * height),
-            .scene = try std.ArrayList(Renderable).initCapacity(allocator, 16),
+            .scene = try std.ArrayList(Renderable3D).initCapacity(allocator, 16),
             .updateFn = null,
             .render_buffer = try std.ArrayList(u8).initCapacity(allocator, render_buffer_capacity),
         };
