@@ -6,7 +6,6 @@ const c = @cImport({
     @cInclude("termios.h");
     @cInclude("fcntl.h");
 });
-const main = @import("main.zig");
 
 const UpdateFn = *const fn (*Canvas) void;
 
