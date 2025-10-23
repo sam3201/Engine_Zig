@@ -149,13 +149,13 @@ pub fn clear(self: *Canvas3D, ch: u8, color: Color3D) void {
         self.colors[uy * self.width + ux] = color;
     }
 
-pub fn flushToTerminal(self: *Canvas) !void {
+pub fn flushToTerminal(self: *Canvas3D) !void {
     self.render_buffer.clearRetainingCapacity();
 
     var writer = self.render_buffer.writer(self.allocator);
 
     try writer.writeAll("\x1b[0m\x1b[?25l\x1b[H");
-    var last_color: ?Color = null;
+    var last_color: ?Color3D = null;
 
     var y: usize = 0;
     while (y < self.height) : (y += 1) {
