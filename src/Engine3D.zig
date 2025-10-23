@@ -91,7 +91,7 @@ pub const Canvas3D = struct {
     allocator: std.mem.Allocator,
     width: usize,
     height: usize,
-    colors: []Color,
+    colors: []Color3D,
     buf: []u8,
     scene: std.ArrayList(Renderable),
 
