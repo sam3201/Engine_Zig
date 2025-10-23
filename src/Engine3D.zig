@@ -285,10 +285,11 @@ pub fn addRenderable(self: *Canvas3D, r: Renderable3D) !void {
 pub const Camera3D = struct {
     x: i32,
     y: i32,
+    z: i32,
     width: i32,
     height: i32,
 
-    pub fn init(width: i32, height: i32) Camera {
+    pub fn init(width: i32, height: i32) Camera3D {
         return Camera{ .x = 0, .y = 0, .width = width, .height = height };
     }
 
