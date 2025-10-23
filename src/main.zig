@@ -80,7 +80,6 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("Starting singleplayer...\n", .{});
-
     var player = try Player.Player.createWASDPlayer("player", allocator, 10, 10);
     defer player.deinit();
 
