@@ -133,7 +133,7 @@ pub fn clear(self: *Canvas3D, ch: u8, color: Color3D) void {
         self.colors[i] = color;
     }
 }
-    pub fn put(self: *Canvas, x: i32, y: i32, ch: u8) void {
+    pub fn put(self: *Canvas3D, x: i32, y: i32, ch: u8) void {
         if (x < 0 or y < 0) return;
         const ux: usize = @intCast(x);
         const uy: usize = @intCast(y);
