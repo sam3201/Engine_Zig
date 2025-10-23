@@ -149,21 +149,6 @@ pub fn clear(self: *Canvas3D, ch: u8, color: Color3D) void {
         self.colors[uy * self.width + ux] = color;
     }
 
-    pub fn fillRect(self: *Canvas, x: i32, y: i32, w: i32, h: i32, ch: u8) void {
-        const x0: i32 = x;
-        const y0: i32 = y;
-        const x1: i32 = x + w - 1;
-        const y1: i32 = y + h - 1;
-
-        var yy = y0;
-        while (yy <= y1) : (yy += 1) {
-            var xx = x0;
-            while (xx <= x1) : (xx += 1) {
-                self.put(xx, yy, ch);
-            }
-        }
-    }
-
 pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
 
