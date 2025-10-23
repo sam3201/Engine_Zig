@@ -93,7 +93,7 @@ pub const Canvas3D = struct {
     height: usize,
     colors: []Color3D,
     buf: []u8,
-    scene: std.ArrayList(Renderable),
+    scene: std.ArrayList(Renderable3D),
 
     render_buffer: std.ArrayList(u8),
 
