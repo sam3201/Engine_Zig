@@ -282,7 +282,7 @@ pub fn addRenderable(self: *Canvas3D, r: Renderable3D) !void {
     }
 };
 
-pub const Camera = struct {
+pub const Camera3D = struct {
     x: i32,
     y: i32,
     width: i32,
