@@ -79,8 +79,6 @@ fn mainMenu(engine: *Engine.Engine) !u8 {
 // ==============================
 
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-// inside runSingleplayer(...)
-    // create a 3D canvas sized to your terminal (maybe narrower/taller)
     var canvas3d = try Engine3D.Canvas3D.init(allocator, engine.canvas.width, engine.canvas.height);
     defer canvas3d.deinit();
 
