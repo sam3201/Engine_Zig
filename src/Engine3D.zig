@@ -141,7 +141,7 @@ pub fn clear(self: *Canvas3D, ch: u8, color: Color3D) void {
         self.buf[uy * self.width + ux] = ch;
     }
 
-    pub fn fillColor(self: *Canvas3D, x: i32, y: i32, color: Color) void {
+    pub fn fillColor(self: *Canvas3D, x: i32, y: i32, color: Color3D) void {
         if (x < 0 or y < 0) return;
         const ux: usize = @intCast(x);
         const uy: usize = @intCast(y);
