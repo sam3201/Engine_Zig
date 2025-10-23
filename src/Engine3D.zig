@@ -239,7 +239,7 @@ pub fn addRenderable(self: *Canvas3D, r: Renderable3D) !void {
         self.updateFn = update_fn;
     }
 
-    pub fn render(self: *Canvas) void {
+    pub fn render(self: *Canvas3D) void {
         for (self.scene.items) |r| {
             const x0 = r.x;
             const y0 = r.y;
