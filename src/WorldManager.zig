@@ -463,11 +463,10 @@ pub fn randomBiome() Chunk.BiomeType {
 const Engine3D = @import("Engine3D.zig");
 
 pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
-    // tuning
-    const max_depth: i32 = 18;        // how many steps along the "ray"
-    const column_width: i32 = 1;      // 1 world tile per column for now
-    const height_scale: i32 = 1;      // how tall one height unit appears (chars)
-    const eye_z: i32 = cam3d.z;       // unused for now but available
+    const max_depth: i32 = 18;        
+    const column_width: i32 = 1;      
+    const height_scale: i32 = 1;      
+    const eye_z: i32 = cam3d.z;      
 
     const screen_w = @intCast(i32, canvas3d.width);
     const screen_h = @intCast(i32, canvas3d.height);
