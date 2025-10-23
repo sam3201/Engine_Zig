@@ -9,7 +9,7 @@ const c = @cImport({
 
 const UpdateFn = *const fn (*Canvas) void;
 
-pub const Color = struct {
+pub const Color3D = struct {
     r: u8 = 0,
     g: u8 = 0,
     b: u8 = 0,
