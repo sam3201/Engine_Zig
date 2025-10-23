@@ -14,6 +14,10 @@ pub const Color3D = struct {
     g: u8 = 0,
     b: u8 = 0,
 
+    pub fn init(r: u8, g: u8, b: u8) Color3D {
+        return .{ .r = r, .g = g, .b = b };
+    }
+
     pub fn eql(self: Color, other: Color) bool {
         return self.r == other.r and self.g == other.g and self.b == other.b;
     }
