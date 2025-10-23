@@ -290,7 +290,7 @@ pub const Camera3D = struct {
     height: i32,
 
     pub fn init(width: i32, height: i32) Camera3D {
-        return Camera{ .x = 0, .y = 0, .width = width, .height = height };
+        return Camera3D{ .x = 0, .y = 0, .z = 0, .width = width, .height = height }; 
     }
 
     pub fn centerOn(self: *Camera, target_x: i32, target_y: i32, world_width: i32, world_height: i32) void {
