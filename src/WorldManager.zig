@@ -473,11 +473,11 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
 
     const tile_to_height_and_char = fn (t: Chunk.TileType) struct {h: i32, ch: u8, color: Engine3D.Color3D} {
         return switch (t) {
-            .Air => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,0)},
-            .Grass => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,255,0)},
-            .Dirt => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,64,0)},
-            .Stone => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,128,128)},
-            .Water => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,255)},
+        .Air => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,0)},
+        .Grass => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,255,0)},
+        .Dirt => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,64,0)},
+        .Stone => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,128,128)},
+        .Water => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,255)},
         };
     }
 
