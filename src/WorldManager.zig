@@ -493,7 +493,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         const world_x = cam3d.x + sx;
 
         var depth: i32 = 0;
-        var highest_drawn_y: i32 = screen_h - 1; // draw from bottom up
+        var highest_drawn_y: i32 = screen_h - 1; 
 
         while (depth < max_depth) : (depth += 1) {
             const world_y = cam3d.y + depth;
