@@ -2,5 +2,5 @@
 
 zig build run
 
-./run
 
+echo "Build complete"
