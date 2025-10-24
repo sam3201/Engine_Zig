@@ -472,6 +472,9 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const screen_h: i32 = @intCast(canvas3D.height);
 
     const tile_to_height_and_char = fn (t: Chunk.TileType) struct {h: i32, ch: u8, color: Engine3D.Color3D} {
+        return switch (t) {
+
+        }
     };
 
     const cam_x = cam3d.x;
