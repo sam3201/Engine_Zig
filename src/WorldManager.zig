@@ -484,6 +484,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255,80,0) },
         .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100,60,0) },
     }
+};
 
     const cam_x = cam3d.x;
     const cam_y = cam3d.y;
