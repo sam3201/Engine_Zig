@@ -471,8 +471,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const screen_w: i32 = @intCast(canvas3D.width);
     const screen_h: i32 = @intCast(canvas3D.height);
 
-    const tile_to_height_and_char = fn (t: Chunk.TileType) struct {
-    h: i32, ch: u8, color: Engine3D.Color3D} {
+    const tile_to_height_and_char = fn (t: Chunk.TileType) struct {h: i32, ch: u8, color: Engine3D.Color3D} {
     switch (t) {
         .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64,64,64) },
         .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20,120,20) },
