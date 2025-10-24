@@ -485,7 +485,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240,240,240) },
         .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255,80,0) },
         .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100,60,0) },
-    };
+    }
 };
 
     const cam_x = cam3d.x;
