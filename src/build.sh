@@ -2,3 +2,5 @@
 
 zig build run
 
+./run
+
