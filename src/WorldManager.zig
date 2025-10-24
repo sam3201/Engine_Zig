@@ -472,14 +472,9 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const screen_h: i32 = @intCast(canvas3D.height);
 
     const tile_to_height_and_char = fn (t: Chunk.TileType) struct {h: i32, ch: u8, color: Engine3D.Color3D} {
-        return switch (t) {
-        .Air => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,0)},
-        .Grass => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,255,0)},
-        .Dirt => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,64,0)},
-        .Stone => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,128,128)},
-        .Water => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,255)},
-        };
+    return switch (t) {
     }
+};
 
     const cam_x = cam3d.x;
     const cam_y = cam3d.y;
@@ -493,7 +488,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         const world_x = cam3d.x + sx;
 
         var depth: i32 = 0;
-        var highest_drawn_y: i32 = screen_h - 1; 
+        var highest_drawn_y: i32 = screen_h - 1; // draw from bottom up
 
         while (depth < max_depth) : (depth += 1) {
             const world_y = cam3d.y + depth;
