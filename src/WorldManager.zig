@@ -472,19 +472,14 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const screen_h: i32 = @intCast(canvas3D.height);
 
     const tile_to_height_and_char = fn (t: Chunk.TileType) struct {h: i32, ch: u8, color: Engine3D.Color3D} {
-    switch (t) {
-        .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64,64,64) },
-        .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20,120,20) },
-        .Tree  => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0,100,0) },
-        .Stone => .{ .h = 2, .ch = '@', .color = Engine3D.Color3D.init(120,120,120) },
-        .Water => .{ .h = 0, .ch = '~', .color = Engine3D.Color3D.init(0,0,160) },
-        .Mountain => .{ .h = 4, .ch = '^', .color = Engine3D.Color3D.init(100,100,100) },
-        .Desert => .{ .h = 0, .ch = ':', .color = Engine3D.Color3D.init(200,180,100) },
-        .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240,240,240) },
-        .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255,80,0) },
-        .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100,60,0) },
+        return switch (t) {
+            .Air => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,0)},
+            .Grass => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,255,0)},
+            .Dirt => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,64,0)},
+            .Stone => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(128,128,128)},
+            .Water => struct {h: i32, ch: u8, color: Engine3D.Color3D}{.h = 0, .ch = ' ', .color = Engine3D.Color3D.init(0,0,255)},
+        };
     }
-};
 
     const cam_x = cam3d.x;
     const cam_y = cam3d.y;
