@@ -493,6 +493,7 @@ const tile_to_height_and_char = struct {
         };
     }
 }.get;
+
     const cam_x = cam3d.x;
     const cam_y = cam3d.y;
     const cam_z = cam3d.z;
