@@ -526,9 +526,9 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
                 const sy = highest_drawn_y;
                 const ch = info.ch;
                 const base = info.color;
-                const r = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.r) * fade)));
-                const g = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.g) * fade)));
-                const b = @intCast(u8, @min(255, @intCast(i32, @as(i32, base.b) * fade)));
+                const r: i32 = @intCast(@min(255, @intCast(i32, @as(i32, base.r) * fade)));
+                const g: i32 = @intCast(@min(255, @intCast(i32, @as(i32, base.g) * fade)));
+                const b: i32 = @intCast(@min(255, @intCast(i32, @as(i32, base.b) * fade)));
                 canvas3D.put(sx, sy, ch);
                 canvas3D.fillColor(sx, sy, Engine3D.Color3D.init(r,g,b));
 
