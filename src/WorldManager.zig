@@ -477,9 +477,9 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     color: Engine3D.Color3D,
 };
 
-const tile_to_height_and_char = struct {
-    fn get(tile: Chunk.TileType) TileInfo {
-        return switch (tile) {
+    const tile_to_height_and_char = struct {
+        fn get(tile: Chunk.TileType) TileInfo {
+            return switch (tile) {
             .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64, 64, 64) },
             .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20, 120, 20) },
             .Tree => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0, 100, 0) },
