@@ -494,10 +494,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         }
     }.get;
 
-    const cam_x: i32 = cam3d.x;
-    const cam_y: i32 = cam3d.y;
-    const cam_z: i32 = cam3d.z;
-
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
     for (0..screen_w) |sx_i| {
