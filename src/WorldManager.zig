@@ -494,10 +494,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         }
     }.get;
 
-    const cam_x = cam3d.x;
-    const cam_y = cam3d.y;
-    const cam_z = cam3d.z;
-
     canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
 
     for (0..screen_w) |sx_i| {
@@ -542,6 +538,7 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
     const pos = self.player.getPosition();
     const px = pos.x - cam3d.x;
     const py = pos.y - cam3d.y;
+
     if (px >= 0 and px < screen_w and py >= 0 and py < screen_h) {
         canvas3D.put(px, py, self.player.entity.ch);
         canvas3D.fillColor(px, py, Engine3D.Color3D.init(255,255,0));
