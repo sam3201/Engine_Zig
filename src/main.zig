@@ -48,7 +48,6 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
 fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const Particle = @import("Particle.zig");
     
-    // Select quality
     const quality_selection = try qualityMenu(engine);
     if (quality_selection >= 4) return; // Back
     
@@ -78,11 +77,10 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
 
     var cam3d = Engine3D.Camera3D.init(@intCast(canvas3d.width), @intCast(canvas3d.height));
     cam3d.z = 3;
-    cam3d.pitch = -0.3; // Look down slightly
+    cam3d.pitch = -0.3; 
 
     engine.running = true;
 
-    // Show controls
     const quality_name = switch (quality) {
         .Low => "LOW",
         .Medium => "MEDIUM",
@@ -121,7 +119,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     while (engine.running) {
         engine.clock.tick();
 
-        // Handle keyboard
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 27) break;
             if (key == 'r' or key == 'R') {
@@ -133,7 +130,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
             }
         }
 
-        // Handle mouse
         if (try Engine.readMouse()) |mouse| {
             const sensitivity: f32 = 0.003;
             const delta_yaw = @as(f32, @floatFromInt(mouse.delta_x)) * sensitivity;
@@ -141,7 +137,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
             cam3d.rotate(delta_yaw, delta_pitch);
         }
 
-        // Regenerate particles when needed
         if (regenerate_particles) {
             particle_field.clear();
             particle_field.deinit();
@@ -149,10 +144,8 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
             regenerate_particles = false;
         }
 
-        // Render
         world.renderParticleField3D(&canvas3d, &cam3d, &particle_field);
 
-        // HUD
         const pos = world.player.getPosition();
         const yaw_deg = cam3d.yaw * 180.0 / std.math.pi;
         const pitch_deg = cam3d.pitch * 180.0 / std.math.pi;
@@ -213,10 +206,6 @@ pub fn main() !void {
         },
     }
 }
-
-// ==============================
-// 🎮 Menu System
-// ==============================
 
 fn mainMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
@@ -281,10 +270,6 @@ fn viewModeMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
-// ==============================
-// 🧙 Singleplayer
-// ==============================
-
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const view_mode = try viewModeMenu(engine);
     
@@ -325,75 +310,6 @@ fn runSingleplayer2D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     }
 }
 
-fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    var canvas3d = try Engine3D.Canvas3D.init(allocator, engine.canvas.width, engine.canvas.height);
-    defer canvas3d.deinit();
-
-    const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
-    var world = try WorldManager.WorldManager.init(
-        Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        1,
-        allocator,
-        &engine.canvas,
-        player,
-    );
-    defer world.deinit();
-
-    var cam3d = Engine3D.Camera3D.init(@intCast(canvas3d.width), @intCast(canvas3d.height));
-    cam3d.z = 2;
-
-    engine.running = true;
-
-    // Show controls hint
-    const hint_text = "3D View | WASD: Move | Q/ESC: Quit";
-    for (hint_text, 0..) |ch, i| {
-        engine.canvas.put(@intCast(i), 0, ch);
-        engine.canvas.fillColor(@intCast(i), 0, .{ .r = 200, .g = 200, .b = 100 });
-    }
-    try engine.canvas.flushToTerminal();
-    std.Thread.sleep(10 * std.time.ns_per_s); 
-
-    while (engine.running) {
-        engine.clock.tick();
-
-        if (try Engine.readKey()) |key| {
-            if (key == 'q' or key == 27) break;
-            const action = Player.InputAction.fromKey(key);
-            try world.handlePlayerAction(action);
-        }
-
-        // Update camera to follow player
-        const pos = world.player.getPosition();
-        cam3d.x = pos.x - @divTrunc(@as(i32, @intCast(canvas3d.width)), 2);
-        cam3d.y = pos.y;
-
-        // Project world to 3D
-        world.projectTo3D(&canvas3d, &cam3d);
-
-        // Draw player info overlay in top-left
-        const player_info = try std.fmt.allocPrint(
-            allocator,
-            "HP: {}/{} | Pos: ({},{}) | 3D MODE",
-            .{ world.player.health, world.player.max_health, pos.x, pos.y },
-        );
-        defer allocator.free(player_info);
-
-        for (player_info, 0..) |ch, i| {
-            if (i < canvas3d.width) {
-                canvas3d.put(@intCast(i), 0, ch);
-                canvas3d.fillColor(@intCast(i), 0, Engine3D.Color3D.init(255, 255, 100));
-            }
-        }
-
-        try canvas3d.flushToTerminal();
-        engine.clock.sleepUntilNextFrame();
-    }
-}
-
-// ==============================
-// 🌐 Host Mode
-// ==============================
-
 fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("Hosting server and playing as host...\n", .{});
 
@@ -411,18 +327,10 @@ fn runServerThread(server: *Server.GameServer) void {
     };
 }
 
-// ==============================
-// 💻 Client Mode
-// ==============================
-
 fn runClientMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("Joining game...\n", .{});
     try Client.runClient(allocator, engine);
 }
-
-// ==============================
-// ⚙️ Key Bindings Display
-// ==============================
 
 fn showKeyBindings(engine: *Engine.Engine) !void {
     const text =
