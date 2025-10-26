@@ -8,6 +8,9 @@ const c = @cImport({
 });
 const main = @import("main.zig");
 
+var g_input_buffer: [64]u8 = undefined;
+var g_input_buffer_len: usize = 0;
+
 const UpdateFn = *const fn (*Canvas) void;
 
 pub const Color = struct {
@@ -477,18 +480,12 @@ pub fn disableMouseTracking() !void {
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006l") catch {};
 }
 
-// Add this to Engine.zig - Replace the existing readKey and readMouse functions
-
 // Input event type
 pub const InputEvent = union(enum) {
     key: u8,
     mouse: MouseState,
     none,
 };
-
-// Global input buffer for handling escape sequences
-var g_input_buffer: [64]u8 = undefined;
-var g_input_buffer_len: usize = 0;
 
 // Unified input reading function that handles both keyboard and mouse
 pub fn readInput() !InputEvent {
