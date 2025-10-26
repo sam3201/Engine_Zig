@@ -473,40 +473,32 @@ pub fn disableMouseTracking() !void {
 pub fn readMouse() !?MouseState {
     var buf: [64]u8 = undefined;
 
-    // Read from stdin in nonblocking mode
     const n = std.posix.read(std.posix.STDIN_FILENO, &buf) catch return null;
     if (n == 0) return null;
 
-    // Make sure we actually have mouse data (starts with ESC [ <)
     if (n >= 6 and buf[0] == 27 and buf[1] == '[' and buf[2] == '<') {
-        // Log what we got
         std.debug.print("Mouse raw: {s}\n", .{buf[0..n]});
 
-        // Example parse of something like ^[[<0;45;22M
         var i: usize = 3;
         var b: usize = 0;
         var x: usize = 0;
         var y: usize = 0;
         var state: u8 = 0;
 
-        // Parse button number
         while (i < n and buf[i] != ';') : (i += 1) {
             b = b * 10 + (buf[i] - '0');
         }
         i += 1;
 
-        // Parse x
         while (i < n and buf[i] != ';') : (i += 1) {
             x = x * 10 + (buf[i] - '0');
         }
         i += 1;
 
-        // Parse y
         while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) {
             y = y * 10 + (buf[i] - '0');
         }
 
-        // M = button down, m = button up
         if (i < n and buf[i] == 'M') state = 1;
 
         return MouseState{
