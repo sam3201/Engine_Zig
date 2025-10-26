@@ -141,6 +141,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
                 //const delta_yaw = @as(f32, @floatFromInt(mouseInput.delta_x)) * sensitivity;
                 //const delta_pitch = -@as(f32, @floatFromInt(mouseInput.delta_y)) * sensitivity;
                 //cam3d.rotate(delta_yaw, delta_pitch);
+                std.debug.print("Mouse Input: {any}\n", .{mouseInput});
             }
         }
 
