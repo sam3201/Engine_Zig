@@ -364,13 +364,19 @@ pub const Engine3D = struct {
         while (self.running) {
             self.clock.tick();
 
-            if (try readKey()) |byte| {
-                if (byte == 'q' or byte == 27) {
-                    self.running = false;
-                    break;
-                }
-            }
+if (try readKey()) |byte| {
+    // Only treat ESC as quit if it’s *not* part of a mouse sequence
+    const available = std.posix.poll(&[_]std.posix.pollfd{.{
+        .fd = std.posix.STDIN_FILENO,
+        .events = std.posix.POLL.IN,
+        .revents = 0,
+    }}, 0) catch 0;
 
+    if (byte == 'q' or (byte == 27 and available == 0)) {
+        self.running = false;
+        break;
+    }
+}
             self.canvas.clear(
                 ' ',
                 self.background_color,
