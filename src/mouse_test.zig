@@ -23,12 +23,12 @@ pub fn main() !void {
     try Engine.enableMouseTracking();
     defer Engine.disableMouseTracking() catch {};
 
-    var events = try std.ArrayList([]const u8).initCapacity(allocator, 15);
+    var events = std.ArrayList([]const u8).init(allocator);
     defer {
         for (events.items) |event| {
             allocator.free(event);
         }
-        events.deinit(allocator);
+        events.deinit();
     }
 
     var mouse_state = Engine.MouseState{};
@@ -42,24 +42,42 @@ pub fn main() !void {
         frame_count += 1;
 
         // Check for keyboard input
+        // First check for mouse input to consume escape sequences
+        const had_mouse = try Engine.readMouse();
+        
         if (try Engine.readKey()) |key| {
-            if (key == 'q' or key == 'Q' or key == 27) {
+            // Only treat ESC as quit if we didn't just get a mouse event
+            if (key == 'q' or key == 'Q') {
                 break;
             }
             
-            const key_event = try std.fmt.allocPrint(
-                allocator,
-                "Frame {}: Key pressed: {} ('{c}')",
-                .{ frame_count, key, if (key >= 32 and key <= 126) key else '?' },
-            );
-            try events.append(allocator, key_event);
-            if (events.items.len > 15) {
-                allocator.free(events.orderedRemove(0));
+            if (key == 27 and had_mouse == null) {
+                // This is a real ESC key press, not part of mouse sequence
+                const esc_event = try std.fmt.allocPrint(
+                    allocator,
+                    "Frame {}: ESC key pressed",
+                    .{frame_count},
+                );
+                try events.append(esc_event);
+                if (events.items.len > 15) {
+                    allocator.free(events.orderedRemove(0));
+                }
+                break;
+            } else if (key != 27) {
+                const key_event = try std.fmt.allocPrint(
+                    allocator,
+                    "Frame {}: Key pressed: {} ('{c}')",
+                    .{ frame_count, key, if (key >= 32 and key <= 126) key else '?' },
+                );
+                try events.append(key_event);
+                if (events.items.len > 15) {
+                    allocator.free(events.orderedRemove(0));
+                }
             }
         }
 
-        // Check for mouse input
-        if (try Engine.readMouse()) |new_mouse| {
+        // Update mouse state and log mouse events
+        if (had_mouse) |new_mouse| {
             mouse_state = new_mouse;
             
             const button_state = if (mouse_state.left_button)
@@ -83,12 +101,12 @@ pub fn main() !void {
                     button_state,
                 },
             );
-            try events.append(allocator, mouse_event);
+            try events.append(mouse_event);
             if (events.items.len > 15) {
                 allocator.free(events.orderedRemove(0));
             }
         }
-        
+
         // Clear screen
         engine.canvas.clear(' ', engine.background_color);
 
