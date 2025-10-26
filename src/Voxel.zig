@@ -1,62 +1,48 @@
-// src/Voxel.zig
+// src/Particle.zig
 
 const std = @import("std");
 const Engine3D = @import("Engine3D.zig");
 const Chunk = @import("Chunk.zig");
 
-pub const VoxelType = enum {
-    Air,
-    Dirt,
-    Grass,
-    Stone,
-    Sand,
-    Water,
-    Wood,
-    Leaves,
-    Snow,
+pub const Particle = struct {
+    x: f32,
+    y: f32,
+    z: f32,
+    color: Engine3D.Color3D,
+    tile_type: Chunk.TileType,
     
-    pub fn fromTileType(tile: Chunk.TileType) VoxelType {
-        return switch (tile) {
-            .Empty => .Air,
-            .Grass => .Grass,
-            .Stone, .Wall => .Stone,
-            .Water => .Water,
-            .Tree => .Wood,
-            .Desert => .Sand,
-            .Snow => .Snow,
-            .Mountain => .Stone,
-            .Lava => .Stone, // For now
+    pub fn init(x: f32, y: f32, z: f32, tile_type: Chunk.TileType) Particle {
+        return .{
+            .x = x,
+            .y = y,
+            .z = z,
+            .color = getColorForTile(tile_type, z),
+            .tile_type = tile_type,
         };
     }
     
-    pub fn getColor(self: VoxelType) Engine3D.Color3D {
-        return switch (self) {
-            .Air => Engine3D.Color3D.init(0, 0, 0),
-            .Dirt => Engine3D.Color3D.init(139, 90, 43),
-            .Grass => Engine3D.Color3D.init(34, 139, 34),
+    fn getColorForTile(tile_type: Chunk.TileType, height: f32) Engine3D.Color3D {
+        return switch (tile_type) {
+            .Empty => Engine3D.Color3D.init(64, 64, 64),
+            .Grass => if (height > 0.5) 
+                Engine3D.Color3D.init(50, 200, 50)  // Bright grass on top
+            else 
+                Engine3D.Color3D.init(101, 67, 33),  // Dirt below
             .Stone => Engine3D.Color3D.init(128, 128, 128),
-            .Sand => Engine3D.Color3D.init(194, 178, 128),
-            .Water => Engine3D.Color3D.init(30, 144, 255),
-            .Wood => Engine3D.Color3D.init(101, 67, 33),
-            .Leaves => Engine3D.Color3D.init(0, 100, 0),
-            .Snow => Engine3D.Color3D.init(255, 250, 250),
+            .Water => Engine3D.Color3D.init(30, 100, 200),
+            .Tree => if (height > 3.0)
+                Engine3D.Color3D.init(0, 150, 0)     // Leaves
+            else
+                Engine3D.Color3D.init(101, 67, 33),  // Trunk
+            .Mountain => Engine3D.Color3D.init(100, 100, 100),
+            .Desert => Engine3D.Color3D.init(220, 180, 100),
+            .Snow => Engine3D.Color3D.init(255, 255, 255),
+            .Lava => Engine3D.Color3D.init(255, 100, 0),
+            .Wall => Engine3D.Color3D.init(139, 90, 43),
         };
     }
-    
-    pub fn isSolid(self: VoxelType) bool {
-        return self != .Air and self != .Water;
-    }
 };
 
-pub const Voxel = struct {
-    voxel_type: VoxelType,
-    
-    pub fn init(voxel_type: VoxelType) Voxel {
-        return .{ .voxel_type = voxel_type };
-    }
-};
-
-// 3D coordinate
 pub const Vec3 = struct {
     x: f32,
     y: f32,
@@ -101,59 +87,64 @@ pub const Vec3 = struct {
     }
 };
 
-pub const VoxelWorld = struct {
-    allocator: std.mem.Allocator,
-    voxels: std.AutoHashMap(VoxelCoord, Voxel),
+pub const ParticleQuality = enum {
+    Low,      // 1 particle per tile (1x1x1)
+    Medium,   // 4 particles per tile (2x2x2)
+    High,     // 16 particles per tile (4x4x4)
+    Ultra,    // 64 particles per tile (8x8x8)
     
-    pub const VoxelCoord = struct {
-        x: i32,
-        y: i32,
-        z: i32,
-        
-        pub fn hash(self: VoxelCoord) u64 {
-            const x_hash: u64 = @bitCast(@as(i64, self.x));
-            const y_hash: u64 = @bitCast(@as(i64, self.y));
-            const z_hash: u64 = @bitCast(@as(i64, self.z));
-            return x_hash ^ (y_hash << 1) ^ (z_hash << 2);
-        }
-        
-        pub fn eql(self: VoxelCoord, other: VoxelCoord) bool {
-            return self.x == other.x and self.y == other.y and self.z == other.z;
-        }
-    };
-    
-    const VoxelContext = struct {
-        pub fn hash(self: @This(), coord: VoxelCoord) u64 {
-            _ = self;
-            return coord.hash();
-        }
-        
-        pub fn eql(self: @This(), a: VoxelCoord, b: VoxelCoord) bool {
-            _ = self;
-            return a.eql(b);
-        }
-    };
-    
-    pub fn init(allocator: std.mem.Allocator) !VoxelWorld {
-        return VoxelWorld{
-            .allocator = allocator,
-            .voxels = std.AutoHashMap(VoxelCoord, Voxel).init(allocator),
+    pub fn getSubdivisions(self: ParticleQuality) usize {
+        return switch (self) {
+            .Low => 1,
+            .Medium => 2,
+            .High => 4,
+            .Ultra => 8,
         };
     }
     
-    pub fn deinit(self: *VoxelWorld) void {
-        self.voxels.deinit();
+    pub fn getParticlesPerTile(self: ParticleQuality) usize {
+        const sub = self.getSubdivisions();
+        return sub * sub * sub;
+    }
+};
+
+pub const ParticleField = struct {
+    allocator: std.mem.Allocator,
+    particles: std.ArrayList(Particle),
+    quality: ParticleQuality,
+    
+    pub fn init(allocator: std.mem.Allocator, quality: ParticleQuality) !ParticleField {
+        return ParticleField{
+            .allocator = allocator,
+            .particles = std.ArrayList(Particle).init(allocator),
+            .quality = quality,
+        };
     }
     
-    pub fn setVoxel(self: *VoxelWorld, x: i32, y: i32, z: i32, voxel: Voxel) !void {
-        try self.voxels.put(.{ .x = x, .y = y, .z = z }, voxel);
+    pub fn deinit(self: *ParticleField) void {
+        self.particles.deinit();
     }
     
-    pub fn getVoxel(self: *VoxelWorld, x: i32, y: i32, z: i32) ?Voxel {
-        return self.voxels.get(.{ .x = x, .y = y, .z = z });
+    pub fn clear(self: *ParticleField) void {
+        self.particles.clearRetainingCapacity();
     }
     
-    pub fn removeVoxel(self: *VoxelWorld, x: i32, y: i32, z: i32) void {
-        _ = self.voxels.remove(.{ .x = x, .y = y, .z = z });
+    pub fn addParticle(self: *ParticleField, particle: Particle) !void {
+        try self.particles.append(particle);
+    }
+    
+    pub fn getHeightForTile(tile_type: Chunk.TileType) f32 {
+        return switch (tile_type) {
+            .Empty => 0.0,
+            .Grass => 0.2,
+            .Desert => 0.3,
+            .Snow => 0.4,
+            .Stone => 1.0,
+            .Water => 0.0,
+            .Tree => 4.0,
+            .Mountain => 6.0,
+            .Wall => 2.0,
+            .Lava => 0.2,
+        };
     }
 };
