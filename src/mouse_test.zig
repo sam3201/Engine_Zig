@@ -28,7 +28,7 @@ pub fn main() !void {
         for (events.items) |event| {
             allocator.free(event);
         }
-        events.deinit();
+        events.deinit(allocator);
     }
 
     var mouse_state = Engine.MouseState{};
