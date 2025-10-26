@@ -510,8 +510,8 @@ pub fn readMouse() !?MouseState {
         if (i < n and buf[i] == 'M') state = 1;
 
         return MouseState{
-            .x = @intCast(i32, x),
-            .y = @intCast(i32, y),
+            .x = @intCast(x),
+            .y = @intCast(y),
             .button = @intCast(u8, b),
             .pressed = state == 1,
         };
