@@ -226,7 +226,7 @@ pub fn main() !void {
 
     var engine = try Engine.Engine.init(
         allocator,
-        100, 50, 60,
+        WIDTH, HEIGHT, 60,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
     defer engine.deinit();
