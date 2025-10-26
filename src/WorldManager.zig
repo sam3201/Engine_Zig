@@ -452,6 +452,29 @@ pub const WorldManager = struct {
         }
     }
 
+
+const TileInfo = struct {
+    h: i32,
+    ch: u8,
+    color: Engine3D.Color3D,
+};
+
+fn getTileInfo(tile: Chunk.TileType) TileInfo {
+    return switch (tile) {
+        .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64, 64, 64) },
+        .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20, 120, 20) },
+        .Tree => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0, 100, 0) },
+        .Stone => .{ .h = 2, .ch = '@', .color = Engine3D.Color3D.init(120, 120, 120) },
+        .Water => .{ .h = 0, .ch = '~', .color = Engine3D.Color3D.init(0, 0, 160) },
+        .Mountain => .{ .h = 4, .ch = '^', .color = Engine3D.Color3D.init(100, 100, 100) },
+        .Desert => .{ .h = 0, .ch = ':', .color = Engine3D.Color3D.init(200, 180, 100) },
+        .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240, 240, 240) },
+        .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255, 80, 0) },
+        .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100, 60, 0) },
+    };
+}
+
+
 pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
     const max_depth: i32 = 18;
     const height_scale: i32 = 1;
@@ -519,25 +542,4 @@ pub fn randomBiome() Chunk.BiomeType {
 }
 
 const Engine3D = @import("Engine3D.zig");
-
-const TileInfo = struct {
-    h: i32,
-    ch: u8,
-    color: Engine3D.Color3D,
-};
-
-fn getTileInfo(tile: Chunk.TileType) TileInfo {
-    return switch (tile) {
-        .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64, 64, 64) },
-        .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20, 120, 20) },
-        .Tree => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0, 100, 0) },
-        .Stone => .{ .h = 2, .ch = '@', .color = Engine3D.Color3D.init(120, 120, 120) },
-        .Water => .{ .h = 0, .ch = '~', .color = Engine3D.Color3D.init(0, 0, 160) },
-        .Mountain => .{ .h = 4, .ch = '^', .color = Engine3D.Color3D.init(100, 100, 100) },
-        .Desert => .{ .h = 0, .ch = ':', .color = Engine3D.Color3D.init(200, 180, 100) },
-        .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240, 240, 240) },
-        .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255, 80, 0) },
-        .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100, 60, 0) },
-    };
-}
 
