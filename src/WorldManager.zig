@@ -531,7 +531,6 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
         }
     }
 
-    // Draw player
     const pos = self.player.getPosition();
     const px = pos.x - cam3d.x;
     const py = pos.y - cam3d.y;
