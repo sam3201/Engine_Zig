@@ -453,7 +453,61 @@ pub const WorldManager = struct {
         }
     }
 
-
+    pub fn generateParticleField(
+    self: *WorldManager,
+    allocator: std.mem.Allocator,
+    quality: Particle.ParticleQuality,
+    render_distance: i32,
+) !Particle.ParticleField {
+    var field = try Particle.ParticleField.init(allocator, quality);
+    
+    const subdivisions = quality.getSubdivisions();
+    const step: f32 = 1.0 / @as(f32, @floatFromInt(subdivisions));
+    
+    const pos = self.player.getPosition();
+    
+    // Sample terrain in a radius around the player
+    var dx: i32 = -render_distance;
+    while (dx <= render_distance) : (dx += 1) {
+        var dy: i32 = -render_distance;
+        while (dy <= render_distance) : (dy += 1) {
+            const world_x = pos.x + dx;
+            const world_y = pos.y + dy;
+            
+            const tile = self.getTileAtWorld(world_x, world_y);
+            const max_height = Particle.ParticleField.getHeightForTile(tile);
+            
+            // Skip empty/air tiles
+            if (max_height <= 0.0) continue;
+            
+            // Generate particles for this tile based on quality
+            var sx: usize = 0;
+            while (sx < subdivisions) : (sx += 1) {
+                var sy: usize = 0;
+                while (sy < subdivisions) : (sy += 1) {
+                    var sz: usize = 0;
+                    while (sz < subdivisions) : (sz += 1) {
+                        const particle_x = @as(f32, @floatFromInt(world_x)) + @as(f32, @floatFromInt(sx)) * step;
+                        const particle_y = @as(f32, @floatFromInt(world_y)) + @as(f32, @floatFromInt(sy)) * step;
+                        const particle_z = @as(f32, @floatFromInt(sz)) * step * max_height;
+                        
+                        // Only add particles below the height threshold
+                        if (particle_z <= max_height) {
+                            try field.addParticle(Particle.Particle.init(
+                                particle_x,
+                                particle_y,
+                                particle_z,
+                                tile,
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return field;
+}
 const TileInfo = struct {
     h: i32,
     ch: u8,
