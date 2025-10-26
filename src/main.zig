@@ -134,7 +134,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
             }
         }
 
-        if (try Engine3D.readMouse()) |mouseInput| {
+        if (try Engine.readMouse()) |mouseInput| {
             std.debug.print("Mouse Input: {any}\n", .{mouseInput});
             if (mouseInput.delta_x != 0 or mouseInput.delta_y != 0) {
                 //const sensitivity: f32 = 0.003;
