@@ -98,9 +98,9 @@ pub const ParticleQuality = enum {
     pub fn getSubdivisions(self: ParticleQuality) usize {
         return switch (self) {
             .Low => 1,
-            .Medium => 2,
-            .High => 4,
-            .Ultra => 8,
+            .Medium => 4,
+            .High => 16,
+            .Ultra => 64,
         };
     }
     
