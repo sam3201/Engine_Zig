@@ -118,7 +118,7 @@ pub const ParticleField = struct {
     pub fn init(allocator: std.mem.Allocator, quality: ParticleQuality) !ParticleField {
         return ParticleField{
             .allocator = allocator,
-            .particles = std.ArrayList(Particle).initCapacity(allocator, 0),
+            .particles = std.ArrayList(Particle).initBuffer(allocator, 0),
             .quality = quality,
         };
     }
