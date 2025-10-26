@@ -35,7 +35,7 @@ pub const TileType = enum {
     pub fn getColor(self: TileType) Engine.Color {
         return switch (self) {
             .Empty => Engine.Color{ .r = 64, .g = 64, .b = 64 },
-            .Wall => Engine.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
+            .Wall => Engine.Color{ .r = 128, .g = 64, .b = 0 }, 
             .Grass => Engine.Color{ .r = 0, .g = 128, .b = 0 },
             .Stone => Engine.Color{ .r = 128, .g = 128, .b = 128 },
             .Water => Engine.Color{ .r = 0, .g = 0, .b = 255 },
@@ -50,7 +50,7 @@ pub const TileType = enum {
     pub fn isWalkable(self: TileType) bool {
         return switch (self) {
             .Empty, .Grass, .Desert, .Snow => true,
-            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false, // FIX 1: Added Wall to non-walkable
+            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false, 
         };
     }
 };
