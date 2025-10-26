@@ -482,7 +482,6 @@ pub fn readMouse() !?MouseState {
     
     if (pos == 0) return null;
     
-    // Parse SGR mouse format: \x1b[<Cb;Cx;CyM or \x1b[<Cb;Cx;Cym
     if (pos >= 6 and buf[0] == 0x1b and buf[1] == '[' and buf[2] == '<') {
         var i: usize = 3;
         var button: u8 = 0;
