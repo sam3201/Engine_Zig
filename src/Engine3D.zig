@@ -293,7 +293,7 @@ pub const Camera3D = struct {
     fov: f32 = 60.0,  
 
     pub fn init(width: i32, height: i32) Camera3D {
-        return Camera3D{ .x = 0, .y = 0, .z = 0, .width = width, .height = height }; 
+        return Camera3D{ .x = 0, .y = 0, .z = 0, .width = width, .height = height, .yaw = 0.0, .pitch = 0.0, .fov = 60.0 }; 
     }
 
     pub fn centerOn(self: *Camera3D, target: Renderable3D) void {
