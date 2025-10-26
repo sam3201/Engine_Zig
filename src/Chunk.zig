@@ -96,7 +96,7 @@ pub const ChunkCoord = struct {
     y: usize,
 
     pub fn hash(self: ChunkCoord) usize {
-        return x_hash ^ (y_hash << 1);
+        return self.x + self.y * CHUNK_WIDTH; 
     }
 
     pub fn equals(self: ChunkCoord, other: ChunkCoord) bool {
