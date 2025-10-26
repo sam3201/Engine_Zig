@@ -525,6 +525,7 @@ pub fn readMouse() !?MouseState {
 pub fn getMouseState() MouseState {
     return g_mouse_state;
 }
+
 pub fn enableRawMode() !void {
     var termios = try posix.tcgetattr(posix.STDIN_FILENO);
     termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
