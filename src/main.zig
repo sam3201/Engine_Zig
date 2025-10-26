@@ -116,7 +116,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         .Ultra => 10,
     };
 
-    // ... rest of the function stays the same
     var particle_field = try world.generateParticleField(allocator, quality, render_distance);
     defer particle_field.deinit();
 
