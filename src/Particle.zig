@@ -131,7 +131,7 @@ pub const ParticleField = struct {
         self.particles.clearRetainingCapacity();
     }
     
-    pub fn addParticle(self: *ParticleField, particle: Particle) !void {
+    pub fn addParticle(self: *ParticleField, allocator: std.mem.Allocator, particle: Particle) !void {
         try self.particles.append(allocator, particle);
     }
     
