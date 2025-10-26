@@ -545,7 +545,6 @@ pub fn generateParticleField(
     
     const pos = self.player.getPosition();
     
-    // Sample terrain in a radius around the player
     var dx: i32 = -render_distance;
     while (dx <= render_distance) : (dx += 1) {
         var dy: i32 = -render_distance;
@@ -556,10 +555,8 @@ pub fn generateParticleField(
             const tile = self.getTileAtWorld(world_x, world_y);
             const max_height = Particle.ParticleField.getHeightForTile(tile);
             
-            // Skip empty/air tiles
             if (max_height <= 0.0) continue;
             
-            // Generate particles for this tile based on quality
             var sx: usize = 0;
             while (sx < subdivisions) : (sx += 1) {
                 var sy: usize = 0;
@@ -570,7 +567,6 @@ pub fn generateParticleField(
                         const particle_y = @as(f32, @floatFromInt(world_y)) + @as(f32, @floatFromInt(sy)) * step;
                         const particle_z = @as(f32, @floatFromInt(sz)) * step * max_height;
                         
-                        // Only add particles below the height threshold
                         if (particle_z <= max_height) {
                             try field.addParticle(Particle.Particle.init(
                                 particle_x,
