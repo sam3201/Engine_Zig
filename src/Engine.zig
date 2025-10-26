@@ -355,11 +355,12 @@ pub const Engine = struct {
             self.clock.tick();
 
 if (try readKey()) |byte| {
-    const available = std.posix.poll(&[_]std.posix.pollfd{.{
-        .fd = std.posix.STDIN_FILENO,
-        .events = std.posix.POLL.IN,
-        .revents = 0,
-    }}, 0) catch 0;
+var fds = [_]std.posix.pollfd{.{
+    .fd = std.posix.STDIN_FILENO,
+    .events = std.posix.POLL.IN,
+    .revents = 0,
+}};
+const available = std.posix.poll(fds[0..], 0) catch 0;
 
     if (byte == 'q' or (byte == 27 and available == 0)) {
         self.running = false;
