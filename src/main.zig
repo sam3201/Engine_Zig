@@ -135,7 +135,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         }
 
         if (try Engine.readMouse()) |mouseInput| {
-                   std.debug.print("Mouse event: x={d}, y={d}, button={d}, pressed={}\n", .{ mouseInput.x, mouseInput.y, mouseInput.button, mouseInput.pressed });
+                   
         } 
 
         if (regenerate_particles) {
