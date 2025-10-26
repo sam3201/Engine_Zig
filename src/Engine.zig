@@ -472,7 +472,6 @@ pub fn disableMouseTracking() !void {
 
 pub fn readMouse() !?MouseState {
     var buf: [64]u8 = undefined;
-
     const n = std.posix.read(std.posix.STDIN_FILENO, &buf) catch return null;
     if (n == 0) return null;
 
@@ -481,35 +480,44 @@ pub fn readMouse() !?MouseState {
 
         var i: usize = 3;
         var b: usize = 0;
-        var x: usize = 0;
-        var y: usize = 0;
+        var x_usize: usize = 0;
+        var y_usize: usize = 0;
         var state: u8 = 0;
 
-        while (i < n and buf[i] != ';') : (i += 1) {
-            b = b * 10 + (buf[i] - '0');
-        }
+        // parse button number
+        while (i < n and buf[i] != ';') : (i += 1) b = b * 10 + (buf[i] - '0');
         i += 1;
 
-        while (i < n and buf[i] != ';') : (i += 1) {
-            x = x * 10 + (buf[i] - '0');
-        }
+        // parse x
+        while (i < n and buf[i] != ';') : (i += 1) x_usize = x_usize * 10 + (buf[i] - '0');
         i += 1;
 
-        while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) {
-            y = y * 10 + (buf[i] - '0');
-        }
+        // parse y
+        while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) y_usize = y_usize * 10 + (buf[i] - '0');
 
         if (i < n and buf[i] == 'M') state = 1;
 
-        return MouseState{
-            .x = @intCast(x),
-            .y = @intCast(y),
+        // Convert to i32 for consistency
+        const x: i32 = @intCast(x_usize);
+        const y: i32 = @intCast(y_usize);
+
+        // Compute deltas (relative movement)
+        const dx: i32 = x - g_last_mouse_x;
+        const dy: i32 = y - g_last_mouse_y;
+        g_last_mouse_x = x;
+        g_last_mouse_y = y;
+
+        g_mouse_state = MouseState{
+            .x = x,
+            .y = y,
             .left_button = state == 1,
             .right_button = state == 2,
             .middle_button = state == 3,
-            .delta_x = @intCast(x - g_last_mouse_x),
-            .delta_y = @intCast(y - g_last_mouse_y),
+            .delta_x = dx,
+            .delta_y = dy,
         };
+
+        return g_mouse_state;
     }
 
     return null;
