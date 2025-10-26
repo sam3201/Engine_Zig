@@ -45,8 +45,6 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
-// Replace the runSingleplayer3D function in main.zig with this version
-
 fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const Particle = @import("Particle.zig");
     
