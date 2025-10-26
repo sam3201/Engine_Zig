@@ -30,7 +30,7 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
 
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 27) {
-                selection = 4; // Back
+                selection = 4; 
                 break;
             }
             if (menu.update(key)) |sel| {
