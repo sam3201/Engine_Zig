@@ -9,8 +9,8 @@ const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
 
 const MAX_PLAYERS = 64;
-pub var CHUNK_WIDTH: usize = 150;
-pub var CHUNK_HEIGHT: usize = 50;
+pub const CHUNK_WIDTH: usize = 150;
+pub const CHUNK_HEIGHT: usize = 50;
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
