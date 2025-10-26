@@ -662,13 +662,13 @@ pub fn renderParticleField3D(
             const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
             
             const ch: u8 = if (distance < 5.0) 
-                ' ' 
+                '#' 
             else if (distance < 10.0) 
-                '▓' 
+                '@' 
             else if (distance < 20.0) 
-                '▒' 
+                '+' 
             else 
-                '░';
+                '.';
             
             canvas3D.put(screen_x, screen_y, ch);
             canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));
