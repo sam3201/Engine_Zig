@@ -90,7 +90,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     
     const hint_text = try std.fmt.allocPrint(
         allocator,
-        "3D PARTICLE VIEW [{s}] | WASD: Move | Mouse: Look | R: Regenerate | Q/ESC: Quit",
+        "3D PARTICLE VIEW [{s}] | WASD: Move | Mouse: Look | R: Regenerate | Q/ESC: Quit | Press any key...",
         .{quality_name},
     );
     defer allocator.free(hint_text);
@@ -102,7 +102,12 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         }
     }
     try engine.canvas.flushToTerminal();
-    std.Thread.sleep(1 * std.time.ns_per_s);
+    
+    // Wait for any key press instead of sleeping
+    while (true) {
+        if (try Engine.readKey()) |_| break;
+        engine.clock.sleepUntilNextFrame();
+    }
 
     const render_distance: i32 = switch (quality) {
         .Low => 20,
@@ -111,6 +116,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         .Ultra => 10,
     };
 
+    // ... rest of the function stays the same
     var particle_field = try world.generateParticleField(allocator, quality, render_distance);
     defer particle_field.deinit();
 
