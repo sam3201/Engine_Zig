@@ -103,7 +103,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     }
     try engine.canvas.flushToTerminal();
     
-    // Wait for any key press instead of sleeping
     while (true) {
         if (try Engine.readKey()) |_| break;
         engine.clock.sleepUntilNextFrame();
