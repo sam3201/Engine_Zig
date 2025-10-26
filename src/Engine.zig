@@ -512,7 +512,7 @@ pub fn readMouse() !?MouseState {
         return MouseState{
             .x = @intCast(x),
             .y = @intCast(y),
-            .button = @intCast(u8, b),
+            .button = @intCast(b),
             .pressed = state == 1,
         };
     }
