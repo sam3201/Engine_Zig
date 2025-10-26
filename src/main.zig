@@ -224,6 +224,9 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
+    const WIDTH = 100;
+    const HEIGHT = 50;
+
     var engine = try Engine.Engine.init(
         allocator,
         WIDTH, HEIGHT, 60,
