@@ -127,6 +127,8 @@ pub const Chunk = struct {
     allocator: std.mem.Allocator,
     coord: ChunkCoord,
     tiles: []TileType,
+    width: usize = CHUNK_WIDTH,
+    height: usize  = CHUNK_HEIGHT,
     biome: BiomeType,
     difficulty: i32,
     generated: bool = false,
