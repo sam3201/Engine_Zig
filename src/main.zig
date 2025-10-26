@@ -142,13 +142,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
                 cam3d.rotate(delta_yaw, delta_pitch);
             }
         }
-        if (mouseInput.?.delta_x != 0 or mouseInput.?.delta_y != 0) {
-            const sensitivity: f32 = 0.003;
-            const delta_yaw = @as(f32, @floatFromInt(mouseInput.?.delta_x)) * sensitivity;
-            const delta_pitch = -@as(f32, @floatFromInt(mouseInput.?.delta_y)) * sensitivity;
-            cam3d.rotate(delta_yaw, delta_pitch);
-        }
-
         if (regenerate_particles) {
             particle_field.clear();
             particle_field.deinit();
