@@ -5,8 +5,8 @@ const Engine = @import("Engine.zig");
 const Inventory = @import("Inventory.zig");
 const WorldManager = @import("WorldManager.zig");
 
-pub var CHUNK_WIDTH: usize = 150;
-pub var CHUNK_HEIGHT: usize = 50;
+pub const CHUNK_WIDTH: usize = 150;
+pub const CHUNK_HEIGHT: usize = 50;
 
 pub const TileType = enum {
     Empty,
@@ -126,9 +126,7 @@ pub const WorldItem = struct {
 pub const Chunk = struct {
     allocator: std.mem.Allocator,
     coord: ChunkCoord,
-    tiles: []TileType,
-    width: usize = CHUNK_WIDTH,
-    height: usize = CHUNK_HEIGHT,
+    tiles: [CHUNK_WIDTH * CHUNK_HEIGHT]TileType,
     biome: BiomeType,
     difficulty: i32,
     generated: bool = false,
