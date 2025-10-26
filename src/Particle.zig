@@ -132,7 +132,7 @@ pub const ParticleField = struct {
     }
     
     pub fn addParticle(self: *ParticleField, particle: Particle) !void {
-        try self.particles.append(particle);
+        try self.particles.append(allocator, particle);
     }
     
     pub fn getHeightForTile(tile_type: Chunk.TileType) f32 {
