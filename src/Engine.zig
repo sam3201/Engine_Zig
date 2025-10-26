@@ -497,9 +497,9 @@ pub fn readMouse() !?MouseState {
                     2 => y = y * 10 + digit,
                     else => {},
                 }
-            } else if (c == ';') {
+            } else if (cc == ';') {
                 part += 1;
-            } else if (c == 'M' or c == 'm') {
+            } else if (cc == 'M' or c == 'm') {
                 g_mouse_state.delta_x = x - g_last_mouse_x;
                 g_mouse_state.delta_y = y - g_last_mouse_y;
                 g_last_mouse_x = x;
