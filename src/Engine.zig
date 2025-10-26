@@ -418,7 +418,11 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
 
         _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
 
-        try enableMouseTracking(); 
+            _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h");
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h");
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h");
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006h");
+ 
 
         return tg;
     }
