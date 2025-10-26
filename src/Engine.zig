@@ -488,7 +488,7 @@ pub fn readMouse() !?MouseState {
         var part: u8 = 0;
         
         while (i < pos) : (i += 1) {
-            const c = buf[i];
+            const cc = buf[i];
             if (c >= '0' and c <= '9') {
                 const digit = c - '0';
                 switch (part) {
