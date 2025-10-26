@@ -586,7 +586,6 @@ pub fn readInput() !InputEvent {
     return InputEvent{ .key = key };
 }
 
-// Keep these for backwards compatibility
 pub fn readKey() !?u8 {
     const event = try readInput();
     return switch (event) {
