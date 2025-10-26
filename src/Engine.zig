@@ -489,7 +489,7 @@ pub fn readMouse() !?MouseState {
         
         while (i < pos) : (i += 1) {
             const cc = buf[i];
-            if (c >= '0' and c <= '9') {
+            if (cc >= '0' and c <= '9') {
                 const digit = c - '0';
                 switch (part) {
                     0 => button = button * 10 + digit,
