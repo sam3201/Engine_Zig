@@ -471,60 +471,52 @@ pub fn disableMouseTracking() !void {
 }
 
 pub fn readMouse() !?MouseState {
-    var buf: [32]u8 = undefined;
-    var pos: usize = 0;
-    
-    while (pos < buf.len) {
-        const n = std.posix.read(std.posix.STDIN_FILENO, buf[pos..pos+1]) catch |err| switch (err) {
-            error.WouldBlock => break,
-            else => return err,
-        };
-        if (n == 0) break;
-        pos += 1;
-        
-        if (pos >= 3 and buf[pos-1] == 'M' or buf[pos-1] == 'm') {
-            break;
-        }
-    }
-    
-    if (pos == 0) return null;
-    
-    if (pos >= 6 and buf[0] == 0x1b and buf[1] == '[' and buf[2] == '<') {
+    var buf: [64]u8 = undefined;
+
+    // Read from stdin in nonblocking mode
+    const n = std.posix.read(std.posix.STDIN_FILENO, &buf) catch return null;
+    if (n == 0) return null;
+
+    // Make sure we actually have mouse data (starts with ESC [ <)
+    if (n >= 6 and buf[0] == 27 and buf[1] == '[' and buf[2] == '<') {
+        // Log what we got
+        std.debug.print("Mouse raw: {s}\n", .{buf[0..n]});
+
+        // Example parse of something like ^[[<0;45;22M
         var i: usize = 3;
-        var button: u8 = 0;
-        var x: i32 = 0;
-        var y: i32 = 0;
-        var part: u8 = 0;
-        
-        while (i < pos) : (i += 1) {
-            const cc = buf[i];
-            if (cc >= '0' and cc <= '9') {
-                const digit = cc - '0';
-                switch (part) {
-                    0 => button = button * 10 + digit,
-                    1 => x = x * 10 + digit,
-                    2 => y = y * 10 + digit,
-                    else => {},
-                }
-            } else if (cc == ';') {
-                part += 1;
-            } else if (cc == 'M' or cc == 'm') {
-                g_mouse_state.delta_x = x - g_last_mouse_x;
-                g_mouse_state.delta_y = y - g_last_mouse_y;
-                g_last_mouse_x = x;
-                g_last_mouse_y = y;
-                
-                g_mouse_state.x = x;
-                g_mouse_state.y = y;
-                g_mouse_state.left_button = (button & 0x03) == 0;
-                g_mouse_state.right_button = (button & 0x03) == 2;
-                g_mouse_state.middle_button = (button & 0x03) == 1;
-                
-                return g_mouse_state;
-            }
+        var b: usize = 0;
+        var x: usize = 0;
+        var y: usize = 0;
+        var state: u8 = 0;
+
+        // Parse button number
+        while (i < n and buf[i] != ';') : (i += 1) {
+            b = b * 10 + (buf[i] - '0');
         }
+        i += 1;
+
+        // Parse x
+        while (i < n and buf[i] != ';') : (i += 1) {
+            x = x * 10 + (buf[i] - '0');
+        }
+        i += 1;
+
+        // Parse y
+        while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) {
+            y = y * 10 + (buf[i] - '0');
+        }
+
+        // M = button down, m = button up
+        if (i < n and buf[i] == 'M') state = 1;
+
+        return MouseState{
+            .x = @intCast(i32, x),
+            .y = @intCast(i32, y),
+            .button = @intCast(u8, b),
+            .pressed = state == 1,
+        };
     }
-    
+
     return null;
 }
 
