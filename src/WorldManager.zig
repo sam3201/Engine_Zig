@@ -569,7 +569,7 @@ pub fn generateParticleField(
                         const particle_z = @as(f32, @floatFromInt(sz)) * step * max_height;
                         
                         if (particle_z <= max_height) {
-                            try field.addParticle(Particle.Particle.init(
+                            try field.addParticle(self.allocator, Particle.Particle.init(
                                 particle_x,
                                 particle_y,
                                 particle_z,
