@@ -296,6 +296,22 @@ pub const Camera3D = struct {
         return Camera3D{ .x = 0, .y = 0, .z = 0, .width = width, .height = height, .yaw = 0.0, .pitch = 0.0, .fov = 60.0 }; 
     }
 
+        pub fn rotate(self: *Camera3D, delta_yaw: f32, delta_pitch: f32) void {
+        self.yaw += delta_yaw;
+        self.pitch += delta_pitch;
+        
+        // Clamp pitch to prevent flipping
+        const max_pitch = 89.0 * std.math.pi / 180.0;
+        if (self.pitch > max_pitch) self.pitch = max_pitch;
+        if (self.pitch < -max_pitch) self.pitch = -max_pitch;
+        
+        // Wrap yaw
+        const two_pi = 2.0 * std.math.pi;
+        while (self.yaw > two_pi) self.yaw -= two_pi;
+        while (self.yaw < 0) self.yaw += two_pi;
+    }
+
+
     pub fn centerOn(self: *Camera3D, target: Renderable3D) void {
         self.x = target.x - self.width / 2;
         self.y = target.y - self.height / 2;
