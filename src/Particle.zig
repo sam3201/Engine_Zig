@@ -124,7 +124,7 @@ pub const ParticleField = struct {
     }
     
     pub fn deinit(self: *ParticleField) void {
-        self.particles.deinit();
+        self.particles.deinit(self.allocator);
     }
     
     pub fn clear(self: *ParticleField) void {
