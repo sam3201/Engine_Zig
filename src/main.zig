@@ -102,7 +102,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         }
     }
     try engine.canvas.flushToTerminal();
-    std.time.sleep(3 * std.time.ns_per_s);
+    std.Thread.sleep(10 * std.time.ns_per_s);
 
     const render_distance: i32 = switch (quality) {
         .Low => 20,
