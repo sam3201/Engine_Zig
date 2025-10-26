@@ -300,17 +300,14 @@ pub const Camera3D = struct {
         self.yaw += delta_yaw;
         self.pitch += delta_pitch;
         
-        // Clamp pitch to prevent flipping
         const max_pitch = 89.0 * std.math.pi / 180.0;
         if (self.pitch > max_pitch) self.pitch = max_pitch;
         if (self.pitch < -max_pitch) self.pitch = -max_pitch;
         
-        // Wrap yaw
         const two_pi = 2.0 * std.math.pi;
         while (self.yaw > two_pi) self.yaw -= two_pi;
         while (self.yaw < 0) self.yaw += two_pi;
     }
-
 
     pub fn centerOn(self: *Camera3D, target: Renderable3D) void {
         self.x = target.x - self.width / 2;
