@@ -11,6 +11,9 @@ const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
 const Thread = std.Thread;
 
+const WIDTH = 100;
+const HEIGHT = 50;
+
 fn qualityMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "Low Quality (Fast)",
@@ -223,9 +226,6 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
-
-    const WIDTH = 100;
-    const HEIGHT = 50;
 
     var engine = try Engine.Engine.init(
         allocator,
