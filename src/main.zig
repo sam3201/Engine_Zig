@@ -45,6 +45,8 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
+// Replace the runSingleplayer3D function in main.zig with this version
+
 fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const Particle = @import("Particle.zig");
     
@@ -104,7 +106,8 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     try engine.canvas.flushToTerminal();
     
     while (true) {
-        if (try Engine.readKey()) |_| break;
+        const input = try Engine.readInput();
+        if (input == .key) break;
         engine.clock.sleepUntilNextFrame();
     }
 
@@ -119,25 +122,61 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     defer particle_field.deinit();
 
     var regenerate_particles = false;
+    const mouse_sensitivity: f32 = 0.002; // Adjust this for mouse feel
 
     while (engine.running) {
         engine.clock.tick();
 
-        if (try Engine.readKey()) |key| {
-            if (key == 'q' or key == 27) break;
-            if (key == 'r' or key == 'R') {
-                regenerate_particles = true;
-            } else {
-                const action = Player.InputAction.fromKey(key);
-                try world.handlePlayerAction(action);
-                regenerate_particles = true;
-            }
+        // Process all available input
+        const input = try Engine.readInput();
+        
+        switch (input) {
+            .key => |key| {
+                if (key == 'q' or key == 'Q') {
+                    break;
+                }
+                
+                // Check if it's a standalone ESC (not part of mouse sequence)
+                if (key == 27) {
+                    // Wait a tiny bit to see if more data comes
+                    var poll_fds = [_]std.posix.pollfd{.{
+                        .fd = std.posix.STDIN_FILENO,
+                        .events = std.posix.POLL.IN,
+                        .revents = 0,
+                    }};
+                    const available = std.posix.poll(&poll_fds, 10) catch 0;
+                    
+                    if (available == 0) {
+                        // No more data, it's a real ESC press
+                        break;
+                    }
+                }
+                
+                if (key == 'r' or key == 'R') {
+                    regenerate_particles = true;
+                } else {
+                    const action = Player.InputAction.fromKey(key);
+                    try world.handlePlayerAction(action);
+                    regenerate_particles = true;
+                }
+            },
+            .mouse => |mouse| {
+                // Use mouse delta for camera rotation
+                if (mouse.delta_x != 0 or mouse.delta_y != 0) {
+                    const delta_yaw = @as(f32, @floatFromInt(mouse.delta_x)) * mouse_sensitivity;
+                    const delta_pitch = @as(f32, @floatFromInt(-mouse.delta_y)) * mouse_sensitivity; // Invert Y
+                    
+                    cam3d.rotate(delta_yaw, delta_pitch);
+                }
+                
+                // Optional: Handle mouse clicks
+                if (mouse.left_button) {
+                    // Could trigger an action, like mining/attacking
+                    std.debug.print("Left click at ({}, {})\n", .{mouse.x, mouse.y});
+                }
+            },
+            .none => {},
         }
-
-        if (try Engine.readMouse()) |mouseInput| {
-            std.debug.print("Mouse Input: {any}\n", .{mouseInput});
-                   
-        } 
 
         if (regenerate_particles) {
             particle_field.clear();
@@ -179,9 +218,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         try canvas3d.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
-}
-
-pub fn main() !void {
+}pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
