@@ -4,7 +4,7 @@ const std = @import("std");
 const Engine3D = @import("Engine3D.zig");
 const Chunk = @import("Chunk.zig");
 
-var MAX_PARTICLES: [Chunk.WIDTH * Chunk.HEIGHT]Particle = undefined; 
+var MAX_PARTICLES: [Chunk.CHUNK_WIDTH * Chunk.CHUNK_HEIGHT]Particle = undefined; 
 
 pub const Particle = struct {
     x: f32,
