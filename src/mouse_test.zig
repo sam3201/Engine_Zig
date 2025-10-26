@@ -58,7 +58,7 @@ pub fn main() !void {
                     "Frame {}: ESC key pressed",
                     .{frame_count},
                 );
-                try events.append(esc_event);
+                try events.append(allocator, esc_event);
                 if (events.items.len > 15) {
                     allocator.free(events.orderedRemove(0));
                 }
