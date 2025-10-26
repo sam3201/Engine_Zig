@@ -462,7 +462,7 @@ pub fn randomBiome() Chunk.BiomeType {
 
 const Engine3D = @import("Engine3D.zig");
 
-const TileInfo = struct {
+const 2dTileInfo = struct {
     h: i32,
     ch: u8,
     color: Engine3D.Color3D,
