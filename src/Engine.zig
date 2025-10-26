@@ -452,10 +452,10 @@ var g_last_mouse_x: i32 = 0;
 var g_last_mouse_y: i32 = 0;
 
 pub fn enableMouseTracking() !void {
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h"); // Mouse click tracking
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h"); // Mouse motion tracking
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h"); // All mouse events
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006h"); // SGR mouse mode
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h"); 
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h");
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h"); 
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006h");
 }
 
 pub fn disableMouseTracking() !void {
