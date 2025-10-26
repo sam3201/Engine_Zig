@@ -77,21 +77,21 @@ pub const WorldManager = struct {
     pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
         const pos = self.player.getPosition();
         return Chunk.ChunkCoord{
-            .x = @divFloor(pos.x, Chunk.CHUNK_WIDTH),
+            .x = @divFloor(pos.x, CHUNK_WIDTH),
             .y = @divFloor(pos.y, Chunk.CHUNK_HEIGHT),
         };
     }
 
     pub fn worldToChunkCoord(world_x: i32, world_y: i32) Chunk.ChunkCoord {
         return Chunk.ChunkCoord{
-            .x = @divFloor(world_x, Chunk.CHUNK_WIDTH),
+            .x = @divFloor(world_x, CHUNK_WIDTH),
             .y = @divFloor(world_y, Chunk.CHUNK_HEIGHT),
         };
     }
 
     pub fn worldToLocalCoord(world_x: i32, world_y: i32) struct { x: i32, y: i32 } {
         return .{
-            .x = @mod(world_x, Chunk.CHUNK_WIDTH),
+            .x = @mod(world_x, CHUNK_WIDTH),
             .y = @mod(world_y, Chunk.CHUNK_HEIGHT),
         };
     }
@@ -218,7 +218,7 @@ pub const WorldManager = struct {
         }
 
         const new_pos = self.player.getPosition();
-        if (@divFloor(old_pos.x, Chunk.CHUNK_WIDTH) != @divFloor(new_pos.x, Chunk.CHUNK_WIDTH) or
+        if (@divFloor(old_pos.x, CHUNK_WIDTH) != @divFloor(new_pos.x, Chunk.CHUNK_WIDTH) or
             @divFloor(old_pos.y, Chunk.CHUNK_HEIGHT) != @divFloor(new_pos.y, Chunk.CHUNK_HEIGHT))
          {
              try self.updateChunks();
