@@ -135,6 +135,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         }
 
         if (try Engine.readMouse()) |mouseInput| {
+            std.debug.print("Mouse Input: {any}\n", .{mouseInput});
                    
         } 
 
