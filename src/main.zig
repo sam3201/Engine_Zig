@@ -134,7 +134,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
             }
         }
 
-        if (try Engine.readMouse()) |mouse| {
+        if (try Engine.readMouse() catch |err| @panic(@errorName(err))) |mouse| {
             const sensitivity: f32 = 0.003;
             const delta_yaw = @as(f32, @floatFromInt(mouse.delta_x)) * sensitivity;
             const delta_pitch = -@as(f32, @floatFromInt(mouse.delta_y)) * sensitivity;
