@@ -136,6 +136,8 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
 
         if (try Engine.readMouseInput()) |mouseInput| {
             std.debug.print("Mouse Input: {any}\n", .{mouseInput});
+            @panic("Mouse Input: {any}\n", .{mouseInput});
+            exit(0);
             if (mouseInput.?.button == 1) {
                 const sensitivity: f32 = 0.003;
                 const delta_yaw = @as(f32, @floatFromInt(mouseInput.?.delta_x)) * sensitivity;
