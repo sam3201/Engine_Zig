@@ -11,8 +11,8 @@ const Engine = @import("Engine.zig");
 const Inventory = @import("Inventory.zig");
 const WorldManager = @import("WorldManager.zig");
 
-pub const CHUNK_WIDTH: i32 = 150;
-pub const CHUNK_HEIGHT: i32 = 50;
+pub var CHUNK_WIDTH = WorldManager.CHUNK_WIDTH;
+pub var CHUNK_HEIGHT = WorldManager.CHUNK_HEIGHT;
 
 pub const TileType = enum {
     Empty,
@@ -44,7 +44,7 @@ pub const TileType = enum {
     pub fn getColor(self: TileType) Engine.Color {
         return switch (self) {
             .Empty => Engine.Color{ .r = 64, .g = 64, .b = 64 },
-            .Wall => Engine.Color{ .r = 128, .g = 64, .b = 0 }, // FIX 1: Added missing Wall case
+            .Wall => Engine.Color{ .r = 128, .g = 64, .b = 0 }, 
             .Grass => Engine.Color{ .r = 0, .g = 128, .b = 0 },
             .Stone => Engine.Color{ .r = 128, .g = 128, .b = 128 },
             .Water => Engine.Color{ .r = 0, .g = 0, .b = 255 },
@@ -59,7 +59,7 @@ pub const TileType = enum {
     pub fn isWalkable(self: TileType) bool {
         return switch (self) {
             .Empty, .Grass, .Desert, .Snow => true,
-            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false, // FIX 1: Added Wall to non-walkable
+            .Wall, .Stone, .Water, .Tree, .Mountain, .Lava => false, 
         };
     }
 };
@@ -515,6 +515,9 @@ const c = @cImport({
     @cInclude("fcntl.h");
 });
 const main = @import("main.zig");
+
+var g_input_buffer: [64]u8 = undefined;
+var g_input_buffer_len: usize = 0;
 
 const UpdateFn = *const fn (*Canvas) void;
 
@@ -985,87 +988,113 @@ pub fn disableMouseTracking() !void {
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006l") catch {};
 }
 
-pub fn readMouse() !?MouseState {
-    var buf: [64]u8 = undefined;
-    const n = std.posix.read(std.posix.STDIN_FILENO, &buf) catch return null;
-    if (n == 0) return null;
+pub const InputEvent = union(enum) {
+    key: u8,
+    mouse: MouseState,
+    none,
+};
 
-    if (n >= 6 and buf[0] == 27 and buf[1] == '[' and buf[2] == '<') {
-        std.debug.print("Mouse raw: {s}\n", .{buf[0..n]});
+pub fn readInput() !InputEvent {
+    if (g_input_buffer_len == 0) {
+        const n = std.posix.read(std.posix.STDIN_FILENO, &g_input_buffer) catch |err| {
+            if (err == error.WouldBlock) return InputEvent.none;
+            return err;
+        };
+        
+        if (n == 0) return InputEvent.none;
+        g_input_buffer_len = n;
+    }
 
+    if (g_input_buffer_len >= 6 and 
+        g_input_buffer[0] == 27 and 
+        g_input_buffer[1] == '[' and 
+        g_input_buffer[2] == '<') {
+        
         var i: usize = 3;
         var b: usize = 0;
         var x_usize: usize = 0;
         var y_usize: usize = 0;
-        var state: u8 = 0;
+        var is_release: bool = false;
 
-        // parse button number
-        while (i < n and buf[i] != ';') : (i += 1) b = b * 10 + (buf[i] - '0');
-        i += 1;
+        while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                b = b * 10 + (g_input_buffer[i] - '0');
+            }
+        }
+        i += 1; 
 
-        // parse x
-        while (i < n and buf[i] != ';') : (i += 1) x_usize = x_usize * 10 + (buf[i] - '0');
-        i += 1;
+        while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                x_usize = x_usize * 10 + (g_input_buffer[i] - '0');
+            }
+        }
+        i += 1; 
 
-        // parse y
-        while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) y_usize = y_usize * 10 + (buf[i] - '0');
+        while (i < g_input_buffer_len and g_input_buffer[i] != 'M' and g_input_buffer[i] != 'm') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                y_usize = y_usize * 10 + (g_input_buffer[i] - '0');
+            }
+        }
 
-        if (i < n and buf[i] == 'M') state = 1;
+        if (i < g_input_buffer_len) {
+            is_release = (g_input_buffer[i] == 'm');
+            i += 1; 
+        }
 
-        // Convert to i32 for consistency
+        g_input_buffer_len = 0;
+
         const x: i32 = @intCast(x_usize);
         const y: i32 = @intCast(y_usize);
 
-        // Compute deltas (relative movement)
         const dx: i32 = x - g_last_mouse_x;
         const dy: i32 = y - g_last_mouse_y;
         g_last_mouse_x = x;
         g_last_mouse_y = y;
 
+        const button_code = b & 0xFF;
+        const left_button = !is_release and (button_code == 0);
+        const middle_button = !is_release and (button_code == 1);
+        const right_button = !is_release and (button_code == 2);
+
         g_mouse_state = MouseState{
             .x = x,
             .y = y,
-            .left_button = state == 1,
-            .right_button = state == 2,
-            .middle_button = state == 3,
+            .left_button = left_button,
+            .right_button = right_button,
+            .middle_button = middle_button,
             .delta_x = dx,
             .delta_y = dy,
         };
 
-        return g_mouse_state;
+        return InputEvent{ .mouse = g_mouse_state };
     }
 
-    return null;
-}
+    const key = g_input_buffer[0];
+    
+    if (g_input_buffer_len > 1) {
+        std.mem.copyForwards(u8, g_input_buffer[0..], g_input_buffer[1..g_input_buffer_len]);
+        g_input_buffer_len -= 1;
+    } else {
+        g_input_buffer_len = 0;
+    }
 
-pub fn getMouseState() MouseState {
-    return g_mouse_state;
-}
-
-pub fn enableRawMode() !void {
-    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
-    termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
-    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
-}
-
-pub fn disableRawMode() !void {
-    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
-    termios.lflag |= @as(u32, posix.ICANON | posix.ECHO);
-    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
+    return InputEvent{ .key = key };
 }
 
 pub fn readKey() !?u8 {
-    var byte: [1]u8 = undefined;
-    const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
-        error.WouldBlock => return null,
-        else => return err,
+    const event = try readInput();
+    return switch (event) {
+        .key => |k| k,
+        else => null,
     };
-    if (n == 0) return null;
-    return byte[0];
 }
 
-pub fn handleInput() !?u8 {
-    return try readKey();
+pub fn readMouse() !?MouseState {
+    const event = try readInput();
+    return switch (event) {
+        .mouse => |m| m,
+        else => null,
+    };
 }
 // src/Engine3D.zig
 
@@ -1763,6 +1792,9 @@ const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
 const Thread = std.Thread;
 
+pub const WIDTH = 175;
+pub const HEIGHT = 50;
+
 fn qualityMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "Low Quality (Fast)",
@@ -1825,6 +1857,10 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         &engine.canvas,
         player,
     );
+    
+    world.CHUNK_WIDTH = WIDTH;
+    world.CHUNK_HEIGHT = HEIGHT;
+
     defer world.deinit();
 
     var cam3d = Engine3D.Camera3D.init(@intCast(canvas3d.width), @intCast(canvas3d.height));
@@ -1856,7 +1892,8 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     try engine.canvas.flushToTerminal();
     
     while (true) {
-        if (try Engine.readKey()) |_| break;
+        const input = try Engine.readInput();
+        if (input == .key) break;
         engine.clock.sleepUntilNextFrame();
     }
 
@@ -1871,25 +1908,61 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     defer particle_field.deinit();
 
     var regenerate_particles = false;
+    const mouse_sensitivity: f32 = 0.002; // Adjust this for mouse feel
 
     while (engine.running) {
         engine.clock.tick();
 
-        if (try Engine.readKey()) |key| {
-            if (key == 'q' or key == 27) break;
-            if (key == 'r' or key == 'R') {
-                regenerate_particles = true;
-            } else {
-                const action = Player.InputAction.fromKey(key);
-                try world.handlePlayerAction(action);
-                regenerate_particles = true;
-            }
+        // Process all available input
+        const input = try Engine.readInput();
+        
+        switch (input) {
+            .key => |key| {
+                if (key == 'q' or key == 'Q') {
+                    break;
+                }
+                
+                // Check if it's a standalone ESC (not part of mouse sequence)
+                if (key == 27) {
+                    // Wait a tiny bit to see if more data comes
+                    var poll_fds = [_]std.posix.pollfd{.{
+                        .fd = std.posix.STDIN_FILENO,
+                        .events = std.posix.POLL.IN,
+                        .revents = 0,
+                    }};
+                    const available = std.posix.poll(&poll_fds, 10) catch 0;
+                    
+                    if (available == 0) {
+                        // No more data, it's a real ESC press
+                        break;
+                    }
+                }
+                
+                if (key == 'r' or key == 'R') {
+                    regenerate_particles = true;
+                } else {
+                    const action = Player.InputAction.fromKey(key);
+                    try world.handlePlayerAction(action);
+                    regenerate_particles = true;
+                }
+            },
+            .mouse => |mouse| {
+                // Use mouse delta for camera rotation
+                if (mouse.delta_x != 0 or mouse.delta_y != 0) {
+                    const delta_yaw = @as(f32, @floatFromInt(mouse.delta_x)) * mouse_sensitivity;
+                    const delta_pitch = @as(f32, @floatFromInt(-mouse.delta_y)) * mouse_sensitivity; // Invert Y
+                    
+                    cam3d.rotate(delta_yaw, delta_pitch);
+                }
+                
+                // Optional: Handle mouse clicks
+                if (mouse.left_button) {
+                    // Could trigger an action, like mining/attacking
+                    std.debug.print("Left click at ({}, {})\n", .{mouse.x, mouse.y});
+                }
+            },
+            .none => {},
         }
-
-        if (try Engine.readMouse()) |mouseInput| {
-            std.debug.print("Mouse Input: {any}\n", .{mouseInput});
-                   
-        } 
 
         if (regenerate_particles) {
             particle_field.clear();
@@ -1939,7 +2012,7 @@ pub fn main() !void {
 
     var engine = try Engine.Engine.init(
         allocator,
-        100, 50, 60,
+        WIDTH, HEIGHT, 60,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
     defer engine.deinit();
@@ -3097,12 +3170,16 @@ const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
 
 const MAX_PLAYERS = 64;
+pub var CHUNK_WIDTH = 150;
+pub var CHUNK_HEIGHT = 50;
 
 pub const WorldManager = struct {
     allocator: std.mem.Allocator,
     canvas: *Engine.Canvas,
     player: Player.Player,
     Players: std.ArrayList(Player.Player), 
+    chunk_width: i32 = CHUNK_WIDTH,
+    chunk_height: i32 = CHUNK_HEIGHT,
     chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
     loaded_radius: i32 = 2,
     canvas_width: i32,
@@ -3134,6 +3211,8 @@ pub const WorldManager = struct {
         };
 
         const start_biome = randomBiome();
+        CHUNK_WIDTH = world.chunk_width;
+        CHUNK_HEIGHT = world.chunk_height;
         const chunk = try Chunk.Chunk.init(coord, start_biome, difficulty, allocator);
         try world.chunks.put(.{ .x = 0, .y = 0 }, chunk);
 
@@ -3163,22 +3242,22 @@ pub const WorldManager = struct {
     pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
         const pos = self.player.getPosition();
         return Chunk.ChunkCoord{
-            .x = @divFloor(pos.x, Chunk.CHUNK_WIDTH),
-            .y = @divFloor(pos.y, Chunk.CHUNK_HEIGHT),
+            .x = @divFloor(pos.x, CHUNK_WIDTH),
+            .y = @divFloor(pos.y, CHUNK_HEIGHT),
         };
     }
 
     pub fn worldToChunkCoord(world_x: i32, world_y: i32) Chunk.ChunkCoord {
         return Chunk.ChunkCoord{
-            .x = @divFloor(world_x, Chunk.CHUNK_WIDTH),
-            .y = @divFloor(world_y, Chunk.CHUNK_HEIGHT),
+            .x = @divFloor(world_x, CHUNK_WIDTH),
+            .y = @divFloor(world_y, CHUNK_HEIGHT),
         };
     }
 
     pub fn worldToLocalCoord(world_x: i32, world_y: i32) struct { x: i32, y: i32 } {
         return .{
-            .x = @mod(world_x, Chunk.CHUNK_WIDTH),
-            .y = @mod(world_y, Chunk.CHUNK_HEIGHT),
+            .x = @mod(world_x, CHUNK_WIDTH),
+            .y = @mod(world_y, CHUNK_HEIGHT),
         };
     }
 
@@ -3304,8 +3383,8 @@ pub const WorldManager = struct {
         }
 
         const new_pos = self.player.getPosition();
-        if (@divFloor(old_pos.x, Chunk.CHUNK_WIDTH) != @divFloor(new_pos.x, Chunk.CHUNK_WIDTH) or
-            @divFloor(old_pos.y, Chunk.CHUNK_HEIGHT) != @divFloor(new_pos.y, Chunk.CHUNK_HEIGHT))
+        if (@divFloor(old_pos.x, CHUNK_WIDTH) != @divFloor(new_pos.x, CHUNK_WIDTH) or
+            @divFloor(old_pos.y, CHUNK_HEIGHT) != @divFloor(new_pos.y, CHUNK_HEIGHT))
          {
              try self.updateChunks();
          }
