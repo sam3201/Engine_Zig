@@ -88,6 +88,7 @@ pub fn main() !void {
                 allocator.free(events.orderedRemove(0));
             }
         }
+        
         // Clear screen
         engine.canvas.clear(' ', engine.background_color);
 
