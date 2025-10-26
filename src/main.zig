@@ -176,7 +176,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         engine.canvas.fillColor(@intCast(i), 0, .{ .r = 200, .g = 200, .b = 100 });
     }
     try engine.canvas.flushToTerminal();
-    std.Thread.sleep(2 * std.time.ns_per_s); // Show hint for 2 seconds
+    std.Thread.sleep(2 * std.time.ns_per_s); 
 
     while (engine.running) {
         engine.clock.tick();
