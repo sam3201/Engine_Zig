@@ -374,7 +374,6 @@ fn showKeyBindings(engine: *Engine.Engine) !void {
 
     try engine.canvas.flushToTerminal();
     
-    // Wait for any key
     while (true) {
         if (try Engine.readKey()) |_| {
             break;
