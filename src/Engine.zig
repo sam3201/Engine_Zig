@@ -430,7 +430,7 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
         std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
     }
     _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
-;
+    };
 
 // Mouse state
 pub const MouseState = struct {
