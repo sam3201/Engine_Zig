@@ -4,7 +4,7 @@ const std = @import("std");
 const Engine3D = @import("Engine3D.zig");
 const Chunk = @import("Chunk.zig");
 
-pub const MAX_PARTICLES = Chunk.WIDTH * Chunk.HEIGHT;
+pub const MAX_PARTICLES[] = [_] = Chunk.WIDTH * Chunk.HEIGHT;
 
 pub const Particle = struct {
     x: f32,
