@@ -572,10 +572,8 @@ pub fn readInput() !InputEvent {
         return InputEvent{ .mouse = g_mouse_state };
     }
 
-    // Not a mouse event, return the first byte as a key
     const key = g_input_buffer[0];
     
-    // Shift remaining buffer data
     if (g_input_buffer_len > 1) {
         std.mem.copyForwards(u8, g_input_buffer[0..], g_input_buffer[1..g_input_buffer_len]);
         g_input_buffer_len -= 1;
