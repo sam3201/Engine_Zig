@@ -477,32 +477,74 @@ pub fn disableMouseTracking() !void {
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006l") catch {};
 }
 
-pub fn readMouse() !?MouseState {
-    var buf: [64]u8 = undefined;
-    const n = std.posix.read(std.posix.STDIN_FILENO, &buf) catch return null;
-    if (n == 0) return null;
+// Add this to Engine.zig - Replace the existing readKey and readMouse functions
 
-    if (n >= 6 and buf[0] == 27 and buf[1] == '[' and buf[2] == '<') {
-        std.debug.print("Mouse raw: {s}\n", .{buf[0..n]});
+// Input event type
+pub const InputEvent = union(enum) {
+    key: u8,
+    mouse: MouseState,
+    none,
+};
 
+// Global input buffer for handling escape sequences
+var g_input_buffer: [64]u8 = undefined;
+var g_input_buffer_len: usize = 0;
+
+// Unified input reading function that handles both keyboard and mouse
+pub fn readInput() !InputEvent {
+    // First, check if we have buffered data
+    if (g_input_buffer_len == 0) {
+        const n = std.posix.read(std.posix.STDIN_FILENO, &g_input_buffer) catch |err| {
+            if (err == error.WouldBlock) return InputEvent.none;
+            return err;
+        };
+        
+        if (n == 0) return InputEvent.none;
+        g_input_buffer_len = n;
+    }
+
+    // Check if this is a mouse event (starts with ESC[<)
+    if (g_input_buffer_len >= 6 and 
+        g_input_buffer[0] == 27 and 
+        g_input_buffer[1] == '[' and 
+        g_input_buffer[2] == '<') {
+        
         var i: usize = 3;
         var b: usize = 0;
         var x_usize: usize = 0;
         var y_usize: usize = 0;
-        var state: u8 = 0;
+        var is_release: bool = false;
 
         // parse button number
-        while (i < n and buf[i] != ';') : (i += 1) b = b * 10 + (buf[i] - '0');
-        i += 1;
+        while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                b = b * 10 + (g_input_buffer[i] - '0');
+            }
+        }
+        i += 1; // skip ';'
 
         // parse x
-        while (i < n and buf[i] != ';') : (i += 1) x_usize = x_usize * 10 + (buf[i] - '0');
-        i += 1;
+        while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                x_usize = x_usize * 10 + (g_input_buffer[i] - '0');
+            }
+        }
+        i += 1; // skip ';'
 
-        // parse y
-        while (i < n and buf[i] != 'M' and buf[i] != 'm') : (i += 1) y_usize = y_usize * 10 + (buf[i] - '0');
+        // parse y and check for M (press) or m (release)
+        while (i < g_input_buffer_len and g_input_buffer[i] != 'M' and g_input_buffer[i] != 'm') : (i += 1) {
+            if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
+                y_usize = y_usize * 10 + (g_input_buffer[i] - '0');
+            }
+        }
 
-        if (i < n and buf[i] == 'M') state = 1;
+        if (i < g_input_buffer_len) {
+            is_release = (g_input_buffer[i] == 'm');
+            i += 1; // consume the M or m
+        }
+
+        // Clear the buffer after consuming the mouse event
+        g_input_buffer_len = 0;
 
         // Convert to i32 for consistency
         const x: i32 = @intCast(x_usize);
@@ -514,48 +556,52 @@ pub fn readMouse() !?MouseState {
         g_last_mouse_x = x;
         g_last_mouse_y = y;
 
+        // Decode button state
+        const button_code = b & 0xFF;
+        const left_button = !is_release and (button_code == 0);
+        const middle_button = !is_release and (button_code == 1);
+        const right_button = !is_release and (button_code == 2);
+
         g_mouse_state = MouseState{
             .x = x,
             .y = y,
-            .left_button = state == 1,
-            .right_button = state == 2,
-            .middle_button = state == 3,
+            .left_button = left_button,
+            .right_button = right_button,
+            .middle_button = middle_button,
             .delta_x = dx,
             .delta_y = dy,
         };
 
-        return g_mouse_state;
+        return InputEvent{ .mouse = g_mouse_state };
     }
 
-    return null;
+    // Not a mouse event, return the first byte as a key
+    const key = g_input_buffer[0];
+    
+    // Shift remaining buffer data
+    if (g_input_buffer_len > 1) {
+        std.mem.copyForwards(u8, g_input_buffer[0..], g_input_buffer[1..g_input_buffer_len]);
+        g_input_buffer_len -= 1;
+    } else {
+        g_input_buffer_len = 0;
+    }
+
+    return InputEvent{ .key = key };
 }
 
-pub fn getMouseState() MouseState {
-    return g_mouse_state;
-}
-
-pub fn enableRawMode() !void {
-    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
-    termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
-    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
-}
-
-pub fn disableRawMode() !void {
-    var termios = try posix.tcgetattr(posix.STDIN_FILENO);
-    termios.lflag |= @as(u32, posix.ICANON | posix.ECHO);
-    try posix.tcsetattr(posix.STDIN_FILENO, posix.TCSANOW, termios);
-}
-
+// Keep these for backwards compatibility
 pub fn readKey() !?u8 {
-    var byte: [1]u8 = undefined;
-    const n = std.posix.read(std.posix.STDIN_FILENO, &byte) catch |err| switch (err) {
-        error.WouldBlock => return null,
-        else => return err,
+    const event = try readInput();
+    return switch (event) {
+        .key => |k| k,
+        else => null,
     };
-    if (n == 0) return null;
-    return byte[0];
 }
 
-pub fn handleInput() !?u8 {
-    return try readKey();
+pub fn readMouse() !?MouseState {
+    const event = try readInput();
+    return switch (event) {
+        .mouse => |m| m,
+        else => null,
+    };
 }
