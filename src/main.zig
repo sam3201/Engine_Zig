@@ -143,6 +143,9 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
                 //cam3d.rotate(delta_yaw, delta_pitch);
                 std.debug.print("Mouse Input: {any}\n", .{mouseInput});
             }
+        } else {
+            std.debug.print("Mouse Input: None\n", .{});
+            break;
         }
 
         if (regenerate_particles) {
