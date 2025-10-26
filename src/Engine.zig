@@ -480,16 +480,13 @@ pub fn disableMouseTracking() !void {
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006l") catch {};
 }
 
-// Input event type
 pub const InputEvent = union(enum) {
     key: u8,
     mouse: MouseState,
     none,
 };
 
-// Unified input reading function that handles both keyboard and mouse
 pub fn readInput() !InputEvent {
-    // First, check if we have buffered data
     if (g_input_buffer_len == 0) {
         const n = std.posix.read(std.posix.STDIN_FILENO, &g_input_buffer) catch |err| {
             if (err == error.WouldBlock) return InputEvent.none;
@@ -500,7 +497,6 @@ pub fn readInput() !InputEvent {
         g_input_buffer_len = n;
     }
 
-    // Check if this is a mouse event (starts with ESC[<)
     if (g_input_buffer_len >= 6 and 
         g_input_buffer[0] == 27 and 
         g_input_buffer[1] == '[' and 
@@ -512,23 +508,20 @@ pub fn readInput() !InputEvent {
         var y_usize: usize = 0;
         var is_release: bool = false;
 
-        // parse button number
         while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
             if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
                 b = b * 10 + (g_input_buffer[i] - '0');
             }
         }
-        i += 1; // skip ';'
+        i += 1; 
 
-        // parse x
         while (i < g_input_buffer_len and g_input_buffer[i] != ';') : (i += 1) {
             if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
                 x_usize = x_usize * 10 + (g_input_buffer[i] - '0');
             }
         }
-        i += 1; // skip ';'
+        i += 1; 
 
-        // parse y and check for M (press) or m (release)
         while (i < g_input_buffer_len and g_input_buffer[i] != 'M' and g_input_buffer[i] != 'm') : (i += 1) {
             if (g_input_buffer[i] >= '0' and g_input_buffer[i] <= '9') {
                 y_usize = y_usize * 10 + (g_input_buffer[i] - '0');
@@ -537,23 +530,19 @@ pub fn readInput() !InputEvent {
 
         if (i < g_input_buffer_len) {
             is_release = (g_input_buffer[i] == 'm');
-            i += 1; // consume the M or m
+            i += 1; 
         }
 
-        // Clear the buffer after consuming the mouse event
         g_input_buffer_len = 0;
 
-        // Convert to i32 for consistency
         const x: i32 = @intCast(x_usize);
         const y: i32 = @intCast(y_usize);
 
-        // Compute deltas (relative movement)
         const dx: i32 = x - g_last_mouse_x;
         const dy: i32 = y - g_last_mouse_y;
         g_last_mouse_x = x;
         g_last_mouse_y = y;
 
-        // Decode button state
         const button_code = b & 0xFF;
         const left_button = !is_release and (button_code == 0);
         const middle_button = !is_release and (button_code == 1);
