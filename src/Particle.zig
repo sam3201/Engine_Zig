@@ -3,10 +3,8 @@
 const std = @import("std");
 const Engine3D = @import("Engine3D.zig");
 const Chunk = @import("Chunk.zig");
-const WIDTH = Chunk.WIDTH;
-const HEIGHT = Chunk.HEIGHT;
 
-pub const MAX_PARTICLES = WIDTH * HEIGHT;
+pub const MAX_PARTICLES = Chunk.WIDTH * Chunk.HEIGHT;
 
 pub const Particle = struct {
     x: f32,
