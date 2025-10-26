@@ -593,23 +593,19 @@ pub fn renderParticleField3D(
     const screen_w: i32 = @intCast(canvas3D.width);
     const screen_h: i32 = @intCast(canvas3D.height);
     
-    // Sky color
     canvas3D.clear(' ', Engine3D.Color3D.init(135, 206, 235));
     
-    // Camera position
     const cam_pos = Particle.Vec3.init(
         @floatFromInt(self.player.getPosition().x),
         @floatFromInt(self.player.getPosition().y),
         @floatFromInt(cam3d.z),
     );
     
-    // Camera orientation
     const cos_yaw = @cos(cam3d.yaw);
     const sin_yaw = @sin(cam3d.yaw);
     const cos_pitch = @cos(cam3d.pitch);
     const sin_pitch = @sin(cam3d.pitch);
     
-    // Camera basis vectors
     const forward = Particle.Vec3.init(
         cos_pitch * sin_yaw,
         cos_pitch * cos_yaw,
@@ -619,7 +615,6 @@ pub fn renderParticleField3D(
     const right = Particle.Vec3.init(-cos_yaw, sin_yaw, 0).normalize();
     const up = right.cross(forward).normalize();
     
-    // Create depth buffer for proper occlusion
     const depth_buffer = self.allocator.alloc(f32, @intCast(screen_w * screen_h)) catch return;
     defer self.allocator.free(depth_buffer);
     
@@ -627,44 +622,36 @@ pub fn renderParticleField3D(
         depth_buffer[i] = std.math.inf(f32);
     }
     
-    // Project each particle
     for (particle_field.particles.items) |particle| {
         const particle_pos = Particle.Vec3.init(particle.x, particle.y, particle.z);
         const relative = particle_pos.sub(cam_pos);
         
-        // Transform to camera space
         const cam_x = relative.dot(right);
         const cam_y = relative.dot(forward);
         const cam_z = relative.dot(up);
         
-        // Skip if behind camera
         if (cam_y <= 0.1) continue;
         
-        // Perspective projection
         const fov_scale = @tan(cam3d.fov * 0.5 * std.math.pi / 180.0);
         const aspect = @as(f32, @floatFromInt(screen_w)) / @as(f32, @floatFromInt(screen_h));
         
         const proj_x = (cam_x / cam_y) / (aspect * fov_scale);
         const proj_z = (cam_z / cam_y) / fov_scale;
         
-        // Convert to screen coordinates
         const screen_x_f = (proj_x * 0.5 + 0.5) * @as(f32, @floatFromInt(screen_w));
         const screen_y_f = (0.5 - proj_z * 0.5) * @as(f32, @floatFromInt(screen_h));
         
         const screen_x: i32 = @intFromFloat(screen_x_f);
         const screen_y: i32 = @intFromFloat(screen_y_f);
-        
-        // Check bounds
+
         if (screen_x < 0 or screen_x >= screen_w or screen_y < 0 or screen_y >= screen_h) continue;
         
-        // Depth test
         const depth_idx: usize = @intCast(screen_y * screen_w + screen_x);
         const distance = cam_y;
         
         if (distance < depth_buffer[depth_idx]) {
             depth_buffer[depth_idx] = distance;
             
-            // Calculate shading based on distance
             const max_view_dist: f32 = 30.0;
             const fade = 1.0 - @min(1.0, distance / max_view_dist);
             
@@ -673,7 +660,6 @@ pub fn renderParticleField3D(
             const g: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.g)) * fade);
             const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
             
-            // Choose character based on distance and particle density
             const ch: u8 = if (distance < 5.0) 
                 '█' 
             else if (distance < 10.0) 
@@ -688,7 +674,6 @@ pub fn renderParticleField3D(
         }
     }
     
-    // Draw crosshair
     const center_x = @divTrunc(screen_w, 2);
     const center_y = @divTrunc(screen_h, 2);
     canvas3D.put(center_x, center_y, '+');
