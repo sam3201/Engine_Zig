@@ -431,10 +431,100 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
     }
 };
 
+// Mouse state
 pub const MouseState = struct {
-    
+    x: i32 = 0,
+    y: i32 = 0,
+    left_button: bool = false,
+    right_button: bool = false,
+    middle_button: bool = false,
+    delta_x: i32 = 0,
+    delta_y: i32 = 0,
+};
+
+var g_mouse_state: MouseState = .{};
+var g_last_mouse_x: i32 = 0;
+var g_last_mouse_y: i32 = 0;
+
+pub fn enableMouseTracking() !void {
+    // Enable mouse tracking and button events
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h"); // Mouse click tracking
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h"); // Mouse motion tracking
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h"); // All mouse events
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006h"); // SGR mouse mode
 }
 
+pub fn disableMouseTracking() !void {
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000l") catch {};
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002l") catch {};
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003l") catch {};
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006l") catch {};
+}
+
+pub fn readMouse() !?MouseState {
+    var buf: [32]u8 = undefined;
+    var pos: usize = 0;
+    
+    // Try to read escape sequence
+    while (pos < buf.len) {
+        const n = std.posix.read(std.posix.STDIN_FILENO, buf[pos..pos+1]) catch |err| switch (err) {
+            error.WouldBlock => break,
+            else => return err,
+        };
+        if (n == 0) break;
+        pos += 1;
+        
+        // Check if we have a complete mouse sequence
+        if (pos >= 3 and buf[pos-1] == 'M' or buf[pos-1] == 'm') {
+            break;
+        }
+    }
+    
+    if (pos == 0) return null;
+    
+    // Parse SGR mouse format: \x1b[<Cb;Cx;CyM or \x1b[<Cb;Cx;Cym
+    if (pos >= 6 and buf[0] == 0x1b and buf[1] == '[' and buf[2] == '<') {
+        var i: usize = 3;
+        var button: u8 = 0;
+        var x: i32 = 0;
+        var y: i32 = 0;
+        var part: u8 = 0;
+        
+        while (i < pos) : (i += 1) {
+            const c = buf[i];
+            if (c >= '0' and c <= '9') {
+                const digit = c - '0';
+                switch (part) {
+                    0 => button = button * 10 + digit,
+                    1 => x = x * 10 + digit,
+                    2 => y = y * 10 + digit,
+                    else => {},
+                }
+            } else if (c == ';') {
+                part += 1;
+            } else if (c == 'M' or c == 'm') {
+                g_mouse_state.delta_x = x - g_last_mouse_x;
+                g_mouse_state.delta_y = y - g_last_mouse_y;
+                g_last_mouse_x = x;
+                g_last_mouse_y = y;
+                
+                g_mouse_state.x = x;
+                g_mouse_state.y = y;
+                g_mouse_state.left_button = (button & 0x03) == 0;
+                g_mouse_state.right_button = (button & 0x03) == 2;
+                g_mouse_state.middle_button = (button & 0x03) == 1;
+                
+                return g_mouse_state;
+            }
+        }
+    }
+    
+    return null;
+}
+
+pub fn getMouseState() MouseState {
+    return g_mouse_state;
+}
 pub fn enableRawMode() !void {
     var termios = try posix.tcgetattr(posix.STDIN_FILENO);
     termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
