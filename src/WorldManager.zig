@@ -3,6 +3,7 @@
 const std = @import("std");
 const Particle = @import("Particle.zig");
 const Engine = @import("Engine.zig");
+const Engine3D = @import("Engine3D.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const Inventory = @import("Inventory.zig");
@@ -688,6 +689,4 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
-
-const Engine3D = @import("Engine3D.zig");
 
