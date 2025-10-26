@@ -49,7 +49,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
     const Particle = @import("Particle.zig");
     
     const quality_selection = try qualityMenu(engine);
-    if (quality_selection >= 4) return; // Back
+    if (quality_selection >= 4) return; 
     
     const quality: Particle.ParticleQuality = switch (quality_selection) {
         0 => .Low,
