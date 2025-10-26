@@ -465,7 +465,6 @@ pub fn readMouse() !?MouseState {
     var buf: [32]u8 = undefined;
     var pos: usize = 0;
     
-    // Try to read escape sequence
     while (pos < buf.len) {
         const n = std.posix.read(std.posix.STDIN_FILENO, buf[pos..pos+1]) catch |err| switch (err) {
             error.WouldBlock => break,
@@ -474,7 +473,6 @@ pub fn readMouse() !?MouseState {
         if (n == 0) break;
         pos += 1;
         
-        // Check if we have a complete mouse sequence
         if (pos >= 3 and buf[pos-1] == 'M' or buf[pos-1] == 'm') {
             break;
         }
