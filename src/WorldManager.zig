@@ -218,7 +218,7 @@ pub const WorldManager = struct {
         }
 
         const new_pos = self.player.getPosition();
-        if (@divFloor(old_pos.x, CHUNK_WIDTH) != @divFloor(new_pos.x, Chunk.CHUNK_WIDTH) or
+        if (@divFloor(old_pos.x, CHUNK_WIDTH) != @divFloor(new_pos.x, CHUNK_WIDTH) or
             @divFloor(old_pos.y, Chunk.CHUNK_HEIGHT) != @divFloor(new_pos.y, Chunk.CHUNK_HEIGHT))
          {
              try self.updateChunks();
