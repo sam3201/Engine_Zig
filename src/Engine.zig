@@ -431,6 +431,10 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
     }
 };
 
+pub const MouseState = struct {
+    
+}
+
 pub fn enableRawMode() !void {
     var termios = try posix.tcgetattr(posix.STDIN_FILENO);
     termios.lflag &= ~@as(u32, posix.ICANON | posix.ECHO);
