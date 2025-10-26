@@ -95,7 +95,7 @@ pub const ChunkCoord = struct {
     x: usize,
     y: usize,
 
-    pub fn hash(self: ChunkCoord) u64 {
+    pub fn hash(self: ChunkCoord) usize {
         const x_hash: u64 = @bitCast(@as(i64, self.x));
         const y_hash: u64 = @bitCast(@as(i64, self.y));
         return x_hash ^ (y_hash << 1);
