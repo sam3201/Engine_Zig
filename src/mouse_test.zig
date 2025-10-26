@@ -52,7 +52,7 @@ pub fn main() !void {
                 "Frame {}: Key pressed: {} ('{c}')",
                 .{ frame_count, key, if (key >= 32 and key <= 126) key else '?' },
             );
-            try events.append(key_event);
+            try events.append(allocator, key_event);
             if (events.items.len > 15) {
                 allocator.free(events.orderedRemove(0));
             }
