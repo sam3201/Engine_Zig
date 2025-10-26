@@ -11,8 +11,8 @@ const WorldManager = @import("WorldManager.zig");
 const Menu = @import("Menu.zig").Menu;
 const Thread = std.Thread;
 
-pub const WIDTH = 150;
-pub const HEIGHT = 60;
+pub const WIDTH = 175;
+pub const HEIGHT = 50;
 
 fn qualityMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
