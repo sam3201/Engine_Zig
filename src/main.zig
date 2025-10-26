@@ -75,6 +75,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         &engine.canvas,
         player,
     );
+    
     defer world.deinit();
 
     var cam3d = Engine3D.Camera3D.init(@intCast(canvas3d.width), @intCast(canvas3d.height));
