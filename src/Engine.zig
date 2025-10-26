@@ -422,14 +422,16 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
     }
 
     pub fn deinit(self: *TerminalGuard) void {
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
+}    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
 
-        if (self.saved) {
-            std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
-        }
-        _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
+    // Disable mouse tracking
+    disableMouseTracking() catch {};
+
+    if (self.saved) {
+        std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
     }
-};
+    _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
+;
 
 // Mouse state
 pub const MouseState = struct {
