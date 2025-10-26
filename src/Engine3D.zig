@@ -292,7 +292,6 @@ pub const Camera3D = struct {
     pitch: f32 = 0.0, 
     fov: f32 = 60.0,  
 
-
     pub fn init(width: i32, height: i32) Camera3D {
         return Camera3D{ .x = 0, .y = 0, .z = 0, .width = width, .height = height }; 
     }
