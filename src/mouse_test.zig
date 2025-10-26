@@ -83,7 +83,7 @@ pub fn main() !void {
                     button_state,
                 },
             );
-            try events.append(mouse_event);
+            try events.append(allocator, mouse_event);
             if (events.items.len > 15) {
                 allocator.free(events.orderedRemove(0));
             }
