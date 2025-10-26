@@ -462,6 +462,12 @@ pub fn randomBiome() Chunk.BiomeType {
 
 const Engine3D = @import("Engine3D.zig");
 
+const TileInfo = struct {
+    h: i32,
+    ch: u8,
+    color: Engine3D.Color3D,
+}
+
 pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
     const max_depth: i32 = 18;        
     const column_width: i32 = 1;      
