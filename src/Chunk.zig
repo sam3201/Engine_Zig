@@ -128,7 +128,7 @@ pub const Chunk = struct {
     coord: ChunkCoord,
     tiles: []TileType,
     width: usize = CHUNK_WIDTH,
-    height: usize  = CHUNK_HEIGHT,
+    height: usize = CHUNK_HEIGHT,
     biome: BiomeType,
     difficulty: i32,
     generated: bool = false,
