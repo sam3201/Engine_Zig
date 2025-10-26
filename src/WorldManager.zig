@@ -484,54 +484,29 @@ fn getTileInfo(tile: Chunk.TileType) TileInfo {
 }
 
 pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *Engine3D.Camera3D) void {
-    const max_depth: i32 = 18;        
-    const column_width: i32 = 1;      
-    const height_scale: i32 = 1;      
-    const eye_z: i32 = cam3d.z;      
+    const max_depth: i32 = 18;
+    const height_scale: i32 = 1;
 
     const screen_w: i32 = @intCast(canvas3D.width);
     const screen_h: i32 = @intCast(canvas3D.height);
 
-    const TileInfo = struct {
-    h: i32,
-    ch: u8,
-    color: Engine3D.Color3D,
-};
+    canvas3D.clear(' ', Engine3D.Color3D.init(0, 0, 0));
 
-    const tile_to_height_and_char = struct {
-        fn get(tile: Chunk.TileType) TileInfo {
-            return switch (tile) {
-            .Empty => .{ .h = 0, .ch = '.', .color = Engine3D.Color3D.init(64, 64, 64) },
-            .Grass => .{ .h = 1, .ch = ',', .color = Engine3D.Color3D.init(20, 120, 20) },
-            .Tree => .{ .h = 3, .ch = 'T', .color = Engine3D.Color3D.init(0, 100, 0) },
-            .Stone => .{ .h = 2, .ch = '@', .color = Engine3D.Color3D.init(120, 120, 120) },
-            .Water => .{ .h = 0, .ch = '~', .color = Engine3D.Color3D.init(0, 0, 160) },
-            .Mountain => .{ .h = 4, .ch = '^', .color = Engine3D.Color3D.init(100, 100, 100) },
-            .Desert => .{ .h = 0, .ch = ':', .color = Engine3D.Color3D.init(200, 180, 100) },
-            .Snow => .{ .h = 1, .ch = '*', .color = Engine3D.Color3D.init(240, 240, 240) },
-            .Lava => .{ .h = 1, .ch = '=', .color = Engine3D.Color3D.init(255, 80, 0) },
-            .Wall => .{ .h = 2, .ch = '#', .color = Engine3D.Color3D.init(100, 60, 0) },
-        };
-        }
-    }.get;
-
-    canvas3D.clear(' ', Engine3D.Color3D.init(0,0,0));
-
-    for (0..screen_w) |sx_i| {
-        const sx = @as(i32, sx_i);
-
+    var sx_i: usize = 0;
+    while (sx_i < screen_w) : (sx_i += 1) {
+        const sx: i32 = @intCast(sx_i);
         const world_x = cam3d.x + sx;
 
         var depth: i32 = 0;
-        var highest_drawn_y: i32 = screen_h - 1; // draw from bottom up
+        var highest_drawn_y: i32 = screen_h - 1;
 
-        while (depth < max_depth) : (depth += 1) {
+        while (depth < max_depth and highest_drawn_y >= 0) : (depth += 1) {
             const world_y = cam3d.y + depth;
             const tile = self.getTileAtWorld(world_x, world_y);
-            const info = tile_to_height_and_char(tile);
+            const info = getTileInfo(tile);
             const tile_h = info.h;
 
-            const fade = if (depth < 4) 1.0 else 1.0 - ( (@as(f32, depth) / @as(f32, max_depth)) * 0.7 );
+            const fade: f32 = if (depth < 4) 1.0 else 1.0 - ((@as(f32, @floatFromInt(depth)) / @as(f32, @floatFromInt(max_depth))) * 0.7);
 
             var stack_h = tile_h * height_scale;
             if (stack_h == 0) {
@@ -543,27 +518,25 @@ pub fn projectTo3D(self: *WorldManager, canvas3D: *Engine3D.Canvas3D, cam3d: *En
                 const sy = highest_drawn_y;
                 const ch = info.ch;
                 const base = info.color;
-                const r: u8 = @intCast(@min(255, base.r) * fade); 
-                const g: u8 = @intCast(@min(255, base.g) * fade);
-                const b: u8 = @intCast(@min(255, base.b) * fade);
+
+                const r: u8 = @intFromFloat(@min(255.0, @as(f32, @floatFromInt(base.r)) * fade));
+                const g: u8 = @intFromFloat(@min(255.0, @as(f32, @floatFromInt(base.g)) * fade));
+                const b: u8 = @intFromFloat(@min(255.0, @as(f32, @floatFromInt(base.b)) * fade));
+
                 canvas3D.put(sx, sy, ch);
-                canvas3D.fillColor(sx, sy, Engine3D.Color3D.init(r,g,b));
+                canvas3D.fillColor(sx, sy, Engine3D.Color3D.init(r, g, b));
 
                 highest_drawn_y -= 1;
             }
-
-            if (highest_drawn_y < 0) break;
         }
     }
 
+    // Draw player
     const pos = self.player.getPosition();
     const px = pos.x - cam3d.x;
     const py = pos.y - cam3d.y;
-
     if (px >= 0 and px < screen_w and py >= 0 and py < screen_h) {
         canvas3D.put(px, py, self.player.entity.ch);
-        canvas3D.fillColor(px, py, Engine3D.Color3D.init(255,255,0));
+        canvas3D.fillColor(px, py, Engine3D.Color3D.init(255, 255, 0));
     }
 }
-
-
