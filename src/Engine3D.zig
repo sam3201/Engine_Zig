@@ -365,7 +365,6 @@ pub const Engine3D = struct {
             self.clock.tick();
 
 if (try readKey()) |byte| {
-    // Only treat ESC as quit if it’s *not* part of a mouse sequence
     const available = std.posix.poll(&[_]std.posix.pollfd{.{
         .fd = std.posix.STDIN_FILENO,
         .events = std.posix.POLL.IN,
