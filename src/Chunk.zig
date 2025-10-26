@@ -5,6 +5,9 @@ const Engine = @import("Engine.zig");
 const Inventory = @import("Inventory.zig");
 const WorldManager = @import("WorldManager.zig");
 
+const CHUNK_WIDTH = WorldManager.CHUNK_WIDTH;
+const CHUNK_HEIGHT = WorldManager.CHUNK_HEIGHT;
+
 pub const TileType = enum {
     Empty,
     Wall,
