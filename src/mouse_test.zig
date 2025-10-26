@@ -23,7 +23,7 @@ pub fn main() !void {
     try Engine.enableMouseTracking();
     defer Engine.disableMouseTracking() catch {};
 
-    var events = std.ArrayList([]const u8).init(allocator);
+    var events = std.ArrayList([]const u8).initCapacity(allocator, 15);
     defer {
         for (events.items) |event| {
             allocator.free(event);
