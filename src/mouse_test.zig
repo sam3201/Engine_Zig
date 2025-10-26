@@ -73,7 +73,7 @@ pub fn main() !void {
 
             const mouse_event = try std.fmt.allocPrint(
                 allocator,
-                "Frame {}: Mouse at ({}, {}) delta=({}, {}) button={}",
+                "Frame {}: Mouse at ({}, {}) delta=({}, {}) button={s}",
                 .{ 
                     frame_count, 
                     mouse_state.x, 
@@ -83,12 +83,11 @@ pub fn main() !void {
                     button_state,
                 },
             );
-            try events.append(allocator, mouse_event);
+            try events.append(mouse_event);
             if (events.items.len > 15) {
                 allocator.free(events.orderedRemove(0));
             }
         }
-
         // Clear screen
         engine.canvas.clear(' ', engine.background_color);
 
