@@ -218,7 +218,9 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void
         try canvas3d.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
-}pub fn main() !void {
+}
+
+pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
