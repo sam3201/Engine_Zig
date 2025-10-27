@@ -151,7 +151,7 @@ pub const Chunk = struct {
 
         try self.items.append(allocator, WorldItem{
             .item = Inventory.Item.initConsumable(.Potion, 1, "Potion", allocator),
-            .x = self.coord.x * CHUNK_WIDTH + 2,
+            .x = self.coord.x * @as(i32,CHUNK_WIDTH) + 2,
             .y = self.coord.y * CHUNK_HEIGHT + 2,
             .ch = 'P',
             .color = Engine.Color{ .r = 200, .g = 0, .b = 200 },
