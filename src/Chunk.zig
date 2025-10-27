@@ -255,6 +255,7 @@ pub const Chunk = struct {
 
     fn generatePaths(self: *Chunk, random: std.Random) void {
         const num_paths = random.intRangeAtMost(usize, 2, 5);
+        std.log.info("Generating {d} paths", .{num_paths});
 
         for (0..@intCast(num_paths)) |_| {
             const start_x = random.intRangeAtMost(usize, 0, CHUNK_WIDTH - 1);
