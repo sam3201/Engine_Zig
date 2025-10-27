@@ -41,7 +41,7 @@ pub fn main() !void {
                 break;
             }
             
-                try events.append(allocator, key_event);
+                try events.append(allocator, try std.fmt.allocPrint(allocator, "Frame {}: Key '{c}'", .{ frame_count, key }));
                 if (events.items.len > 15) {
                     allocator.free(events.orderedRemove(0));
                 }
