@@ -92,8 +92,8 @@ pub const BiomeType = enum {
 pub const BiomeCount: u32 = 6;
 
 pub const ChunkCoord = struct {
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
 
     pub fn hash(self: ChunkCoord) usize {
         const x_hash: usize = @bitCast(self.x);
