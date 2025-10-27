@@ -105,7 +105,7 @@ pub const WorldManager = struct {
     pub fn updateChunks(self: *WorldManager) !void {
         const player_chunk = self.getPlayerChunkCoord();
 
-        var y: i32 = player_chunk.y - self.loaded_radius;
+        var y: i32 = player_chunk.y - @as(i32, self.loaded_radius);
         while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
             var x: i32 = player_chunk.x - self.loaded_radius;
             while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
