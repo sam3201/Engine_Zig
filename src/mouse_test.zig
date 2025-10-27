@@ -34,7 +34,7 @@ pub fn main() !void {
     var mouse_state = Engine.MouseState{};
     var frame_count: usize = 0;
 
-    std.debug.print("Mouse Test Started - Move mouse, click buttons, press Q to quit\n", .{});
+    std.debug.print("Mouse Test Started - Move mouse, click buttons, press Ctrl-C to quit\n", .{});
 
     engine.running = true;
     while (engine.running) {
