@@ -108,8 +108,8 @@ pub const ChunkCoord = struct {
 
 pub const WorldItem = struct {
     item: Inventory.Item,
-    x: i32,
-    y: i32,
+    x: usize,
+    y: usize,
     ch: u8,
     color: Engine.Color = .{ .r = 255, .g = 255, .b = 0 },
 
