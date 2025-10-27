@@ -51,7 +51,7 @@ pub fn main() !void {
 
         engine.canvas.clear(' ', engine.background_color);
 
-        const title = "=== MOUSE INPUT TEST ===";
+        const title = "=== KEYBOARD INPUT TEST ===";
         const title_x = @divTrunc(@as(i32, @intCast(engine.canvas.width)) - @as(i32, @intCast(title.len)), 2);
         for (title, 0..) |ch, i| {
             engine.canvas.put(title_x + @as(i32, @intCast(i)), 1, ch);
