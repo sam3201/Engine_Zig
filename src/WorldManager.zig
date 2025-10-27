@@ -107,7 +107,7 @@ pub const WorldManager = struct {
 
         var y: usize = player_chunk.y - self.loaded_radius;
         while (y <= player_chunk.y + self.loaded_radius) : (y += 1) {
-            var x: i32 = player_chunk.x - self.loaded_radius;
+            var usize: i32 = player_chunk.x - self.loaded_radius;
             while (x <= player_chunk.x + self.loaded_radius) : (x += 1) {
                 const coord = Chunk.ChunkCoord{ .x = x, .y = y };
                 if (!self.chunks.contains(coord)) {
