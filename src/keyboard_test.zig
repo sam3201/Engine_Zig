@@ -49,7 +49,6 @@ pub fn main() !void {
 
         }
 
-        // Clear screen
         engine.canvas.clear(' ', engine.background_color);
 
         // Draw title
