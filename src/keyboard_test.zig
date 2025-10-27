@@ -29,7 +29,7 @@ pub fn main() !void {
 
     var frame_count: usize = 0;
 
-    std.debug.print("Mouse Test Started - Move mouse, click buttons, press Ctrl-C to quit\n", .{});
+    std.debug.print("Keyboard Test Started - Enter keys, click buttons, press Ctrl-C to quit\n", .{});
 
     engine.running = true;
     while (engine.running) {
