@@ -346,7 +346,7 @@ pub const Chunk = struct {
         }
     }
 
-    pub fn getTile(self: Chunk, local_x: usize, local_y: usize) TileType {
+    pub fn getTile(self: Chunk, local_x: i32, local_y: 32) TileType {
         if (local_x < 0 or local_x >= CHUNK_WIDTH or local_y < 0 or local_y >= CHUNK_HEIGHT) {
             return .Stone; 
         }
