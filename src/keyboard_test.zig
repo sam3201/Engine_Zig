@@ -46,12 +46,7 @@ pub fn main() !void {
                     allocator.free(events.orderedRemove(0));
                 }
             }
-        }
 
-            try events.append(allocator, mouse_event);
-            if (events.items.len > 15) {
-                allocator.free(events.orderedRemove(0));
-            }
         }
 
         // Clear screen
