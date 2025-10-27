@@ -19,10 +19,6 @@ pub fn main() !void {
     var terminal_guard = try Engine.TerminalGuard.init();
     defer terminal_guard.deinit();
 
-    // Enable mouse tracking
-    try Engine.enableMouseTracking();
-    defer Engine.disableMouseTracking() catch {};
-
     var events = try std.ArrayList([]const u8).initCapacity(allocator, 15);
     defer {
         for (events.items) |event| {
