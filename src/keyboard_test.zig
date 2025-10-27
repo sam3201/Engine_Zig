@@ -65,9 +65,8 @@ pub fn main() !void {
             engine.canvas.fillColor(inst_x + @as(i32, @intCast(i)), 3, .{ .r = 200, .g = 200, .b = 200 });
         }
 
-        const mouse_info = try std.fmt.allocPrint(
+        const key_info = try std.fmt.allocPrint(
             allocator,
-            "Mouse: X={} Y={} | Delta: X={} Y={} | Buttons: L={} R={} M={}",
             .{
                 mouse_state.x,
                 mouse_state.y,
