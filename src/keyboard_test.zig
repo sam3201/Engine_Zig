@@ -48,31 +48,6 @@ pub fn main() !void {
             }
         }
 
-        // Update mouse state and log mouse events
-        if (had_mouse) |new_mouse| {
-            mouse_state = new_mouse;
-            
-            const button_state = if (mouse_state.left_button)
-                "LEFT"
-            else if (mouse_state.right_button)
-                "RIGHT"
-            else if (mouse_state.middle_button)
-                "MIDDLE"
-            else
-                "NONE";
-
-            const mouse_event = try std.fmt.allocPrint(
-                allocator,
-                "Frame {}: Mouse at ({}, {}) delta=({}, {}) button={s}",
-                .{ 
-                    frame_count, 
-                    mouse_state.x, 
-                    mouse_state.y,
-                    mouse_state.delta_x,
-                    mouse_state.delta_y,
-                    button_state,
-                },
-            );
             try events.append(allocator, mouse_event);
             if (events.items.len > 15) {
                 allocator.free(events.orderedRemove(0));
