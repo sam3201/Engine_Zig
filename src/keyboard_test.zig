@@ -51,7 +51,6 @@ pub fn main() !void {
 
         engine.canvas.clear(' ', engine.background_color);
 
-        // Draw title
         const title = "=== MOUSE INPUT TEST ===";
         const title_x = @divTrunc(@as(i32, @intCast(engine.canvas.width)) - @as(i32, @intCast(title.len)), 2);
         for (title, 0..) |ch, i| {
