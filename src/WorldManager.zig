@@ -77,7 +77,7 @@ pub const WorldManager = struct {
     pub fn getPlayerChunkCoord(self: WorldManager) Chunk.ChunkCoord {
         const pos = self.player.getPosition();
         return Chunk.ChunkCoord{
-            .x = @divFloor(pos.x, CHUNK_WIDTH),
+            .x = @divFloor(pos.x, @as(i32, CHUNK_WIDTH)),
             .y = @divFloor(pos.y, CHUNK_HEIGHT),
         };
     }
