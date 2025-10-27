@@ -92,7 +92,7 @@ pub fn main() !void {
 
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
-    }
 
-    std.debug.print("\nMouse test finished. Total events: {}\n", .{events.items.len});
+    
 }
+
