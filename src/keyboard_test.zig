@@ -65,7 +65,6 @@ pub fn main() !void {
             engine.canvas.fillColor(inst_x + @as(i32, @intCast(i)), 3, .{ .r = 200, .g = 200, .b = 200 });
         }
 
-        // Draw current mouse state
         const mouse_info = try std.fmt.allocPrint(
             allocator,
             "Mouse: X={} Y={} | Delta: X={} Y={} | Buttons: L={} R={} M={}",
