@@ -65,21 +65,6 @@ pub fn main() !void {
             engine.canvas.fillColor(inst_x + @as(i32, @intCast(i)), 3, .{ .r = 200, .g = 200, .b = 200 });
         }
 
-        const key_info = try std.fmt.allocPrint(
-            allocator,
-            .{
-
-            },
-        );
-        defer allocator.free(mouse_info);
-
-        const info_y: i32 = 5;
-        for (mouse_info, 0..) |ch, i| {
-            if (i < engine.canvas.width) {
-                engine.canvas.put(@as(i32, @intCast(i)), info_y, ch);
-                engine.canvas.fillColor(@as(i32, @intCast(i)), info_y, .{ .r = 100, .g = 255, .b = 100 });
-            }
-        }
 
         const log_title = "--- Event Log (last 15 events) ---";
         const log_x = 2;
