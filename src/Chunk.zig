@@ -257,9 +257,9 @@ pub const Chunk = struct {
         const num_paths = random.intRangeAtMost(usize, 2, 5);
 
         for (0..@intCast(num_paths)) |_| {
-            const start_x = random.intRangeAtMost(i32, 0, CHUNK_WIDTH - 1);
-            const start_y = random.intRangeAtMost(i32, 0, CHUNK_HEIGHT - 1);
-            const length = random.intRangeAtMost(i32, 5, 15);
+            const start_x = random.intRangeAtMost(usize, 0, CHUNK_WIDTH - 1);
+            const start_y = random.intRangeAtMost(usize, 0, CHUNK_HEIGHT - 1);
+            const length = random.intRangeAtMost(usize, 5, 15);
 
             var x = start_x;
             var y = start_y;
