@@ -93,6 +93,6 @@ pub fn main() !void {
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
 
-    
+    }
 }
 
