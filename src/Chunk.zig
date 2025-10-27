@@ -354,7 +354,7 @@ pub const Chunk = struct {
         //const CHUNK_WIDTH_i32: i32 = @intCast(CHUNK_WIDTH);
         const local_x_usize: usize = @intCast(local_x);
         const local_y_usize: usize = @intCast(local_y);
-        const idx: usize = local_y * CHUNK_WIDTH + local_x;
+        const idx: usize = local_y_usize * CHUNK_WIDTH + local_x_usize;
         return self.tiles[idx];
     }
 
