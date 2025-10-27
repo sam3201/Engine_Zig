@@ -90,8 +90,6 @@ pub fn main() !void {
             log_y += 1;
         }
 
-
-        // Render frame
         try engine.canvas.flushToTerminal();
         engine.clock.sleepUntilNextFrame();
     }
