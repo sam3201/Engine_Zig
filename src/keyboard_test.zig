@@ -88,7 +88,6 @@ pub fn main() !void {
             }
         }
 
-        // Draw event log
         const log_title = "--- Event Log (last 15 events) ---";
         const log_x = 2;
         var log_y: i32 = 7;
