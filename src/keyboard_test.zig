@@ -90,22 +90,6 @@ pub fn main() !void {
             log_y += 1;
         }
 
-        // Draw mouse cursor at current position if within bounds
-        if (mouse_state.x >= 0 and mouse_state.x < engine.canvas.width and
-            mouse_state.y >= 0 and mouse_state.y < engine.canvas.height)
-        {
-            const cursor_color = if (mouse_state.left_button)
-                Engine.Color{ .r = 255, .g = 0, .b = 0 }
-            else if (mouse_state.right_button)
-                Engine.Color{ .r = 0, .g = 0, .b = 255 }
-            else if (mouse_state.middle_button)
-                Engine.Color{ .r = 255, .g = 255, .b = 0 }
-            else
-                Engine.Color{ .r = 255, .g = 255, .b = 255 };
-
-            engine.canvas.put(mouse_state.x, mouse_state.y, 'X');
-            engine.canvas.fillColor(mouse_state.x, mouse_state.y, cursor_color);
-        }
 
         // Render frame
         try engine.canvas.flushToTerminal();
