@@ -68,13 +68,7 @@ pub fn main() !void {
         const key_info = try std.fmt.allocPrint(
             allocator,
             .{
-                mouse_state.x,
-                mouse_state.y,
-                mouse_state.delta_x,
-                mouse_state.delta_y,
-                mouse_state.left_button,
-                mouse_state.right_button,
-                mouse_state.middle_button,
+
             },
         );
         defer allocator.free(mouse_info);
