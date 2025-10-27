@@ -351,7 +351,7 @@ pub const Chunk = struct {
             return .Stone; 
         }
 
-        const idx = local_y * @intCast(CHUNK_WIDTH) + local_x);
+        const idx = local_y * @intCast(CHUNK_WIDTH) + local_x;
         return self.tiles[idx];
     }
 
