@@ -27,7 +27,6 @@ pub fn main() !void {
         events.deinit(allocator);
     }
 
-    var mouse_state = Engine.MouseState{};
     var frame_count: usize = 0;
 
     std.debug.print("Mouse Test Started - Move mouse, click buttons, press Ctrl-C to quit\n", .{});
