@@ -1,4 +1,4 @@
-// mouse_test.zig - Simple mouse input test for debugging
+// keyboard.zig - Simple mouse input test for debugging
 const std = @import("std");
 const Engine = @import("Engine.zig");
 
