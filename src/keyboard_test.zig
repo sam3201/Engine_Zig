@@ -58,7 +58,6 @@ pub fn main() !void {
             engine.canvas.fillColor(title_x + @as(i32, @intCast(i)), 1, .{ .r = 255, .g = 255, .b = 100 });
         }
 
-        // Draw instructions
         const instructions = "Move mouse, click buttons | Press Q to quit";
         const inst_x = @divTrunc(@as(i32, @intCast(engine.canvas.width)) - @as(i32, @intCast(instructions.len)), 2);
         for (instructions, 0..) |ch, i| {
