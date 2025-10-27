@@ -75,7 +75,6 @@ pub fn main() !void {
         }
         log_y += 2;
 
-        // Draw events (newest first)
         var event_idx = events.items.len;
         while (event_idx > 0 and log_y < engine.canvas.height - 2) {
             event_idx -= 1;
