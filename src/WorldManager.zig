@@ -18,7 +18,7 @@ pub const WorldManager = struct {
     player: Player.Player,
     Players: std.ArrayList(Player.Player), 
     chunks: std.HashMap(Chunk.ChunkCoord, Chunk.Chunk, ChunkContext, std.hash_map.default_max_load_percentage),
-    loaded_radius: i32 = 2,
+    loaded_radius: usize = 2,
     canvas_width: i32,
     canvas_height: i32,
     camera_x: i32 = 0,
