@@ -41,24 +41,6 @@ pub fn main() !void {
                 break;
             }
             
-            if (key == 27 and had_mouse == null) {
-                // This is a real ESC key press, not part of mouse sequence
-                const esc_event = try std.fmt.allocPrint(
-                    allocator,
-                    "Frame {}: ESC key pressed",
-                    .{frame_count},
-                );
-                try events.append(allocator, esc_event);
-                if (events.items.len > 15) {
-                    allocator.free(events.orderedRemove(0));
-                }
-                break;
-            } else if (key != 27) {
-                const key_event = try std.fmt.allocPrint(
-                    allocator,
-                    "Frame {}: Key pressed: {} ('{c}')",
-                    .{ frame_count, key, if (key >= 32 and key <= 126) key else '?' },
-                );
                 try events.append(allocator, key_event);
                 if (events.items.len > 15) {
                     allocator.free(events.orderedRemove(0));
