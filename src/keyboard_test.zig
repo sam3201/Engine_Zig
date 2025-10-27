@@ -36,12 +36,7 @@ pub fn main() !void {
         engine.clock.tick();
         frame_count += 1;
 
-        // Check for keyboard input
-        // First check for mouse input to consume escape sequences
-        const had_mouse = try Engine.readMouse();
-        
         if (try Engine.readKey()) |key| {
-            // Only treat ESC as quit if we didn't just get a mouse event
             if (key == 'q' or key == 'Q') {
                 break;
             }
