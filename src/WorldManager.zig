@@ -91,8 +91,8 @@ pub const WorldManager = struct {
 
     pub fn worldToLocalCoord(world_x: i32, world_y: i32) struct { x: i32, y: i32 } {
         return .{
-            .x = @mod(world_x,  
-            .y = @mod(world_y, CHUNK_HEIGHT),
+            .x = @mod(world_x, @as(i32, CHUNK_WIDTH)), 
+            .y = @mod(world_y, @as(i32, CHUNK_HEIGHT)), 
         };
     }
 
