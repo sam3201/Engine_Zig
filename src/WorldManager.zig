@@ -232,8 +232,6 @@ pub const WorldManager = struct {
         const pos = self.player.getPosition();
         const canvas_width_i32: i32 = @intCast(self.canvas_width);
         const canvas_height_i32: i32 = @intCast(self.canvas_height);
-        const world_x = pos.x - @divTrunc(canvas_width_i32, 2);
-        const world_y = pos.y - @divTrunc(canvas_height_i32, 2);
 
         self.camera_x = pos.x - @divTrunc(self.canvas_width, 2);
         self.camera_y = pos.y - @divTrunc(self.canvas_height, 2);
