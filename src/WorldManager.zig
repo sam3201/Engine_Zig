@@ -347,7 +347,8 @@ pub const WorldManager = struct {
 
     fn drawHotbar(self: *WorldManager) void {
         const canvas = self.canvas;
-        const bottom_y: i32 = self.canvas_height - 1;
+        const canvas_height_i32: i32 = @intCast(self.canvas_height);
+        const bottom_y: i32 = canvas_height_i32 - 1;
         const slot_count: usize = 10; 
         const slot_width: i32 = 4; 
 
