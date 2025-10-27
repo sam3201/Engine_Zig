@@ -81,7 +81,7 @@ pub const Player = struct {
         };
     }
 
-    pub fn createWASDPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: i32, start_y: i32) !Player {
+    pub fn createWASDPlayer(name: []const u8, allocator: std.mem.Allocator, start_x: usize, start_y: usize) !Player {
         const inv = try Inventory.Inventory.init(allocator);
 
         const p = Player{
