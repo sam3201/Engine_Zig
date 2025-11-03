@@ -26,44 +26,44 @@ pub const Particle = struct {
     fn getColorForTile(tile_type: Chunk.TileType, height: f32) Engine3D.Color3D {
     return switch (tile_type) {
         .Empty => if (height < 0.1)
-            Engine3D.Color3D.init(40, 40, 40)  // Dark ground
+            Engine3D.Color3D.init(40, 40, 40)  
         else
             Engine3D.Color3D.init(64, 64, 64),
         .Grass => if (height < 0.1) 
-            Engine3D.Color3D.init(34, 139, 34)  // Forest green ground
+            Engine3D.Color3D.init(34, 139, 34)  
         else if (height > 0.5) 
-            Engine3D.Color3D.init(50, 200, 50)  // Bright grass on top
+            Engine3D.Color3D.init(50, 200, 50) 
         else 
-            Engine3D.Color3D.init(101, 67, 33),  // Dirt in middle
+            Engine3D.Color3D.init(101, 67, 33),  
         .Stone => if (height < 0.1)
-            Engine3D.Color3D.init(80, 80, 80)  // Dark stone ground
+            Engine3D.Color3D.init(80, 80, 80)  
         else
             Engine3D.Color3D.init(128, 128, 128),
         .Water => Engine3D.Color3D.init(30, 100, 200),
         .Tree => if (height > 3.0)
-            Engine3D.Color3D.init(0, 150, 0)     // Leaves
+            Engine3D.Color3D.init(0, 150, 0)  
         else if (height < 0.5)
-            Engine3D.Color3D.init(139, 90, 43)   // Trunk base
+            Engine3D.Color3D.init(139, 90, 43)   
         else
-            Engine3D.Color3D.init(101, 67, 33),  // Trunk middle
+            Engine3D.Color3D.init(101, 67, 33),  
         .Mountain => if (height < 0.1)
-            Engine3D.Color3D.init(70, 70, 70)   // Mountain base
+            Engine3D.Color3D.init(70, 70, 70)   
         else
             Engine3D.Color3D.init(100, 100, 100),
         .Desert => if (height < 0.1)
-            Engine3D.Color3D.init(194, 178, 128)  // Sand ground
+            Engine3D.Color3D.init(194, 178, 128)  
         else
             Engine3D.Color3D.init(220, 180, 100),
         .Snow => if (height < 0.1)
-            Engine3D.Color3D.init(240, 248, 255)  // Snow ground
+            Engine3D.Color3D.init(240, 248, 255) 
         else
             Engine3D.Color3D.init(255, 255, 255),
         .Lava => if (height < 0.1)
-            Engine3D.Color3D.init(139, 0, 0)      // Dark lava ground
+            Engine3D.Color3D.init(139, 0, 0)    
         else
             Engine3D.Color3D.init(255, 100, 0),
         .Wall => if (height < 0.1)
-            Engine3D.Color3D.init(101, 67, 33)    // Brown ground
+            Engine3D.Color3D.init(101, 67, 33) 
         else
             Engine3D.Color3D.init(139, 90, 43),
     };
