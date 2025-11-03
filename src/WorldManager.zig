@@ -708,7 +708,7 @@ pub fn renderParticleField3D(
 
                     else {
                         '.'; } 
-                }
+                };
                 
                 canvas3D.put(screen_x, screen_y, ch);
                 canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));
