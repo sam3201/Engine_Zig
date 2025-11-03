@@ -562,15 +562,13 @@ pub fn generateParticleField(
             const tile = self.getTileAtWorld(world_x, world_y);
             const max_height = Particle.ParticleField.getHeightForTile(tile);
             
-            // Always add ground layer particles (at z=0)
             var sx: usize = 0;
             while (sx < subdivisions) : (sx += 1) {
                 var sy: usize = 0;
                 while (sy < subdivisions) : (sy += 1) {
                     const particle_x = @as(f32, @floatFromInt(world_x)) + @as(f32, @floatFromInt(sx)) * step;
                     const particle_y = @as(f32, @floatFromInt(world_y)) + @as(f32, @floatFromInt(sy)) * step;
-                    
-                    // Add ground particle at z=0
+
                     try field.addParticle(self.allocator, Particle.Particle.init(
                         particle_x,
                         particle_y,
@@ -578,9 +576,8 @@ pub fn generateParticleField(
                         tile,
                     ));
                     
-                    // Add vertical particles if there's height
                     if (max_height > 0.0) {
-                        var sz: usize = 1; // Start from 1 since we already added z=0
+                        var sz: usize = 1; 
                         while (sz < subdivisions) : (sz += 1) {
                             const particle_z = @as(f32, @floatFromInt(sz)) * step * max_height;
                             
