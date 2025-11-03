@@ -352,7 +352,8 @@ pub const Engine = struct {
         var term = try TerminalGuard.init();
         defer term.deinit();
 
-        _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H") catch {};
+            _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[2J\x1b[H\x1b[?25l") catch {};
+
 
         while (self.running) {
             self.clock.tick();
