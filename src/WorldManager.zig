@@ -691,7 +691,9 @@ pub fn renderParticleField3D(
                     } else if (distance < 10.0) {
                         ' ';
 
-                    } else if (distance < 15.0) { '▒' }
+                    } else if (distance < 15.0) {
+                        '▒';
+                    }
 
                     else { '▓' }
 
