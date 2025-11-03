@@ -253,34 +253,36 @@ pub const Chunk = struct {
         self.generatePaths(random);
     }
 
-    fn generatePaths(self: *Chunk, random: std.Random) void {
+    fn generatePaths(self: *Chunk, random: std.Random) !void {
         const num_paths = random.intRangeAtMost(usize, 2, 5);
 
-        for (0..@intCast(num_paths)) |_| {
-            const start_x = random.intRangeAtMost(usize, 0, CHUNK_WIDTH - 1);
-            const start_y = random.intRangeAtMost(usize, 0, CHUNK_HEIGHT - 1);
-            const length = random.intRangeAtMost(usize, 5, 15);
+    for (0..@intCast(num_paths)) |_| {
+        const start_x = random.intRangeAtMost(i32, 0, @intCast(CHUNK_WIDTH - 1));
+        const start_y = random.intRangeAtMost(i32, 0, @intCast(CHUNK_HEIGHT - 1));
+        const length = random.intRangeAtMost(i32, 5, 15);
 
-            var x = start_x;
-            var y = start_y;
+        var x: i32 = start_x;  
+        var y: i32 = start_y; 
 
-            for (0..@intCast(length)) |_| {
-                if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
-                    const idx = @as(usize, @intCast(y * CHUNK_WIDTH + x));
-                    self.tiles[idx] = if (self.biome == .Desert) .Desert else .Empty;
-                }
+        for (0..@intCast(length)) |_| {
+            if (x >= 0 and x < CHUNK_WIDTH and y >= 0 and y < CHUNK_HEIGHT) {
+                const x_usize: usize = @intCast(x);
+                const y_usize: usize = @intCast(y);
+                const idx: usize = y_usize * CHUNK_WIDTH + x_usize;
+                self.tiles[idx] = if (self.biome == .Desert) .Desert else .Empty;
+            }
 
-                const direction = random.intRangeAtMost(i32, 0, 3);
-                switch (direction) {
-                    0 => x += 1,
-                    1 => x -= 1,
-                    2 => y += 1,
-                    3 => y -= 1,
-                    else => {},
-                }
+            const direction = random.intRangeAtMost(i32, 0, 3);
+            switch (direction) {
+                0 => x += 1,
+                1 => x -= 1,  
+                2 => y += 1,
+                3 => y -= 1, 
+                else => {},
             }
         }
     }
+}
 
     fn addFeatures(self: *Chunk, random: std.Random) void {
         if (random.float(f32) < 0.25) {
