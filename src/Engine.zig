@@ -399,46 +399,52 @@ pub const TerminalGuard = struct {
     saved: bool = false,
     orig_flags: usize = 0,
 
-    pub fn init() !TerminalGuard {
-        var tg: TerminalGuard = undefined;
+pub fn init() !TerminalGuard {
+    var tg: TerminalGuard = undefined;
 
-        tg.orig = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
-        tg.saved = true;
+    tg.orig = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
+    tg.saved = true;
 
-        var raw = tg.orig;
+    var raw = tg.orig;
 
-        const LFlag = @TypeOf(raw.lflag);
-        const LBits = std.meta.Int(.unsigned, @bitSizeOf(LFlag));
-        var lbits: LBits = @bitCast(raw.lflag);
-        const ICANON_bits: LBits = @intCast(c.ICANON);
-        const ECHO_bits: LBits = @intCast(c.ECHO);
-        lbits &= ~(ICANON_bits | ECHO_bits);
-        raw.lflag = @bitCast(lbits);
+    const LFlag = @TypeOf(raw.lflag);
+    const LBits = std.meta.Int(.unsigned, @bitSizeOf(LFlag));
+    var lbits: LBits = @bitCast(raw.lflag);
+    const ICANON_bits: LBits = @intCast(c.ICANON);
+    const ECHO_bits: LBits = @intCast(c.ECHO);
+    lbits &= ~(ICANON_bits | ECHO_bits);
+    raw.lflag = @bitCast(lbits);
 
-        raw.cc[@intFromEnum(std.posix.V.MIN)] = 0;
-        raw.cc[@intFromEnum(std.posix.V.TIME)] = 0;
+    raw.cc[@intFromEnum(std.posix.V.MIN)] = 0;
+    raw.cc[@intFromEnum(std.posix.V.TIME)] = 0;
 
-        try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
+    try std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, raw);
 
     const flags: usize = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.GETFL, 0);
     tg.orig_flags = flags;
 
-        const nonblock_bits: usize = 0x0004;
-_ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
+    const nonblock_bits: usize = 0x0004;
+    _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
 
-        _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");
-
+    // Hide cursor with multiple methods for compatibility
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");  // DECTCEM - hide cursor
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1c");   // Make cursor invisible
+    
+    // Enable mouse tracking
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h");
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h");
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h");
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1006h");
- 
 
-        return tg;
-    }
+    return tg;
+}
 
-    pub fn deinit(self: *TerminalGuard) void {
-    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};
+pub fn deinit(self: *TerminalGuard) void {
+    // Show cursor again
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};  // Show cursor
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?0c") catch {};   // Reset cursor
+    
+    // Disable mouse tracking
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000l") catch {};
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002l") catch {};
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003l") catch {};
@@ -448,8 +454,7 @@ _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonbl
         std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
     }
     _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
-    }
-};
+}};
     
 
 pub const MouseState = struct {
