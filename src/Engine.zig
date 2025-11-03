@@ -391,6 +391,8 @@ const available = std.posix.poll(fds[0..], 0) catch 0;
         }
 
         _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {}; 
+
     }   
     
 };
