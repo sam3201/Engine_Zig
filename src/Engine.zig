@@ -159,7 +159,7 @@ pub fn flushToTerminal(self: *Canvas) !void {
     self.render_buffer.clearRetainingCapacity();
 
     var writer = self.render_buffer.writer(self.allocator);
-
+        try writer.writeAll("\x1b[?25l\x1b[0m\x1b[H");
     try writer.writeAll("\x1b[0m\x1b[?25l\x1b[H");
     var last_color: ?Color = null;
 
