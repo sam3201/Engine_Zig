@@ -426,11 +426,9 @@ pub fn init() !TerminalGuard {
     const nonblock_bits: usize = 0x0004;
     _ = try std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, flags | nonblock_bits);
 
-    // Hide cursor with multiple methods for compatibility
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l");  // DECTCEM - hide cursor
-    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1c");   // Make cursor invisible
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25l"); 
+    _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1c");   
     
-    // Enable mouse tracking
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000h");
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002h");
     _ = try std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003h");
@@ -440,11 +438,9 @@ pub fn init() !TerminalGuard {
 }
 
 pub fn deinit(self: *TerminalGuard) void {
-    // Show cursor again
-    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};  // Show cursor
-    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?0c") catch {};   // Reset cursor
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h") catch {};  
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?0c") catch {};  
     
-    // Disable mouse tracking
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1000l") catch {};
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1002l") catch {};
     _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?1003l") catch {};
@@ -454,7 +450,8 @@ pub fn deinit(self: *TerminalGuard) void {
         std.posix.tcsetattr(std.posix.STDIN_FILENO, .FLUSH, self.orig) catch {};
     }
     _ = std.posix.fcntl(std.posix.STDIN_FILENO, std.posix.F.SETFL, self.orig_flags) catch {};
-}};
+}
+};
     
 
 pub const MouseState = struct {
