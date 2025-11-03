@@ -12,7 +12,7 @@ const Menu = @import("Menu.zig").Menu;
 const Thread = std.Thread;
 
 pub const WIDTH = 175;
-pub const HEIGHT = 50;
+pub const HEIGHT = 80;
 
 fn qualityMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
