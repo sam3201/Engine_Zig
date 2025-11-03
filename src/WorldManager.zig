@@ -706,7 +706,8 @@ pub fn renderParticleField3D(
                         '+'; 
                     } 
 
-                    else {'.';
+                    else {
+                        '.';
                 }
                 
                 canvas3D.put(screen_x, screen_y, ch);
