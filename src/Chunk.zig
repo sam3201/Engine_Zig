@@ -250,7 +250,7 @@ pub const Chunk = struct {
             }
         }
 
-        try self.generatePaths(random);
+        self.generatePaths(random);
     }
 
     fn generatePaths(self: *Chunk, random: std.Random) !void {
