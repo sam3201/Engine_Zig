@@ -704,7 +704,7 @@ pub fn renderParticleField3D(
                         '@'; 
                     } else if (distance < 20.0) {
                         '+'; 
-                    } else '.';
+                    } else {'.';}
                 };
                 
                 canvas3D.put(screen_x, screen_y, ch);
