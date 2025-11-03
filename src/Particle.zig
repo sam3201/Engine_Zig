@@ -67,7 +67,7 @@ pub const Particle = struct {
         else
             Engine3D.Color3D.init(139, 90, 43),
     };
-}
+    }
 };
 
 pub const Vec3 = struct {
