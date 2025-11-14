@@ -681,7 +681,7 @@ pub fn renderParticleField3D(
                 const g: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.g)) * fade);
                 const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
 
-const ch: u8 = blk: {
+                const ch: u8 = blk: {
                     if (is_ground) {
                         if (distance < 5.0) {
                             break :blk '#';
