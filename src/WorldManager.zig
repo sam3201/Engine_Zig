@@ -673,7 +673,7 @@ pub fn renderParticleField3D(
             if (distance < depth_buffer[depth_idx]) {
                 depth_buffer[depth_idx] = distance;
 
-                const max_view_dist: f32 = 30.0;
+const max_view_dist: f32 = 30.0;
                 const fade = 1.0 - @min(1.0, distance / max_view_dist);
 
                 const base_color = particle.color;
@@ -682,14 +682,13 @@ pub fn renderParticleField3D(
                 const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
 
                 const ch: u8 = if (is_ground) {
-                    if (distance < 5.0) '█' else if (distance < 10.0) '▓' else if (distance < 15.0) '▒' else '░'
+                    if (distance < 5.0) '#' else if (distance < 10.0) '=' else if (distance < 15.0) '-' else '.'
                 } else {
                     if (distance < 5.0) '#' else if (distance < 10.0) '@' else if (distance < 20.0) '+' else '.'
                 };
 
                 canvas3D.put(screen_x, screen_y, ch);
-                canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));
-            }
+                canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));            }
         }
     }
 
