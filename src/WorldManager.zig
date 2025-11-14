@@ -607,121 +607,98 @@ pub fn renderParticleField3D(
 ) void {
     const screen_w: i32 = @intCast(canvas3D.width);
     const screen_h: i32 = @intCast(canvas3D.height);
-    
-    // Sky color
+
     canvas3D.clear(' ', Engine3D.Color3D.init(135, 206, 235));
-    
+
     const cam_pos = Particle.Vec3.init(
         @floatFromInt(self.player.getPosition().x),
         @floatFromInt(self.player.getPosition().y),
         @floatFromInt(cam3d.z),
     );
-    
+
     const cos_yaw = @cos(cam3d.yaw);
     const sin_yaw = @sin(cam3d.yaw);
     const cos_pitch = @cos(cam3d.pitch);
     const sin_pitch = @sin(cam3d.pitch);
-    
+
     const forward = Particle.Vec3.init(
         cos_pitch * sin_yaw,
         cos_pitch * cos_yaw,
         sin_pitch,
     ).normalize();
-    
+
     const right = Particle.Vec3.init(-cos_yaw, sin_yaw, 0).normalize();
     const up = right.cross(forward).normalize();
-    
+
     const depth_buffer = self.allocator.alloc(f32, @intCast(screen_w * screen_h)) catch return;
     defer self.allocator.free(depth_buffer);
-    
+
     for (0..depth_buffer.len) |i| {
         depth_buffer[i] = std.math.inf(f32);
     }
-    
-    // Render particles in two passes: ground first, then structures
+
     var pass: usize = 0;
     while (pass < 2) : (pass += 1) {
         for (particle_field.particles.items) |particle| {
-            // Pass 0: only ground (z < 0.3)
-            // Pass 1: only structures (z >= 0.3)
             const is_ground = particle.z < 0.3;
             if (pass == 0 and !is_ground) continue;
             if (pass == 1 and is_ground) continue;
-            
+
             const particle_pos = Particle.Vec3.init(particle.x, particle.y, particle.z);
             const relative = particle_pos.sub(cam_pos);
-            
+
             const cam_x = relative.dot(right);
             const cam_y = relative.dot(forward);
             const cam_z = relative.dot(up);
-            
+
             if (cam_y <= 0.1) continue;
-            
+
             const fov_scale = @tan(cam3d.fov * 0.5 * std.math.pi / 180.0);
             const aspect = @as(f32, @floatFromInt(screen_w)) / @as(f32, @floatFromInt(screen_h));
-            
+
             const proj_x = (cam_x / cam_y) / (aspect * fov_scale);
             const proj_z = (cam_z / cam_y) / fov_scale;
-            
+
             const screen_x_f = (proj_x * 0.5 + 0.5) * @as(f32, @floatFromInt(screen_w));
             const screen_y_f = (0.5 - proj_z * 0.5) * @as(f32, @floatFromInt(screen_h));
-            
+
             const screen_x: i32 = @intFromFloat(screen_x_f);
             const screen_y: i32 = @intFromFloat(screen_y_f);
 
             if (screen_x < 0 or screen_x >= screen_w or screen_y < 0 or screen_y >= screen_h) continue;
-            
+
             const depth_idx: usize = @intCast(screen_y * screen_w + screen_x);
             const distance = cam_y;
-            
+
             if (distance < depth_buffer[depth_idx]) {
                 depth_buffer[depth_idx] = distance;
-                
+
                 const max_view_dist: f32 = 30.0;
                 const fade = 1.0 - @min(1.0, distance / max_view_dist);
-                
+
                 const base_color = particle.color;
                 const r: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.r)) * fade);
                 const g: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.g)) * fade);
                 const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
-                
+
                 const ch: u8 = if (is_ground) {
-                    if (distance < 5.0) {
-                        ' ';
-                    } else if (distance < 10.0) {
-                        ' ';
-
-                    } else if (distance < 15.0) {
-                        '▒';
-                    }
-
-                    else { '▓'; }
-
+                    if (distance < 5.0) '█' else if (distance < 10.0) '▓' else if (distance < 15.0) '▒' else '░'
                 } else {
-                    if (distance < 5.0) {
-                        '#'; 
-                    } else if (distance < 10.0) {
-                        '@'; 
-                    } else if (distance < 20.0) {
-                        '+'; 
-                    } 
-
-                    else {
-                        '.'; } 
+                    if (distance < 5.0) '#' else if (distance < 10.0) '@' else if (distance < 20.0) '+' else '.'
                 };
-                
+
                 canvas3D.put(screen_x, screen_y, ch);
                 canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));
             }
         }
     }
-    
+
     const center_x = @divTrunc(screen_w, 2);
     const center_y = @divTrunc(screen_h, 2);
     canvas3D.put(center_x, center_y, '+');
     canvas3D.fillColor(center_x, center_y, Engine3D.Color3D.init(255, 255, 255));
 }
-
+};
 
 pub fn randomBiome() Chunk.BiomeType {
     const seed: u64 = @intCast(std.time.milliTimestamp());
@@ -729,4 +706,3 @@ pub fn randomBiome() Chunk.BiomeType {
     const roll: u32 = prng.random().intRangeLessThan(u32, 0, Chunk.BiomeCount);
     return @enumFromInt(roll);
 }
-
