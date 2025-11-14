@@ -681,12 +681,29 @@ pub fn renderParticleField3D(
                 const g: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.g)) * fade);
                 const b: u8 = @intFromFloat(@as(f32, @floatFromInt(base_color.b)) * fade);
 
-                const ch: u8 = if (is_ground) {
-                    if (distance < 5.0) '#' else if (distance < 10.0) '=' else if (distance < 15.0) '-' else '.'
-                } else {
-                    if (distance < 5.0) '#' else if (distance < 10.0) '@' else if (distance < 20.0) '+' else '.'
-                };
-
+const ch: u8 = blk: {
+                    if (is_ground) {
+                        if (distance < 5.0) {
+                            break :blk '#';
+                        } else if (distance < 10.0) {
+                            break :blk '=';
+                        } else if (distance < 15.0) {
+                            break :blk '-';
+                        } else {
+                            break :blk '.';
+                        }
+                    } else {
+                        if (distance < 5.0) {
+                            break :blk '#';
+                        } else if (distance < 10.0) {
+                            break :blk '@';
+                        } else if (distance < 20.0) {
+                            break :blk '+';
+                        } else {
+                            break :blk '.';
+                        }
+                    }
+                };                
                 canvas3D.put(screen_x, screen_y, ch);
                 canvas3D.fillColor(screen_x, screen_y, Engine3D.Color3D.init(r, g, b));            }
         }
