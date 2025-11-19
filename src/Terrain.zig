@@ -117,7 +117,6 @@ pub const Terrain = struct {
     }
 
     pub fn mapMaterial(h: f32) struct { ch: u8, color: Engine.Color } {
-        // thresholds
         if (h < 0.2) return .{ .ch = '~', .color = Engine.Color{ .r = 20, .g = 60, .b = 180 } };
         if (h < 0.3) return .{ .ch = '.', .color = Engine.Color{ .r = 200, .g = 180, .b = 90 } };
         if (h < 0.6) return .{ .ch = ',', .color = Engine.Color{ .r = 30, .g = 160, .b = 30 } };
