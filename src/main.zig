@@ -18,7 +18,6 @@ pub const HEIGHT = 50;
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const view_mode = try viewModeMenu(engine);
 
-    // Create a fresh player for both modes
     const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
 
     switch (view_mode) {
@@ -112,10 +111,13 @@ fn runSingleplayer3D(
         engine.clock.tick();
 
         if (try Engine.readKey()) |b| {
-            if (b == 'v') view_3d = !view_3d;
-            else if (b == 'q' or b == 27) break;
-            else try world_manager.processPlayerInput(b);
-        }
+    switch (b) {
+        'v' => view_3d = !view_3d,
+        'q', 27 => break,
+        else => try world_manager.processPlayerInput(b),
+    }
+}
+
 
         if (!view_3d) {
             // fallback 2D view
