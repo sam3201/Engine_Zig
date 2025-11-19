@@ -98,8 +98,8 @@ fn runSingleplayer3D(
 cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
 }
 
-    var particle_field: ?*Particle.ParticleField = null;
-    particle_field = try world_manager
+    var particle_field: ?Particle.ParticleField = null;
+    particle_field = world_manager
         .generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
