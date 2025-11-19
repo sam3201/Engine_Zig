@@ -132,7 +132,6 @@ pub const Terrain = struct {
     }
 
     pub fn renderTopDown(self: *Terrain, canvas: *Engine.Canvas, camera_x: f32, camera_y: f32, scale: f32) void {
-        // Render an area centered on camera_x/camera_y onto the canvas in top-down view.
         const cw = canvas.width;
         const ch = canvas.height;
         //const cx = @as(f32, cw) / 2.0;
