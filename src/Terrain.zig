@@ -60,7 +60,7 @@ pub const Terrain = struct {
         const w = self.width;
         const h = self.height;
         const max_oct = @as(u32, self.octaves);
-        for (hrow, 0..) |_, y| {
+        for (hrows: 0..) |_, y| {
             var x: usize = 0;
             while (x < w) : (x += 1) {
                 var amp: f32 = 1.0;
