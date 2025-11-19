@@ -58,7 +58,7 @@ pub const Terrain = struct {
     pub fn generate(self: *Terrain) void {
         // fractal value noise
         const w = self.width;
-        const h = self.height;
+        //const h = self.height;
         const max_oct = @as(u32, self.octaves);
         const hrow = self.heights[0..w];
         for (hrow, 0..) |_, y| {
