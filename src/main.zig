@@ -96,7 +96,6 @@ fn runSingleplayer3D(
         cam3d.y = pos.y - cam3d.height / 2;
     }
 
-    // generate particles around the player
     var particle_field: ?Particle.ParticleField = null;
     particle_field = world_manager
         .generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
