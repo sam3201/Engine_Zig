@@ -65,7 +65,7 @@ fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine, playe
     var engine3d = try Engine3D.Engine3D.init(allocator, cam_w, cam_h, 30.0, Engine3D.Color3D.init(135, 206, 235));
     defer engine3d.deinit();
 
-    var cam3d = Engine3D.Camera3D.init((engine.canvas.width / 2), (engine.canvas.height / 2), @intCast(i32, cam_w), @intCast(i32, cam_h));
+    var cam3d = Engine3D.Camera3D.init(engine.canvas.width, engine.canvas.height);
     {
         const pos = world_manager.player.getPosition();
         cam3d.x = pos.x - cam3d.width / 2;
