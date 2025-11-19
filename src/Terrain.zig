@@ -210,7 +210,7 @@ pub const Terrain = struct {
         const t = std.math.clamp(time, 0.0, 1.0);
         // day (0.0..0.5) -> blue sky, night (0.5..1.0) -> dark
         const day = if (t < 0.5) 1.0 else 0.0;
-        const r = @intCast(u8, 30 + 120 * day);
+        const r: u8 = @intCast(30 + 120 * day);
         const g = @intCast(u8, 60 + 120 * day);
         const b = @intCast(u8, 140 + 60 * day);
         return Engine.Color{ .r = r, .g = g, .b = b };
