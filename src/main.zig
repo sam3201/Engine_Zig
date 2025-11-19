@@ -8,6 +8,7 @@ const Client = @import("Client.zig");
 const Player = @import("Player.zig");
 const Chunk = @import("Chunk.zig");
 const WorldManager = @import("WorldManager.zig");
+const Particle = @import("Particle.zig");
 const Menu = @import("Menu.zig").Menu;
 const Thread = std.Thread;
 
