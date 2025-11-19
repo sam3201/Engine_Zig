@@ -48,178 +48,79 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
-fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    const Particle = @import("Particle.zig");
-    
-    const quality_selection = try qualityMenu(engine);
-    if (quality_selection >= 4) return; 
-    
-    const quality: Particle.ParticleQuality = switch (quality_selection) {
-        0 => .Low,
-        1 => .Medium,
-        2 => .High,
-        3 => .Ultra,
-        else => .Medium,
-    };
-    
-    try Engine.enableMouseTracking();
-    defer Engine.disableMouseTracking() catch {};
-    
-    var canvas3d = try Engine3D.Canvas3D.init(allocator, engine.canvas.width, engine.canvas.height);
-    defer canvas3d.deinit();
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
+    std.debug.print("\nStarting singleplayer...\n", .{});
 
-    const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
-    var world = try WorldManager.WorldManager.init(
+    // Create the WorldManager (reuses engine.canvas for 2D)
+    var world_manager = try WorldManager.WorldManager.init(
         Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        1,
+        0,
         allocator,
         &engine.canvas,
-        player,
+        player.*,
     );
-    
-    defer world.deinit();
+    defer world_manager.deinit();
 
-    var cam3d = Engine3D.Camera3D.init(@intCast(canvas3d.width), @intCast(canvas3d.height));
-    cam3d.z = 3;
-    cam3d.pitch = -0.3; 
+    // Create Engine3D canvas sized to match your terminal width/height (or a subset)
+    const cam_w: usize = engine.canvas.width;     // use same width for now
+    const cam_h: usize = engine.canvas.height;    // same height (you can lower for 3D view)
+    var engine3d = try Engine3D.Engine3D.init(allocator, cam_w, cam_h, 30.0, Engine3D.Color3D.init(135, 206, 235));
+    defer engine3d.deinit();
 
+    // Camera for 3D view
+    var cam3d = Engine3D.Camera3D.init(@intCast(i32, cam_w), @intCast(i32, cam_h));
+    // center camera roughly on player initially
+    {
+        const pos = world_manager.player.getPosition();
+        cam3d.x = pos.x - cam3d.width / 2;
+        cam3d.y = pos.y - cam3d.height / 2;
+    }
+
+    var particle_field: ?Particle.ParticleField = null;
+    particle_field = world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 16) catch null;
+    if (particle_field) |pf| {
+        defer pf.deinit();
+    }
+
+    var view_3d: bool = false; 
     engine.running = true;
-
-    const quality_name = switch (quality) {
-        .Low => "LOW",
-        .Medium => "MEDIUM",
-        .High => "HIGH",
-        .Ultra => "ULTRA",
-    };
-    
-    const hint_text = try std.fmt.allocPrint(
-        allocator,
-        "3D PARTICLE VIEW [{s}] | WASD: Move | Mouse: Look | R: Regenerate | Q/ESC: Quit | Press any key...",
-        .{quality_name},
-    );
-    defer allocator.free(hint_text);
-    
-    for (hint_text, 0..) |ch, i| {
-        if (i < engine.canvas.width) {
-            engine.canvas.put(@intCast(i), 0, ch);
-            engine.canvas.fillColor(@intCast(i), 0, .{ .r = 255, .g = 255, .b = 100 });
-        }
-    }
-    try engine.canvas.flushToTerminal();
-    
-    while (true) {
-        const input = try Engine.readInput();
-        if (input == .key) break;
-        engine.clock.sleepUntilNextFrame();
-    }
-
-    const render_distance: i32 = switch (quality) {
-        .Low => 20,
-        .Medium => 15,
-        .High => 12,
-        .Ultra => 10,
-    };
-
-    var particle_field = try world.generateParticleField(allocator, quality, render_distance);
-    defer particle_field.deinit();
-
-    var regenerate_particles = false;
-    const mouse_sensitivity: f32 = 0.002; // Adjust this for mouse feel
 
     while (engine.running) {
         engine.clock.tick();
 
-        // Process all available input
-        const input = try Engine.readInput();
-        
-        switch (input) {
-            .key => |key| {
-                if (key == 'q' or key == 'Q') {
-                    break;
-                }
-                
-                // Check if it's a standalone ESC (not part of mouse sequence)
-                if (key == 27) {
-                    // Wait a tiny bit to see if more data comes
-                    var poll_fds = [_]std.posix.pollfd{.{
-                        .fd = std.posix.STDIN_FILENO,
-                        .events = std.posix.POLL.IN,
-                        .revents = 0,
-                    }};
-                    const available = std.posix.poll(&poll_fds, 10) catch 0;
-                    
-                    if (available == 0) {
-                        // No more data, it's a real ESC press
-                        break;
-                    }
-                }
-                
-                if (key == 'r' or key == 'R') {
-                    regenerate_particles = true;
-                } else {
-                    const action = Player.InputAction.fromKey(key);
-                    try world.handlePlayerAction(action);
-                    regenerate_particles = true;
-                }
-            },
-            .mouse => |mouse| {
-                // Use mouse delta for camera rotation
-                if (mouse.delta_x != 0 or mouse.delta_y != 0) {
-                    const delta_yaw = @as(f32, @floatFromInt(mouse.delta_x)) * mouse_sensitivity;
-                    const delta_pitch = @as(f32, @floatFromInt(-mouse.delta_y)) * mouse_sensitivity; // Invert Y
-                    
-                    cam3d.rotate(delta_yaw, delta_pitch);
-                }
-                
-                // Optional: Handle mouse clicks
-                if (mouse.left_button) {
-                    // Could trigger an action, like mining/attacking
-                    std.debug.print("Left click at ({}, {})\n", .{mouse.x, mouse.y});
-                }
-            },
-            .none => {},
-        }
-
-        if (regenerate_particles) {
-            particle_field.clear();
-            particle_field.deinit();
-            particle_field = try world.generateParticleField(allocator, quality, render_distance);
-            regenerate_particles = false;
-        }
-
-        world.renderParticleField3D(&canvas3d, &cam3d, &particle_field);
-
-        const pos = world.player.getPosition();
-        const yaw_deg = cam3d.yaw * 180.0 / std.math.pi;
-        const pitch_deg = cam3d.pitch * 180.0 / std.math.pi;
-        const particle_count = particle_field.particles.items.len;
-        
-        const hud = try std.fmt.allocPrint(
-            allocator,
-            "HP:{}/{} Pos:({},{}) Yaw:{d:.0} Pitch:{d:.0} Particles:{} [{s}]",
-            .{ 
-                world.player.health, 
-                world.player.max_health, 
-                pos.x, 
-                pos.y, 
-                yaw_deg, 
-                pitch_deg, 
-                particle_count,
-                quality_name,
-            },
-        );
-        defer allocator.free(hud);
-
-        for (hud, 0..) |ch, i| {
-            if (i < canvas3d.width) {
-                canvas3d.put(@intCast(i), 0, ch);
-                canvas3d.fillColor(@intCast(i), 0, Engine3D.Color3D.init(255, 255, 100));
+        if (try Engine.readKey()) |b| {
+            if (b == 'v' or b == 'V') {
+                view_3d = !view_3d;
+            } else if (b == 'q' or b == 27) {
+                engine.running = false;
+                break;
+            } else {
+                try world_manager.processPlayerInput(b);
             }
         }
 
-        try canvas3d.flushToTerminal();
+        if (!view_3d) {
+            // 2D draw
+            engine.canvas.clear(' ', engine.background_color);
+            world_manager.draw();
+            engine.canvas.render();
+            try engine.canvas.flushToTerminal();
+        } else {
+            engine3d.canvas.clear(' ', Engine3D.Color3D.init(135, 206, 235)); // sky blue
+            world_manager.projectTo3D(&engine3d.canvas, &cam3d);
+
+            if (particle_field) |pf| {
+                world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
+            }
+
+            engine3d.canvas.render();
+            try engine3d.canvas.flushToTerminal();
+        }
+
         engine.clock.sleepUntilNextFrame();
     }
+
+    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {};
 }
 
 pub fn main() !void {
