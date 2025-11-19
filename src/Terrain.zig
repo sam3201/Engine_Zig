@@ -169,9 +169,9 @@ pub const Terrain = struct {
                 if (wx < 0 or wy < 0 or wx >= @as(f32, self.width) or wy >= @as(f32, self.height)) continue;
                 const height_at = self.sampleAt(wx, wy);
                 // world height relative to camera
-                const rel_h = (height_at * 20.0) - cam_height; // scale terrain vertical exaggeration
+                const rel_h = (height_at * 20.0) - cam_height; 
                 // project to screen y
-                const proj_y = half_h - (rel_h / dist) * 8.0; // tuning constant
+                const proj_y = half_h - (rel_h / dist) * 8.0; 
                 if (proj_y < half_h) {
                     hit = true;
                     hit_h = height_at;
@@ -180,12 +180,11 @@ pub const Terrain = struct {
                 }
             }
 
-            // draw column
             var y: usize = 0;
             while (y < canvas.height) : (y += 1) {
                 if (!hit) {
                     // sky
-                    const sky_col = Terrain.skyColor(0.5); // placeholder static sky
+                    const sky_col = Terrain.skyColor(0.5); 
                     canvas.put(@intCast(sx), @intCast(y), ' ');
                     canvas.fillColor(@intCast(sx), @intCast(y), sky_col);
                 } else {
