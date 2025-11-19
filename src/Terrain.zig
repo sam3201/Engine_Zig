@@ -195,7 +195,6 @@ pub const Terrain = struct {
                         canvas.put(@intCast(sx), @intCast(y), ' ');
                         canvas.fillColor(@intCast(sx), @intCast(y), sky_col);
                     } else {
-                        // terrain color depends on hit_h
                         const mat = self.mapMaterial(hit_h);
                         canvas.put(@intCast(sx), @intCast(y), mat.ch);
                         canvas.fillColor(@intCast(sx), @intCast(y), mat.color);
