@@ -153,7 +153,7 @@ pub const Terrain = struct {
         const screen_w = @as(f32, canvas.width);
         const screen_h = @as(f32, canvas.height);
         const half_h = screen_h / 2.0;
-        const two_pi = 6.2831855;
+        //const two_pi = 6.2831855;
 
         var sx: usize = 0;
         while (sx < canvas.width) : (sx += 1) {
