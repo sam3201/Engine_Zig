@@ -123,7 +123,6 @@ cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
 
 
         if (!view_3d) {
-            // fallback 2D view
             engine.canvas.clear(' ', engine.background_color);
             world_manager.draw();
             engine.canvas.render();
