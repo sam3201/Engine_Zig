@@ -38,11 +38,10 @@ pub const Terrain = struct {
     }
 
     pub fn sampleAt(self: *const Terrain, xf: f32, yf: f32) f32 {
-        // bilinear sample with clamping at edges
         if (xf < 0) return 0.0;
         if (yf < 0) return 0.0;
-        const x0 = @intCast(usize, @floor(xf));
-        const y0 = @intCast(usize, @floor(yf));
+        const x0: usize = @intCast(@floor(xf));
+        const y0: usize = @intCast(@floor(yf));
         const x1 = if (x0 + 1 < self.width) x0 + 1 else x0;
         const y1 = if (y0 + 1 < self.height) y0 + 1 else y0;
         const sx = xf - @as(f32, x0);
