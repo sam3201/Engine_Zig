@@ -18,7 +18,7 @@ pub const HEIGHT = 50;
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const view_mode = try viewModeMenu(engine);
 
-    const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
+    var player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
 
     switch (view_mode) {
         0 => try runSingleplayer2D(allocator, engine, &player),
