@@ -48,7 +48,7 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
-fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
+fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     std.debug.print("\nStarting singleplayer...\n", .{});
 
     var world_manager = try WorldManager.WorldManager.init(
@@ -210,7 +210,7 @@ fn viewModeMenu(engine: *Engine.Engine) !u8 {
     return @intCast(selection);
 }
 
-fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     const view_mode = try viewModeMenu(engine);
     
     switch (view_mode) {
