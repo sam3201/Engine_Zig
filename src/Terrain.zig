@@ -189,7 +189,7 @@ pub const Terrain = struct {
                     canvas.put(@intCast(sx), @intCast(y), ' ');
                     canvas.fillColor(@intCast(sx), @intCast(y), sky_col);
                 } else {
-                    const col_top = @intCast(@max(0, @floor((half_h - ( ( (hit_h * 20.0) - cam_height) / hit_dist) * 8.0 )))) ;
+                    const col_top: usize = @intCast(@max(0, @floor((half_h - ( ( (hit_h * 20.0) - cam_height) / hit_dist) * 8.0 )))) ;
                     if (y < col_top) {
                         const sky_col = Terrain.skyColor(0.5);
                         canvas.put(@intCast(sx), @intCast(y), ' ');
