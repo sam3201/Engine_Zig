@@ -135,6 +135,8 @@ pub const Terrain = struct {
         // Render an area centered on camera_x/camera_y onto the canvas in top-down view.
         const cw = canvas.width;
         const ch = canvas.height;
+        const cx = @as(f32, cw) / 2.0;
+        const cy = @as(f32, ch) / 2.0;
         for (cy, 0..) |_, sy| {
             var sx: usize = 0;
             while (sx < cw) : (sx += 1) {
