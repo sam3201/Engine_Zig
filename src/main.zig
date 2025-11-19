@@ -91,7 +91,7 @@ fn runSingleplayer3D(
     const cam_w_i32: i32 = @intCast(engine.canvas.width);
     const cam_h_i32: i32 = @intCast(engine.canvas.height); 
 
-    var cam3d = Engine3D.Camera3D.init(cam_w, cam_h);
+    var cam3d = Engine3D.Camera3D.init(cam_w_i32, cam_h_i32);
     {
         const pos = player.getPosition();
         cam3d.x = pos.x - cam3d.width / 2;
