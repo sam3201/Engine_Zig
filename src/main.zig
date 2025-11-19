@@ -15,6 +15,132 @@ const Thread = std.Thread;
 pub const WIDTH = 175;
 pub const HEIGHT = 50;
 
+fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
+    const view_mode = try viewModeMenu(engine);
+
+    // Create a fresh player for both modes
+    const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
+
+    switch (view_mode) {
+        0 => try runSingleplayer2D(allocator, engine, player),
+        1 => try runSingleplayer3D(allocator, engine, player),
+        else => return,
+    }
+}
+
+fn runSingleplayer2D(
+    allocator: std.mem.Allocator,
+    engine: *Engine.Engine,
+    player: *Player.Player,
+) !void {
+    var world_manager = try WorldManager.WorldManager.init(
+        Chunk.ChunkCoord{ .x = 0, .y = 0 },
+        1,
+        allocator,
+        &engine.canvas,
+        player.*,
+    );
+    defer world_manager.deinit();
+
+    engine.running = true;
+
+    while (engine.running) {
+        engine.clock.tick();
+
+        if (try Engine.readKey()) |key| {
+            if (key == 'q' or key == 27) break;
+            try world_manager.processPlayerInput(key);
+        }
+
+        engine.canvas.clear(' ', engine.background_color);
+        world_manager.draw();
+        engine.canvas.render();
+        try engine.canvas.flushToTerminal();
+
+        engine.clock.sleepUntilNextFrame();
+    }
+}
+
+fn runSingleplayer3D(
+    allocator: std.mem.Allocator,
+    engine: *Engine.Engine,
+    player: *Player.Player,
+) !void {
+    std.debug.print("\nStarting 3D mode...\n", .{});
+
+    var world_manager = try WorldManager.WorldManager.init(
+        Chunk.ChunkCoord{ .x = 0, .y = 0 },
+        0,
+        allocator,
+        &engine.canvas,
+        player.*,
+    );
+    defer world_manager.deinit();
+
+    const cam_w = engine.canvas.width;
+    const cam_h = engine.canvas.height;
+
+    var engine3d = try Engine3D.Engine3D.init(
+        allocator,
+        cam_w,
+        cam_h,
+        30.0,
+        Engine3D.Color3D.init(135, 206, 235),
+    );
+    defer engine3d.deinit();
+
+    var cam3d = Engine3D.Camera3D.init(cam_w, cam_h);
+    {
+        const pos = player.getPosition();
+        cam3d.x = pos.x - cam3d.width / 2;
+        cam3d.y = pos.y - cam3d.height / 2;
+    }
+
+    // generate particles around the player
+    var particle_field: ?Particle.ParticleField = null;
+    particle_field = world_manager
+        .generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
+        catch null;
+
+    if (particle_field) |pf| {
+        defer pf.deinit();
+    }
+
+    var view_3d = true;
+    engine.running = true;
+
+    while (engine.running) {
+        engine.clock.tick();
+
+        if (try Engine.readKey()) |b| {
+            if (b == 'v') view_3d = !view_3d;
+            else if (b == 'q' or b == 27) break;
+            else try world_manager.processPlayerInput(b);
+        }
+
+        if (!view_3d) {
+            // fallback 2D view
+            engine.canvas.clear(' ', engine.background_color);
+            world_manager.draw();
+            engine.canvas.render();
+            try engine.canvas.flushToTerminal();
+        } else {
+            // 3D
+            engine3d.canvas.clear(' ', Engine3D.Color3D.init(135, 206, 235));
+            world_manager.projectTo3D(&engine3d.canvas, &cam3d);
+
+            if (particle_field) |pf| {
+                world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
+            }
+
+            engine3d.canvas.render();
+            try engine3d.canvas.flushToTerminal();
+        }
+
+        engine.clock.sleepUntilNextFrame();
+    }
+}
+
 fn qualityMenu(engine: *Engine.Engine) !u8 {
     const items = [_][]const u8{
         "Low Quality (Fast)",
@@ -47,77 +173,6 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
     }
 
     return @intCast(selection);
-}
-
-fn runSingleplayer3D(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
-    std.debug.print("\nStarting singleplayer...\n", .{});
-
-    var world_manager = try WorldManager.WorldManager.init(
-        Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        0,
-        allocator,
-        &engine.canvas,
-        player.*,
-    );
-    defer world_manager.deinit();
-
-    const cam_w: usize = engine.canvas.width;     
-    const cam_h: usize = engine.canvas.height;   
-    var engine3d = try Engine3D.Engine3D.init(allocator, cam_w, cam_h, 30.0, Engine3D.Color3D.init(135, 206, 235));
-    defer engine3d.deinit();
-
-    var cam3d = Engine3D.Camera3D.init(engine.canvas.width, engine.canvas.height);
-    {
-        const pos = world_manager.player.getPosition();
-        cam3d.x = pos.x - cam3d.width / 2;
-        cam3d.y = pos.y - cam3d.height / 2;
-    }
-
-    var particle_field: ?Particle.ParticleField = null;
-    particle_field = world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 16) catch null;
-    if (particle_field) |pf| {
-        defer pf.deinit();
-    }
-
-    var view_3d: bool = false; 
-    engine.running = true;
-
-    while (engine.running) {
-        engine.clock.tick();
-
-        if (try Engine.readKey()) |b| {
-            if (b == 'v' or b == 'V') {
-                view_3d = !view_3d;
-            } else if (b == 'q' or b == 27) {
-                engine.running = false;
-                break;
-            } else {
-                try world_manager.processPlayerInput(b);
-            }
-        }
-
-        if (!view_3d) {
-            // 2D draw
-            engine.canvas.clear(' ', engine.background_color);
-            world_manager.draw();
-            engine.canvas.render();
-            try engine.canvas.flushToTerminal();
-        } else {
-            engine3d.canvas.clear(' ', Engine3D.Color3D.init(135, 206, 235)); // sky blue
-            world_manager.projectTo3D(&engine3d.canvas, &cam3d);
-
-            if (particle_field) |pf| {
-                world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
-            }
-
-            engine3d.canvas.render();
-            try engine3d.canvas.flushToTerminal();
-        }
-
-        engine.clock.sleepUntilNextFrame();
-    }
-
-    _ = std.posix.write(std.posix.STDOUT_FILENO, "\x1b[?25h\x1b[0m\n") catch {};
 }
 
 pub fn main() !void {
@@ -209,46 +264,6 @@ fn viewModeMenu(engine: *Engine.Engine) !u8 {
     }
 
     return @intCast(selection);
-}
-
-fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    const view_mode = try viewModeMenu(engine);
-    
-    switch (view_mode) {
-        0 => try runSingleplayer2D(allocator, engine),
-        1 => try runSingleplayer3D(allocator, engine),
-        else => return, // Back to main menu
-    }
-}
-
-fn runSingleplayer2D(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
-    const player = try Player.Player.createWASDPlayer("Player", allocator, 5, 5);
-    var world = try WorldManager.WorldManager.init(
-        Chunk.ChunkCoord{ .x = 0, .y = 0 },
-        1,
-        allocator,
-        &engine.canvas,
-        player,
-    );
-    defer world.deinit();
-
-    engine.running = true;
-
-    while (engine.running) {
-        engine.clock.tick();
-
-        if (try Engine.readKey()) |key| {
-            if (key == 'q' or key == 27) break;
-            const action = Player.InputAction.fromKey(key);
-            try world.handlePlayerAction(action);
-        }
-
-        engine.canvas.clear(' ', engine.background_color);
-        world.draw();
-        try engine.canvas.flushToTerminal();
-
-        engine.clock.sleepUntilNextFrame();
-    }
 }
 
 fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
