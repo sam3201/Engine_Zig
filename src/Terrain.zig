@@ -84,9 +84,8 @@ pub const Terrain = struct {
     }
 
     pub fn simpleNoise2D(seed: u64, x: f32, y: f32) f32 {
-        // value noise via hashing grid corners + smoothstep interpolation
-        const xi = @intCast(i32, @floor(x));
-        const yi = @intCast(i32, @floor(y));
+        const xi: i32 = @intCast(@floor(x));
+        const yi: i32 = @intCast(@floor(y));
         const xf = x - @as(f32, xi);
         const yf = y - @as(f32, yi);
 
