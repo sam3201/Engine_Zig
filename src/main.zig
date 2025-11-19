@@ -76,8 +76,8 @@ fn runSingleplayer3D(
     );
     defer world_manager.deinit();
 
-    const cam_w = engine.canvas.width;
-    const cam_h = engine.canvas.height;
+    const cam_w: i32 = engine.canvas.width;
+    const cam_h: i32 = @intCast(engine.canvas.height); 
 
     var engine3d = try Engine3D.Engine3D.init(
         allocator,
