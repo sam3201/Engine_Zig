@@ -6,7 +6,7 @@ const Engine = @import("Engine.zig");
 pub const Terrain = struct {
     width: usize,
     height: usize,
-    heights: []f32, // row-major [y * width + x]
+    heights: []f32, 
     seed: u64,
     scale: f32,
     octaves: u8,
@@ -20,7 +20,6 @@ pub const Terrain = struct {
             .scale = scale,
             .octaves = octaves,
         };
-        // generate once
         t.generate();
         return t;
     }
