@@ -112,7 +112,6 @@ pub const Terrain = struct {
         h = (h ^ (h >> 30)) * 0xBF58476D1CE4E5B9;
         h = (h ^ (h >> 27)) * 0x94D049BB133111EB;
         h = h ^ (h >> 31);
-        // map to -1..1
         const f = @as(f32, (h & 0xFFFFFFFFFFFFFFFF)) / @as(f32, 0xFFFFFFFFFFFFFFFF);
         return (f * 2.0) - 1.0;
     }
