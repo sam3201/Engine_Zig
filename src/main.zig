@@ -94,9 +94,9 @@ fn runSingleplayer3D(
     var cam3d = Engine3D.Camera3D.init(cam_w_i32, cam_h_i32);
     {
         const pos = player.getPosition();
-        cam3d.x = pos.x - cam3d.width / 2;
-        cam3d.y = pos.y - cam3d.height / 2;
-    }
+    cam3d.x = pos.x - @divTrunc(cam3d.width, 2);
+cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
+}
 
     var particle_field: ?Particle.ParticleField = null;
     particle_field = world_manager
