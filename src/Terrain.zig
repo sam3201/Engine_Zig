@@ -1,7 +1,4 @@
-// Terrain.zig
-// Procedural heightmap-based terrain generator and renderer for your ASCII engine.
-// Integrates with Engine.Canvas and Engine.Color. Intended for Zig 0.15.x.
-// Reference file (uploaded by user): /mnt/data/all.txt
+// src/Terrain.zig
 
 const std = @import("std");
 const Engine = @import("Engine.zig");
@@ -108,7 +105,6 @@ pub const Terrain = struct {
     }
 
     fn smoothstep(t: f32) f32 {
-        // classic smoothing
         return t * t * (3.0 - 2.0 * t);
     }
 
