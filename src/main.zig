@@ -51,7 +51,6 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
 fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player: *Player.Player) !void {
     std.debug.print("\nStarting singleplayer...\n", .{});
 
-    // Create the WorldManager (reuses engine.canvas for 2D)
     var world_manager = try WorldManager.WorldManager.init(
         Chunk.ChunkCoord{ .x = 0, .y = 0 },
         0,
@@ -61,15 +60,12 @@ fn runSingleplayer(allocator: std.mem.Allocator, engine: *Engine.Engine, player:
     );
     defer world_manager.deinit();
 
-    // Create Engine3D canvas sized to match your terminal width/height (or a subset)
-    const cam_w: usize = engine.canvas.width;     // use same width for now
-    const cam_h: usize = engine.canvas.height;    // same height (you can lower for 3D view)
+    const cam_w: usize = engine.canvas.width;     
+    const cam_h: usize = engine.canvas.height;   
     var engine3d = try Engine3D.Engine3D.init(allocator, cam_w, cam_h, 30.0, Engine3D.Color3D.init(135, 206, 235));
     defer engine3d.deinit();
 
-    // Camera for 3D view
     var cam3d = Engine3D.Camera3D.init(@intCast(i32, cam_w), @intCast(i32, cam_h));
-    // center camera roughly on player initially
     {
         const pos = world_manager.player.getPosition();
         cam3d.x = pos.x - cam3d.width / 2;
