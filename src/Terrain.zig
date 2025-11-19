@@ -78,7 +78,6 @@ pub const Terrain = struct {
                     freq *= 2.0;
                 }
                 const val = sum / norm; // -1..1
-                // normalize 0..1
                 self.heights[y * w + x] = (val * 0.5) + 0.5;
             }
         }
