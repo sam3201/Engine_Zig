@@ -106,7 +106,7 @@ pub const Terrain = struct {
     }
 
     fn hashFloat(seed: u64, x: i32, y: i32) f32 {
-        var h: u64 = @intCast(u64, x) * 0x9E3779B97F4A7C15 + @intCast(u64, y) * 0xBF58476D1CE4E5B9 + seed;
+        var h: u64 = @intCast(x) * 0x9E3779B97F4A7C15 + @intCast(u64, y) * 0xBF58476D1CE4E5B9 + seed;
         h = (h ^ (h >> 30)) * 0xBF58476D1CE4E5B9;
         h = (h ^ (h >> 27)) * 0x94D049BB133111EB;
         h = h ^ (h >> 31);
