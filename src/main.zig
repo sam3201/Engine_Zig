@@ -112,7 +112,6 @@ fn runSingleplayer3D(
         engine.clock.tick();
 
         if (try Engine.readKey()) |b| {
-        }
             if (b == 'v') view_3d = !view_3d;
             else if (b == 'q' or b == 27) break;
             else try world_manager.processPlayerInput(b);
