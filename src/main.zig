@@ -96,8 +96,7 @@ fn runSingleplayer3D(
         cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
     }
 
-    // ✔ FIXED: optional pointer, not value
-    var particle_field: ?*Particle.ParticleField =
+    const particle_field: ?*Particle.ParticleField =
         world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
