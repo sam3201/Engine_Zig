@@ -102,6 +102,7 @@ fn runSingleplayer3D(
 
     if (particle_field) |*pf| {
         defer pf.deinit();
+        world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
     }
 
     var view_3d = true;
