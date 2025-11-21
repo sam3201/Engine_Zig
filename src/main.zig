@@ -101,7 +101,7 @@ cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
     var particle_field = try world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
-    if (particle_field) |*pf| {
+    if (particle_field) |pf| {
         defer pf.deinit();
     }
 
