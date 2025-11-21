@@ -103,6 +103,7 @@ var particle_field: ?Particle.ParticleField =
 // Handle allocated particle field
 if (particle_field) |*pf| {
     defer pf.deinit(); // safe: pf is mutable pointer
+}
 
     var view_3d = true;
     engine.running = true;
