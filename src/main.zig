@@ -100,9 +100,8 @@ var particle_field: ?Particle.ParticleField =
     world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
-// Handle allocated particle field
 if (particle_field) |*pf| {
-    defer pf.deinit(); // safe: pf is mutable pointer
+    defer pf.deinit(); 
 }
 
     var view_3d = true;
