@@ -128,7 +128,6 @@ cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
             engine.canvas.render();
             try engine.canvas.flushToTerminal();
         } else {
-            // 3D
             engine3d.canvas.clear(' ', Engine3D.Color3D.init(135, 206, 235));
             world_manager.projectTo3D(&engine3d.canvas, &cam3d);
 
