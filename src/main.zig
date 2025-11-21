@@ -96,14 +96,13 @@ fn runSingleplayer3D(
         cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
     }
 
-    var particle_field: ?Particle.ParticleField =
-        world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
+var particle_field: ?Particle.ParticleField =
+    world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
-    if (particle_field) |*pf| {
-        defer pf.deinit();
-        world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
-    }
+// Handle allocated particle field
+if (particle_field) |*pf| {
+    defer pf.deinit(); // safe: pf is mutable pointer
 
     var view_3d = true;
     engine.running = true;
