@@ -100,7 +100,7 @@ fn runSingleplayer3D(
         world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
-    if (particle_field) |pf| {
+    if (particle_field) |*pf| {
         defer pf.deinit();
     }
 
