@@ -1,5 +1,3 @@
-// src/main.zig
-
 const std = @import("std");
 const Engine = @import("Engine.zig");
 const Engine3D = @import("Engine3D.zig");
@@ -77,7 +75,7 @@ fn runSingleplayer3D(
     defer world_manager.deinit();
 
     const cam_w = engine.canvas.width;
-    const cam_h = engine.canvas.height; 
+    const cam_h = engine.canvas.height;
 
     var engine3d = try Engine3D.Engine3D.init(
         allocator,
@@ -89,16 +87,18 @@ fn runSingleplayer3D(
     defer engine3d.deinit();
 
     const cam_w_i32: i32 = @intCast(engine.canvas.width);
-    const cam_h_i32: i32 = @intCast(engine.canvas.height); 
+    const cam_h_i32: i32 = @intCast(engine.canvas.height);
 
     var cam3d = Engine3D.Camera3D.init(cam_w_i32, cam_h_i32);
     {
         const pos = player.getPosition();
-    cam3d.x = pos.x - @divTrunc(cam3d.width, 2);
-cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
-}
+        cam3d.x = pos.x - @divTrunc(cam3d.width, 2);
+        cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
+    }
 
-    var particle_field = try world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
+    // ✔ FIXED: optional pointer, not value
+    var particle_field: ?*Particle.ParticleField =
+        world_manager.generateParticleField(allocator, Particle.ParticleQuality.Medium, 12)
         catch null;
 
     if (particle_field) |pf| {
@@ -112,24 +112,25 @@ cam3d.y = pos.y - @divTrunc(cam3d.height, 2);
         engine.clock.tick();
 
         if (try Engine.readKey()) |b| {
-    switch (b) {
-        'v' => view_3d = !view_3d,
-        'q', 27 => break,
-        else => try world_manager.processPlayerInput(b),
-    }
-}
-
+            switch (b) {
+                'v' => view_3d = !view_3d,
+                'q', 27 => break,
+                else => try world_manager.processPlayerInput(b),
+            }
+        }
 
         if (!view_3d) {
             engine.canvas.clear(' ', engine.background_color);
             world_manager.draw();
             engine.canvas.render();
             try engine.canvas.flushToTerminal();
+
         } else {
             engine3d.canvas.clear(' ', Engine3D.Color3D.init(135, 206, 235));
             world_manager.projectTo3D(&engine3d.canvas, &cam3d);
 
-            if (particle_field) |*pf| {
+            // ✔ FIXED: no more |*pf|, use |pf|
+            if (particle_field) |pf| {
                 world_manager.renderParticleField3D(&engine3d.canvas, &cam3d, pf);
             }
 
@@ -160,7 +161,7 @@ fn qualityMenu(engine: *Engine.Engine) !u8 {
 
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 27) {
-                selection = 4; 
+                selection = 4;
                 break;
             }
             if (menu.update(key)) |sel| {
@@ -181,7 +182,9 @@ pub fn main() !void {
 
     var engine = try Engine.Engine.init(
         allocator,
-        WIDTH, HEIGHT, 60,
+        WIDTH,
+        HEIGHT,
+        60,
         Engine.Color{ .r = 0, .g = 0, .b = 0 },
     );
     defer engine.deinit();
@@ -251,7 +254,7 @@ fn viewModeMenu(engine: *Engine.Engine) !u8 {
 
         if (try Engine.readKey()) |key| {
             if (key == 'q' or key == 27) {
-                selection = 2; // Back
+                selection = 2;
                 break;
             }
             if (menu.update(key)) |sel| {
@@ -270,10 +273,9 @@ fn runHostMode(allocator: std.mem.Allocator, engine: *Engine.Engine) !void {
     std.debug.print("Hosting server and playing as host...\n", .{});
 
     var server = try Server.GameServer.init(allocator);
-    const server_thread = try Thread.spawn(.{}, runServerThread, .{&server});
+    const server_thread = try Thread.spawn(.{}, runServerThread, .{ &server });
     server_thread.detach();
 
-    // Host acts as local client
     try Client.runClient(allocator, engine);
 }
 
@@ -312,6 +314,7 @@ fn showKeyBindings(engine: *Engine.Engine) !void {
         "Press any key to return...";
 
     engine.canvas.clear(' ', .{ .r = 0, .g = 0, .b = 0 });
+
     var x: i32 = 5;
     var y: i32 = 3;
 
@@ -329,11 +332,10 @@ fn showKeyBindings(engine: *Engine.Engine) !void {
     }
 
     try engine.canvas.flushToTerminal();
-    
+
     while (true) {
-        if (try Engine.readKey()) |_| {
-            break;
-        }
+        if (try Engine.readKey()) |_| break;
         engine.clock.sleepUntilNextFrame();
     }
 }
+
